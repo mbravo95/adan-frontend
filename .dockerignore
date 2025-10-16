@@ -1,0 +1,7 @@
+# Items que no necesitan estar dentro de la imagen de docker
+Dockerfile
+.dockerignore
+.gitignore
+README.md
+build
+node_modules
