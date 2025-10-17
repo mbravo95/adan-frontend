@@ -4,8 +4,6 @@ function App() {
 
   return (
     <>
-      <h1>Adan frontend</h1>
-
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />}/>
