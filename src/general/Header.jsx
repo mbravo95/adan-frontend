@@ -6,6 +6,8 @@ const Header = () => {
   
   const cerrarSesion = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("mail");
+    localStorage.removeItem("tipo");
     navigate("/login");
   }
   

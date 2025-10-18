@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Login from "./usuario/Login";
 import Register from "./usuario/Register";
 import RutaProtegidaLayout from "./layout/RutaProtegidaLayout";
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AuthLayout />}>

@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Input = styled.input`
   box-sizing: border-box;
@@ -78,6 +82,10 @@ const Link = styled.a`
   order: 3;
   align-self: stretch;
   flex-grow: 0;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const Image = styled.img`
@@ -91,24 +99,64 @@ const Image = styled.img`
 
 
 const DivMayor = styled.div`
-  position: relative;
-  width: 905px;
-  height: 680px;
-  background: #9DCBD7;
-  border: 8px solid #322F35;
-  border-radius: 18px;
+  position: absolute;
+  background-color: #9DCBD7;
 `;
 
 
 const Login = () => {
+
+  const [mail, setMail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const iniciarSesion = async () => {
+    if(mail == "" || password == ""){
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
+      });
+      const {data} = response;
+      const {token, nombreUsuario, rol} = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("mail", nombreUsuario);
+      localStorage.setItem("tipo", rol);
+      navigate('/usuario');
+    } catch (error) {
+      console.log(error);
+      toast.error("Correo y/o contrasenia incorrectos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
   return (
     <>
         <DivMayor>
           <Div>
-            <Input type="text" placeholder="adan@email.com" />
+            <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
             <Div2>
-              <Input type="password" placeholder="**************" />
-              <Button>Iniciar sesion</Button>
+              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
+              <Button onClick={() => iniciarSesion()}>Iniciar sesion</Button>
             </Div2>
             <Link>Olvido su contrasenia?</Link>
           </Div>
