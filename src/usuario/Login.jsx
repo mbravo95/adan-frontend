@@ -90,7 +90,7 @@ const Image = styled.img`
 
 
 
-const divMayor = styled.body`
+const DivMayor = styled.div`
   position: relative;
   width: 905px;
   height: 680px;
@@ -103,17 +103,17 @@ const divMayor = styled.body`
 const Login = () => {
   return (
     <>
-        <divMayor>
-        <Div>
-          <Input placeholder="adan@email.com" />
-          <Div2>
-            <Input placeholder="**************" />
-            <Button>Iniciar sesion</Button>
-          </Div2>
-          <Link>Olvido su contrasenia?</Link>
-        </Div>
-        <Image src = "/logo.jpeg" />
-        </divMayor>
+        <DivMayor>
+          <Div>
+            <Input type="text" placeholder="adan@email.com" />
+            <Div2>
+              <Input type="password" placeholder="**************" />
+              <Button>Iniciar sesion</Button>
+            </Div2>
+            <Link>Olvido su contrasenia?</Link>
+          </Div>
+          <Image src = "/logo.jpeg" />
+        </DivMayor>
     </>
   )
 }

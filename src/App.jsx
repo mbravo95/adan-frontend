@@ -5,6 +5,8 @@ import RutaProtegidaLayout from "./layout/RutaProtegidaLayout";
 import AuthLayout from "./layout/AuthLayout";
 import HomeCurso from "./cursos/HomeCurso";
 import CrearCurso from "./cursos/CrearCurso";
+import HomeUsuario from "./usuario/HomeUsuario";
+import EditProfile from "./usuario/EditProfile";
 
 function App() {
 
@@ -19,6 +21,10 @@ function App() {
           <Route path="/curso" element={<RutaProtegidaLayout/>}>
             <Route index element={<HomeCurso />} />
             <Route path="crear" element={<CrearCurso />} />
+          </Route>
+          <Route path="/usuario" element={<RutaProtegidaLayout/>}>
+            <Route index element={<HomeUsuario />} />
+            <Route path="editar" element={<EditProfile />} />
           </Route>
         </Routes>
       </BrowserRouter>
