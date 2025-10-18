@@ -1,7 +1,21 @@
+import { useNavigate } from "react-router-dom";
+
 const Header = () => {
+
+  const navigate = useNavigate();
+  
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  }
+  
   return (
     <>
-        <h1>Header</h1>
+        <input
+          type="button"
+          value="Cerrar sesion"
+          onClick={() => cerrarSesion()}
+        />
     </>
   )
 }
