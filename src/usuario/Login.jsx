@@ -88,9 +88,22 @@ const Image = styled.img`
   top: 165px;
 `;
 
+
+
+const divMayor = styled.body`
+  position: relative;
+  width: 905px;
+  height: 680px;
+  background: #9DCBD7;
+  border: 8px solid #322F35;
+  border-radius: 18px;
+`;
+
+
 const Login = () => {
   return (
     <>
+        <divMayor>
         <Div>
           <Input placeholder="adan@email.com" />
           <Div2>
@@ -100,6 +113,7 @@ const Login = () => {
           <Link>Olvido su contrasenia?</Link>
         </Div>
         <Image src = "/logo.jpeg" />
+        </divMayor>
     </>
   )
 }
