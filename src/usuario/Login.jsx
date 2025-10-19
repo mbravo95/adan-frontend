@@ -152,7 +152,7 @@ const Login = () => {
       };
       const response2 = await axios.get(`${urlBase}/usuarios/perfil`, config);
       setProfile(response2.data);
-      navigate('/usuario');
+      navigate('/home');
     } catch (error) {
       console.log(error);
       toast.error("Correo y/o contrasenia incorrectos", {

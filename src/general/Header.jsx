@@ -115,14 +115,14 @@ const Header = () => {
     <>
         <HeaderContainer>
         <LeftSection>
-          <LogoImage src="/header/logo_1.png" alt="Logo ADAN" onClick={() => console.log('Ir al home')}/>
+          <LogoImage src="/header/logo_1.png" alt="Logo ADAN" onClick={() => navigate('/home')}/>
         </LeftSection>
         <RightSection>
-          <Icon src="/header/logo_2.png" alt="Icono 2" onClick={() => console.log('Ir al home')} />
+          <Icon src="/header/logo_2.png" alt="Icono 2" onClick={() => navigate('/home')} />
           <MessagesIcon src="/header/mensajes.png" alt="Mensajes" onClick={() => console.log('Ir a los mensajes')} />
           <Icon src="/header/notificaciones.png" alt="Notificaciones" onClick={() => console.log('Ir a las notificaciones')} />
           <ProfileContainer onClick={() => setAbrirMenu(!abrirMenu)}>
-            <ProfileIcon src={(profile.fotoPerfil && profile.fotoPerfil.includes("railway")) ? profile.fotoPerfil : "/header/avatar.png"} alt="Perfil" />
+            <ProfileIcon src={profile.fotoPerfil ? profile.fotoPerfil : "/header/avatar.png"} alt="Perfil" />
             {abrirMenu && (
               <DropdownMenu>
                 <DropdownItem onClick={() => navigate('/usuario')}>Ver perfil</DropdownItem>

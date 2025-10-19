@@ -152,7 +152,7 @@ const CrearCurso = () => {
         draggable: true,
         progress: undefined,
       });
-      navigate('/usuario');
+      navigate('/home');
     } catch (error) {
       console.log(error);
       const {response} = error;
@@ -172,7 +172,7 @@ const CrearCurso = () => {
   
   return (
     <>
-        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
+        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
       
         
         <Container>
@@ -188,7 +188,7 @@ const CrearCurso = () => {
               <option value="Nocturno">Nocturno</option>
             </Select>
             <CreateButton type="button" onClick={() => crear()}>Crear curso</CreateButton>
-            <CancelButton type="button" onClick={() => navigate('/usuario')}>Cancelar</CancelButton>
+            <CancelButton type="button" onClick={() => navigate('/home')}>Cancelar</CancelButton>
           </Form>
         </Container>
         

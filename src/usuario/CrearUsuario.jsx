@@ -193,7 +193,7 @@ const CrearUsuario = () => {
           draggable: true,
           progress: undefined,
         });
-        navigate('/usuario');
+        navigate('/home');
       } catch (error) {
         console.log(error);
         const {response} = error;
@@ -212,7 +212,7 @@ const CrearUsuario = () => {
 
   return (
     <>
-        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
+        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
         <Container>
           <Title>CREAR USUARIO</Title>
           <Form>
