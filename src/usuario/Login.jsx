@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 const BlueBackground = '#9DCBD7'; 
 
@@ -119,6 +120,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const { setProfile } = useAuth();
 
   const iniciarSesion = async () => {
     if(mail == "" || password == ""){
@@ -139,10 +141,17 @@ const Login = () => {
       const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
       });
       const {data} = response;
-      const {token, nombreUsuario, rol} = data;
+      const {token, rol} = data;
       localStorage.setItem("token", token);
-      localStorage.setItem("mail", nombreUsuario);
       localStorage.setItem("tipo", rol);
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response2 = await axios.get(`${urlBase}/usuarios/perfil`, config);
+      setProfile(response2.data);
       navigate('/usuario');
     } catch (error) {
       console.log(error);

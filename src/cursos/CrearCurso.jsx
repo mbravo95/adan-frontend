@@ -5,7 +5,6 @@ import axios from "axios";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
 
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -135,13 +134,13 @@ const CrearCurso = () => {
 
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
-       const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        };
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
       const response = await axios.post(`${urlBase}/cursos/alta`, {nombre, turno, codigo, anio}, config);
       console.log(response);
       toast.success("Curso agregado exitosamente", {

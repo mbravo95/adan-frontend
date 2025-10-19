@@ -1,23 +1,138 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import styled from "styled-components";
+import useAuth from "../hooks/useAuth";
+
+const HeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const LogoImage = styled.img`
+  height: 30px;
+  width: auto;
+  cursor: pointer;
+`;
+
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 25px;
+`;
+
+const Icon = styled.img`
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const MessagesIcon = styled(Icon)`
+  height: 28px;
+  width: 28px;
+`;
+
+const ProfileContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+  margin-left: 5px;
+`;
+
+const ProfileIcon = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 180px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px 15px;
+  font-size: 1em;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.1s;
+
+  &:hover {
+    background-color: #f4f4f4;
+  }
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background-color: #eee;
+  margin: 5px 0;
+`;
 
 const Header = () => {
 
   const navigate = useNavigate();
+
+  const [abrirMenu, setAbrirMenu] = useState(false);
+
+  const { setProfile, profile } = useAuth();
   
   const cerrarSesion = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("mail");
     localStorage.removeItem("tipo");
+    setProfile({});
     navigate("/login");
   }
   
   return (
     <>
-        <input
-          type="button"
-          value="Cerrar sesion"
-          onClick={() => cerrarSesion()}
-        />
+        <HeaderContainer>
+        <LeftSection>
+          <LogoImage src="/header/logo_1.png" alt="Logo ADAN" onClick={() => console.log('Ir al home')}/>
+        </LeftSection>
+        <RightSection>
+          <Icon src="/header/logo_2.png" alt="Icono 2" onClick={() => console.log('Ir al home')} />
+          <MessagesIcon src="/header/mensajes.png" alt="Mensajes" onClick={() => console.log('Ir a los mensajes')} />
+          <Icon src="/header/notificaciones.png" alt="Notificaciones" onClick={() => console.log('Ir a las notificaciones')} />
+          <ProfileContainer onClick={() => setAbrirMenu(!abrirMenu)}>
+            <ProfileIcon src={(profile.fotoPerfil && profile.fotoPerfil.includes("railway")) ? profile.fotoPerfil : "/header/avatar.png"} alt="Perfil" />
+            {abrirMenu && (
+              <DropdownMenu>
+                <DropdownItem onClick={() => navigate('/usuario')}>Ver perfil</DropdownItem>
+                <Divider />
+                <DropdownItem onClick={() => cerrarSesion()}>Cerrar sesión</DropdownItem>
+              </DropdownMenu>
+            )}
+          </ProfileContainer>
+        </RightSection>
+      </HeaderContainer>
     </>
   )
 }
