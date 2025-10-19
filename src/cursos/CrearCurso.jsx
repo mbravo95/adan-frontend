@@ -12,7 +12,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #a7d9ed; /* El color de fondo claro que se ve en la imagen */
+  background-color: #a7d9ed;
   padding: 20px;
 `;
 
@@ -29,9 +29,9 @@ const Title = styled.h1`
 const Form = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Espacio entre los campos del formulario */
+  gap: 15px;
   width: 100%;
-  max-width: 400px; /* Ancho máximo del formulario */
+  max-width: 400px;
 `;
 
 const Input = styled.input`
@@ -44,7 +44,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa; /* Un ligero borde azul al enfocar */
+    box-shadow: 0 0 0 2px #60a5fa;
   }
 `;
 
@@ -55,7 +55,7 @@ const Select = styled.select`
   font-size: 1.1em;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  appearance: none; /* Elimina el estilo predeterminado del navegador */
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); /* Icono de flecha */
@@ -90,7 +90,7 @@ const Button = styled.button`
 `;
 
 const CreateButton = styled(Button)`
-  background-color: #5a2e2e; /* Color oscuro para el botón Crear */
+  background-color: #5a2e2e;
   color: #fff;
   margin-top: 10px;
 
@@ -100,7 +100,7 @@ const CreateButton = styled(Button)`
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #e0e0e0; /* Color claro para el botón Cancelar */
+  background-color: #e0e0e0;
   color: #333;
 
   &:hover {
