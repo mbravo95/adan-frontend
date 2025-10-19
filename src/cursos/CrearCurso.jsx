@@ -6,127 +6,106 @@ import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
 
 
-const Div = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0px 24px;
-  gap: 22px;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #a7d9ed; /* El color de fondo claro que se ve en la imagen */
+  padding: 20px;
 `;
 
-const Select = styled.select`
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  width: 327px;
-  height: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  flex: none;
-  order: 2;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 140%;
-  color: rgba(76, 36, 29, 0.5);
-`;
-
-
-const Header = styled.h1`
-  position: absolute;
-  width: 228px;
-  height: 60px;
-  left: 339px;
-  width: 228px;
-  height: 60px;
-  left: 339px;
-  top: 176px;
-  font-family: 'Inter';
-  font-style: normal;
+const Title = styled.h1`
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 40px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
   font-weight: 800;
-  font-size: 32px;
-  line-height: 140%;
+`;
+
+const Form = styled.div`
   display: flex;
-  align-items: center;
-  letter-spacing: -0.02em;
-  color: #000000;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre los campos del formulario */
+  width: 100%;
+  max-width: 400px; /* Ancho máximo del formulario */
 `;
 
 const Input = styled.input`
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  width: 327px;
-  height: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  padding: 15px;
+  border: none;
   border-radius: 8px;
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 0;
+  font-size: 1.1em;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #60a5fa; /* Un ligero borde azul al enfocar */
+  }
 `;
 
-
-
-const BtnAceptar = styled.input`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 16px;
-  gap: 8px;
-  width: 327px;
-  height: 40px;
-  background: #4C241D;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+const Select = styled.select`
+  padding: 15px;
+  border: none;
   border-radius: 8px;
-  flex: none;
-  order: 3;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 140%;
-  color: #FFFFFF;
-  cursor: pointer;
+  font-size: 1.1em;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  appearance: none; /* Elimina el estilo predeterminado del navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); /* Icono de flecha */
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 20px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #60a5fa;
+  }
 `;
 
-const BtnCancelar = styled.input`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 16px;
-  gap: 8px;
-  width: 327px;
-  height: 40px;
-  background: #E0E0E0;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+const Button = styled.button`
+  padding: 15px;
+  border: none;
   border-radius: 8px;
-  flex: none;
-  order: 4;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 140%;
-  color: #000000;
+  font-size: 1.2em;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  
+  &:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transform: translateY(1px);
+  }
+`;
+
+const CreateButton = styled(Button)`
+  background-color: #5a2e2e; /* Color oscuro para el botón Crear */
+  color: #fff;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #4b2525;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: #e0e0e0; /* Color claro para el botón Cancelar */
+  color: #333;
+
+  &:hover {
+    background-color: #d0d0d0;
+  }
 `;
 
 const CrearCurso = () => {
@@ -196,28 +175,23 @@ const CrearCurso = () => {
     <>
         {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
       
-        <Header>CREAR CURSO</Header>
-
-        <Div>
-
-          <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
-
-          <Select onChange={(e) => setTurno(e.target.value)}>
-            <option value="">Turno</option>
-            <option value="Matutino">Matutino</option>
-            <option value="Vespertino">Vespertino</option>
-            <option value="Nocturno">Nocturno</option>
-          </Select>
-
-          <Input type="text" onChange={(e) => setCodigo(e.target.value)} placeholder="Codigo" />
-
-          <Input type="number" onChange={(e) => setAnio(Number(e.target.value))} placeholder="Anio" />
-
-          <BtnAceptar type="button" value="Crear curso" onClick={() => crear()} />
-
-          <BtnCancelar type="button" value="Cancelar" onClick={() => navigate('/usuario')} />
         
-        </Div>
+        <Container>
+          <Title>CREAR CURSO</Title>
+          <Form>
+            <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
+            <Input type="text" onChange={(e) => setCodigo(e.target.value)} placeholder="Código" />
+            <Input type="number" onChange={(e) => setAnio(Number(e.target.value))} placeholder="Año" />
+            <Select onChange={(e) => setTurno(e.target.value)}>
+              <option value="">Turno</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Vespertino">Vespertino</option>
+              <option value="Nocturno">Nocturno</option>
+            </Select>
+            <CreateButton type="button" onClick={() => crear()}>Crear curso</CreateButton>
+            <CancelButton type="button" onClick={() => navigate('/usuario')}>Cancelar</CancelButton>
+          </Form>
+        </Container>
         
     </>
   )

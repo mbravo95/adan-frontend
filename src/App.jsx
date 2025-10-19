@@ -3,7 +3,6 @@ import { ToastContainer } from "react-toastify";
 import Login from "./usuario/Login";
 import RutaProtegidaLayout from "./layout/RutaProtegidaLayout";
 import AuthLayout from "./layout/AuthLayout";
-import HomeCurso from "./cursos/HomeCurso";
 import CrearCurso from "./cursos/CrearCurso";
 import HomeUsuario from "./usuario/HomeUsuario";
 import EditProfile from "./usuario/EditProfile";
