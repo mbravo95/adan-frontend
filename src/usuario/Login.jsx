@@ -4,103 +4,112 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Input = styled.input`
-  box-sizing: border-box;
+const BlueBackground = '#9DCBD7'; 
+
+const FullScreenContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  width: 327px;
-  height: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
+  min-height: 100vh;
+  width: 100%;
+  background-color: ${BlueBackground};
+  margin: 0;
+  padding: 0;
 `;
 
-const Button = styled.button`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 16px;
-  gap: 8px;
-  width: 327px;
-  height: 40px;
-  background: #4C241D;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 0;
-  color: white;
-`;
-
-const Div = styled.div`
+const ColumnBase = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0px 24px;
-  gap: 22px;
-  position: absolute;
-  width: 412px;
-  height: 258px;
-  left: 52px;
-  top: 284px;
+  justify-content: center; 
+  align-items: center; 
+  flex-grow: 1; 
+  padding: 20px;
 `;
 
-const Div2 = styled.div`
-  display: flex;
-  flex-direction: column;
+const LoginColumn = styled(ColumnBase)`
+  flex-basis: 50%;
+  max-width: 500px;
+`;
+
+const LogoColumn = styled(ColumnBase)`
+  flex-basis: 50%;
   align-items: flex-start;
-  padding: 0px;
-  gap: 16px;
-  width: 327px;
-  height: 96px;
-  flex: none;
-  order: 1;
-  flex-grow: 0;
+  padding-left: 0; 
 `;
 
-const Link = styled.a`
-  width: 364px;
-  height: 18px;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 150%;
-  text-align: center;
-  color: #4C241D;
-  mix-blend-mode: darken;
-  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-  flex: none;
-  order: 3;
-  align-self: stretch;
-  flex-grow: 0;
+
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 320px;
+`;
+
+const Input = styled.input`
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #60a5fa;
+  }
+`;
+
+const LoginButton = styled.button`
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
   cursor: pointer;
+  font-weight: bold;
+  background-color: #5a2e2e;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    background-color: #4b2525;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+  }
+`;
+
+const SeparatorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+`;
+
+const SeparatorLine = styled.div`
+  flex-grow: 1;
+  height: 1px;
+  background-color: #5a2e2e;
+`;
+
+const SeparatorText = styled.span`
+  color: #5a2e2e;
+  font-size: 0.9em;
+  font-weight: 500;
+`;
+
+const ForgotPasswordLink = styled.a`
+  color: #5a2e2e;
+  font-size: 0.9em;
+  text-decoration: none;
+  text-align: center;
+  margin-top: -10px;
+
   &:hover {
     text-decoration: underline;
   }
 `;
 
-const Image = styled.img`
-  position: absolute;
-  width: 412px;
-  height: 412px;
-  left: 464px;
-  top: 165px;
-`;
-
-
-
-const DivMayor = styled.div`
-  position: absolute;
-  background-color: #9DCBD7;
+const LogoImage = styled.img`
+  width: 300px;
+  height: auto;
 `;
 
 
@@ -151,17 +160,24 @@ const Login = () => {
 
   return (
     <>
-        <DivMayor>
-          <Div>
+        <FullScreenContainer>
+          <LoginColumn>
+          <Form>
             <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
-            <Div2>
-              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
-              <Button onClick={() => iniciarSesion()}>Iniciar sesion</Button>
-            </Div2>
-            <Link>Olvido su contrasenia?</Link>
-          </Div>
-          <Image src = "/logo.jpeg" />
-        </DivMayor>
+            <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
+            <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
+            <SeparatorContainer>
+              <SeparatorLine />
+              <SeparatorText>o</SeparatorText>
+              <SeparatorLine />
+            </SeparatorContainer>
+            <ForgotPasswordLink href="#">¿Olvidó su contraseña?</ForgotPasswordLink>
+          </Form>
+          </LoginColumn>
+          <LoginColumn>
+            <LogoImage src = "/logo.jpeg" alt="Logo ADAN" />
+          </LoginColumn>
+        </FullScreenContainer>
     </>
   )
 }
