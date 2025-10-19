@@ -96,6 +96,29 @@ const Divider = styled.div`
   margin: 5px 0;
 `;
 
+const CenterSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  gap: 30px;
+`;
+
+const Button = styled.button`
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  background-color: #e0e0e0;
+  color: #333;
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;
+
 const Header = () => {
 
   const navigate = useNavigate();
@@ -103,6 +126,8 @@ const Header = () => {
   const [abrirMenu, setAbrirMenu] = useState(false);
 
   const { setProfile, profile } = useAuth();
+
+  const rol = localStorage.getItem("tipo");
   
   const cerrarSesion = () => {
     localStorage.removeItem("token");
@@ -117,6 +142,12 @@ const Header = () => {
         <LeftSection>
           <LogoImage src="/header/logo_1.png" alt="Logo ADAN" onClick={() => navigate('/home')}/>
         </LeftSection>
+        { rol == "ADMINISTRADOR" &&
+        <CenterSection>
+          <Button onClick={() => navigate('/crear-usuario')}>Crear nuevo usuario</Button>
+          <Button onClick={() => navigate('/crear-curso')}>Crear nuevo curso</Button>
+        </CenterSection>
+        }
         <RightSection>
           <Icon src="/header/logo_2.png" alt="Icono 2" onClick={() => navigate('/home')} />
           <MessagesIcon src="/header/mensajes.png" alt="Mensajes" onClick={() => console.log('Ir a los mensajes')} />
