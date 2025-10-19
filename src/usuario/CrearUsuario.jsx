@@ -4,8 +4,6 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
-
-
 const Div = styled.div`
   display: flex;
   flex-direction: column;
@@ -129,98 +127,92 @@ const BtnCancelar = styled.input`
   cursor: pointer;
 `;
 
-const CrearCurso = () => {
-  
+const CrearUsuario = () => {
+
   const rol = localStorage.getItem("tipo");
-
-  const navigate = useNavigate();
-
-  const [nombre, setNombre] = useState("");
-  const [turno, setTurno] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [anio, setAnio] = useState(0);
-
-  const crear = async () => {
-    if(nombre == "" || turno == "" || codigo == "" || anio == 0){
-      toast.error("Debe completar todos los campos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-       const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        };
-      const response = await axios.post(`${urlBase}/cursos/alta`, {nombre, turno, codigo, anio}, config);
-      console.log(response);
-      toast.success("Curso agregado exitosamente", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      navigate('/usuario');
-    } catch (error) {
-      console.log(error);
-      const {response} = error;
-      const {data} = response;
-      toast.error(data, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  }
-
   
+    const navigate = useNavigate();
+  
+    const [cedula, setCedula] = useState("");
+    const [nombres, setNombres] = useState("");
+    const [apellidos, setApellidos] = useState("");
+    const [correo, setCorreo] = useState("");
+    const [tipo, setTipo] = useState("USUARIO");
+  
+    const crear = async () => {
+      if((tipo != "ADMINISTRADOR" && (nombres == "" || cedula == "" || apellidos == "")) || correo == ""){
+        toast.error("Debe completar todos los campos", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
+  
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+         const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          };
+        const response = await axios.post(`${urlBase}/usuarios/alta`, {cedula, nombres, apellidos, correo, tipoUsuario: tipo}, config);
+        console.log(response);
+        toast.success("Usuario agregado exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        navigate('/usuario');
+      } catch (error) {
+        console.log(error);
+        const {response} = error;
+        const {data} = response;
+        toast.error(data, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+
   return (
     <>
         {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
       
-        <Header>CREAR CURSO</Header>
+        <Header>CREAR USUARIO</Header>
 
         <Div>
 
-          <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
+          <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="12345678" />
 
-          <Select onChange={(e) => setTurno(e.target.value)}>
-            <option value="">Turno</option>
-            <option value="Matutino">Matutino</option>
-            <option value="Vespertino">Vespertino</option>
-            <option value="Nocturno">Nocturno</option>
-          </Select>
+          <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Juan Carlos" />
 
-          <Input type="text" onChange={(e) => setCodigo(e.target.value)} placeholder="Codigo" />
+          <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Perez Lopez" />
 
-          <Input type="number" onChange={(e) => setAnio(Number(e.target.value))} placeholder="Anio" />
+          <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="jperez@adan.com" />
 
-          <BtnAceptar type="button" value="Crear curso" onClick={() => crear()} />
+          <BtnAceptar type="button" value="Crear usuario" onClick={() => crear()} />
 
-          <BtnCancelar type="button" value="Cancelar" onClick={() => navigate('/usuario')} />
+          <BtnCancelar type="button" value="Cancelar" onClick={() => navigate('/curso')} />
         
         </Div>
-        
     </>
   )
 }
 
-export default CrearCurso
+export default CrearUsuario
