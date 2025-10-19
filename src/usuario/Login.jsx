@@ -44,13 +44,11 @@ const Div = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0px 24px;
+  padding: 24px;
   gap: 22px;
-  position: absolute;
   width: 412px;
-  height: 258px;
-  left: 52px;
-  top: 284px;
+  height: auto;
+  position: relative;
 `;
 
 const Div2 = styled.div`
@@ -89,18 +87,24 @@ const Link = styled.a`
 `;
 
 const Image = styled.img`
-  position: absolute;
-  width: 412px;
-  height: 412px;
-  left: 464px;
-  top: 165px;
+  width: 450px;
+  height: 450px;
+  margin-top: 20px;
+  object-fit: contain;
 `;
 
 
 
 const DivMayor = styled.div`
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: #9DCBD7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 
