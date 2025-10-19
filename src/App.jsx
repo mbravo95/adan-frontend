@@ -8,6 +8,7 @@ import CrearCurso from "./cursos/CrearCurso";
 import HomeUsuario from "./usuario/HomeUsuario";
 import EditProfile from "./usuario/EditProfile";
 import CrearUsuario from "./usuario/CrearUsuario";
+import CursosUsuario from "./cursos/CursosUsuario";
 import Perfil from "./usuario/Perfil";
 
 function App() {
@@ -32,6 +33,9 @@ function App() {
           </Route>
           <Route path="/home" element={<RutaProtegidaLayout/>}>
             <Route index element={<HomeUsuario />} />
+          </Route>
+          <Route path="/cursos" element={<RutaProtegidaLayout />}>
+            <Route index element={<CursosUsuario />} />
           </Route>
         </Routes>
       </BrowserRouter>
