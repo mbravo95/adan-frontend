@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
 const HeaderContainer = styled.header`
@@ -135,6 +136,27 @@ const Header = () => {
     setProfile({});
     navigate("/login");
   }
+
+  useEffect(() => {
+    const recargarPerfil = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/usuarios/perfil`, config);
+        setProfile(response.data);
+      } catch (error) {
+        console.log(error);
+        cerrarSesion();
+      }
+    }
+    recargarPerfil();
+  }, []);
   
   return (
     <>
