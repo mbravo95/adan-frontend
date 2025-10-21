@@ -207,13 +207,6 @@ const CrearUsuario = () => {
               <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="Correo: jperez@adan.com" />
             </FormGroup>
 
-            <FormGroup>
-              <Select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-                <option value="USUARIO">Usuario Regular</option>
-                <option value="ADMINISTRADOR">Administrador</option>
-                <option value="PROFESOR">Profesor</option>
-              </Select>
-            </FormGroup>
 
             <ButtonGroup>
               <BtnAceptar type="button" onClick={() => crear()}>

@@ -20,12 +20,15 @@ const HeaderContainer = styled.header`
   transition: background-color 0.3s ease;
 `;
 
-const Logo = styled.h1`
-  color: ${props => props.textColor || 'black'};
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-  transition: color 0.3s ease;
+const Logo = styled.img`
+  height: 40px;
+  width: auto;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const NavigationSection = styled.div`
@@ -217,7 +220,7 @@ const Header = () => {
   return (
     <>
       <HeaderContainer bgColor={bgColor}>
-        <Logo textColor={textColor}>adan</Logo>
+        <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irCursos} />
         
         <NavigationSection>
             <NavButton textColor={textColor} onClick={irCursos}>

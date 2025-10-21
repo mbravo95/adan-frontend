@@ -12,6 +12,9 @@ import CursosUsuario from "./cursos/CursosUsuario";
 import PaginaCurso from "./cursos/PaginaCurso";
 import Perfil from "./usuario/Perfil";
 import CrearSeccion from "./seccion/CrearSeccion";
+import ParticipantesCurso from "./cursos/ParticipantesCurso";
+import MatricularEstudianteCurso from "./cursos/MatricularEstudianteCurso";
+import SubirMaterial from "./recursos/SubirMaterial"; 
 
 function App() {
 
@@ -47,6 +50,15 @@ function App() {
           </Route>
           <Route path="/curso/:codigo/alta-seccion" element={<RutaProtegidaLayout />}>
             <Route index element={<CrearSeccion />} />
+          </Route>
+            <Route path="/curso/:codigo/participantes" element={<RutaProtegidaLayout />}>
+          <Route index element={<ParticipantesCurso />} />
+          </Route>
+            <Route path="/curso/:codigo/participantes/matricular" element={<RutaProtegidaLayout />}>
+          <Route index element={<MatricularEstudianteCurso />} />
+          </Route>
+            <Route path="/curso/:codigo/subir-material" element={<RutaProtegidaLayout />}>
+          <Route index element={<SubirMaterial />} />
           </Route>
         </Routes>
       </BrowserRouter>

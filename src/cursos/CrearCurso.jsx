@@ -186,7 +186,6 @@ const CrearCurso = () => {
         progress: undefined,
       });
       
-      // Navegar a la página de administración de cursos
       navigate('/admin-cursos');
       
     } catch (error) {
