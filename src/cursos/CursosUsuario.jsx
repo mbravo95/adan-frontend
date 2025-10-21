@@ -7,15 +7,12 @@ const Container = styled.div`
   background-color: #9DCBD7;
   width: 100vw;
   min-height: calc(100vh - 60px);
-  position: fixed;
-  top: 60px;
-  left: 0;
+  margin-top: 60px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
   box-sizing: border-box;
-  overflow-y: auto;
 `;
 
 const ContentWrapper = styled.div`
@@ -60,6 +57,13 @@ const CourseTitle = styled.h2`
   font-size: 20px;
   margin-bottom: 15px;
   font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #4C241D;
+    text-decoration: underline;
+  }
 `;
 
 
@@ -194,7 +198,6 @@ const CursosUsuario = () => {
           return;
         }
 
-        // Primero obtener el perfil del usuario para conseguir su ID
         console.log("Obteniendo perfil del usuario desde:", `${urlBase}/usuarios/perfil`);
         
         const perfilResponse = await axios.get(`${urlBase}/usuarios/perfil`, {
@@ -205,13 +208,7 @@ const CursosUsuario = () => {
         });
 
         const userIdFromProfile = perfilResponse.data.id;
-        console.log("ID del usuario obtenido:", userIdFromProfile);
-        console.log("Datos completos del perfil:", JSON.stringify(perfilResponse.data, null, 2));
-        console.log("Tipo de usuario:", perfilResponse.data.tipoUsuario || perfilResponse.data.rol);
         setUserId(userIdFromProfile);
-
-        // Ahora obtener los cursos del usuario usando su ID
-        console.log("Obteniendo cursos del usuario desde:", `${urlBase}/usuarios/${userIdFromProfile}/cursos`);
 
         const cursosResponse = await axios.get(`${urlBase}/usuarios/${userIdFromProfile}/cursos`, {
           headers: {
@@ -220,30 +217,19 @@ const CursosUsuario = () => {
           }
         });
 
-        console.log("Cursos del usuario obtenidos:", cursosResponse.data);
-        console.log("Respuesta completa:", JSON.stringify(cursosResponse.data, null, 2));
-        
         const data = cursosResponse.data;
         const cursosProfesor = data.cursosComoProfesor || [];
         const cursosEstudiante = data.cursosComoEstudiante || [];
-        
-        console.log("Cursos como profesor:", cursosProfesor.length);
-        console.log("Cursos como estudiante:", cursosEstudiante.length);
-        console.log("Total cursos:", data.totalCursos);
-        
-        // Combinar ambos arrays y marcar el rol
+
         const todosLosCursos = [
           ...cursosProfesor.map(curso => ({ ...curso, rolEnCurso: 'PROFESOR' })),
           ...cursosEstudiante.map(curso => ({ ...curso, rolEnCurso: 'ESTUDIANTE' }))
         ];
-        
-        console.log("Cursos combinados:", todosLosCursos);
+
         setCursos(todosLosCursos);
         
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
         if (error.response?.status === 404) {
-          // Si es 404, probablemente no hay cursos, no es un error
           setCursos([]);
         } else {
           setError("Error al cargar los datos");
@@ -256,27 +242,12 @@ const CursosUsuario = () => {
     obtenerPerfilYCursos();
   }, []);
 
-  // Función para formatear fechas
-  const formatearFecha = (fechaString) => {
-    if (!fechaString) return "No disponible";
-    try {
-      const fecha = new Date(fechaString);
-      return fecha.toLocaleDateString('es-ES');
-    } catch (error) {
-      return fechaString;
-    }
-  };
-
-  // Función para obtener el estado del curso para el usuario
-  const obtenerEstadoCurso = (curso) => {
-    // Esto dependerá de cómo venga la información del backend
-    return curso.estado || curso.estadoInscripcion || 'INSCRITO';
-  };
-
-  // Función para obtener el rol del usuario en el curso
   const obtenerRolEnCurso = (curso) => {
-    // Ahora usamos el campo que agregamos al combinar los arrays
     return curso.rolEnCurso || 'ESTUDIANTE';
+  };
+
+  const irACurso = (curso) => {
+    navigate(`/curso/${curso.codigo}`);
   };
 
   return (
@@ -286,7 +257,7 @@ const CursosUsuario = () => {
         
         {loading && (
           <LoadingMessage>
-            Cargando tus cursos...
+            Cargando
           </LoadingMessage>
         )}
         
@@ -302,7 +273,9 @@ const CursosUsuario = () => {
               <CoursesGrid>
                 {cursos.map((curso) => (
                   <CourseCard key={curso.id}>
-                    <CourseTitle>{curso.nombre || "Curso sin nombre"}</CourseTitle>
+                    <CourseTitle onClick={() => irACurso(curso)}>
+                      {curso.nombre || "Curso sin nombre"}
+                    </CourseTitle>
                     <CourseDetails>
                       <DetailRow>
                         <DetailLabel>Código:</DetailLabel>
@@ -324,10 +297,9 @@ const CursosUsuario = () => {
               </CoursesGrid>
             ) : (
               <EmptyState>
-                <h3>No tienes cursos asociados</h3>
+                <h3>No hay cursos asociados</h3>
                 <p>
-                  No tienes cursos como profesor ni como estudiante. <br />
-                  Contacta al administrador para obtener información sobre los cursos disponibles.
+                  No hay cursos asociados en el sistema <br />
                 </p>
               </EmptyState>
             )}

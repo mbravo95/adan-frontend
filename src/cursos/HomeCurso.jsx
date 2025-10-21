@@ -8,15 +8,12 @@ const Container = styled.div`
   background-color: #9DCBD7;
   width: 100vw;
   min-height: calc(100vh - 60px);
-  position: fixed;
-  top: 60px;
-  left: 0;
+  margin-top: 60px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
   box-sizing: border-box;
-  overflow-y: auto;
 `;
 
 const ContentWrapper = styled.div`

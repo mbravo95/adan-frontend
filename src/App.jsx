@@ -9,7 +9,9 @@ import HomeUsuario from "./usuario/HomeUsuario";
 import EditProfile from "./usuario/EditProfile";
 import CrearUsuario from "./usuario/CrearUsuario";
 import CursosUsuario from "./cursos/CursosUsuario";
+import PaginaCurso from "./cursos/PaginaCurso";
 import Perfil from "./usuario/Perfil";
+import CrearSeccion from "./seccion/CrearSeccion";
 
 function App() {
 
@@ -36,6 +38,15 @@ function App() {
           </Route>
           <Route path="/cursos" element={<RutaProtegidaLayout />}>
             <Route index element={<CursosUsuario />} />
+          </Route>
+          <Route path="/admin-cursos" element={<RutaProtegidaLayout />}>
+            <Route index element={<HomeCurso />} />
+          </Route>
+          <Route path="/curso/:codigo" element={<RutaProtegidaLayout />}>
+            <Route index element={<PaginaCurso />} />
+          </Route>
+          <Route path="/curso/:codigo/alta-seccion" element={<RutaProtegidaLayout />}>
+            <Route index element={<CrearSeccion />} />
           </Route>
         </Routes>
       </BrowserRouter>

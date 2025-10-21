@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
 const HeaderContainer = styled.header`
-  background-color: white;
+  background-color: ${props => props.bgColor || 'white'};
   width: 100%;
   height: 60px;
   display: flex;
@@ -17,13 +17,15 @@ const HeaderContainer = styled.header`
   left: 0;
   z-index: 1000;
   box-sizing: border-box;
+  transition: background-color 0.3s ease;
 `;
 
 const Logo = styled.h1`
-  color: black;
+  color: ${props => props.textColor || 'black'};
   font-size: 24px;
   font-weight: bold;
   margin: 0;
+  transition: color 0.3s ease;
 `;
 
 const NavigationSection = styled.div`
@@ -35,16 +37,16 @@ const NavigationSection = styled.div`
 const NavButton = styled.button`
   background: none;
   border: none;
-  color: black;
+  color: ${props => props.textColor || 'black'};
   font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.3s ease;
   
   &:hover {
-    background-color: #f5f5f5;
+    background-color: ${props => props.textColor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
   }
 `;
 
@@ -62,14 +64,15 @@ const UserContainer = styled.div`
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: #f5f5f5;
+    background-color: ${props => props.textColor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
   }
 `;
 
 const UserName = styled.span`
-  color: black;
+  color: ${props => props.textColor || 'black'};
   font-size: 14px;
   font-weight: 500;
+  transition: color 0.3s ease;
 `;
 
 const UserIcon = styled.div`
@@ -115,6 +118,25 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState("Usuario");
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const getHeaderColors = () => {
+    const path = location.pathname;
+    
+    if (path.startsWith('/curso/')) {
+      return {
+        bgColor: '#9DCBD7',
+        textColor: 'black'
+      };
+    } else {
+      return {
+        bgColor: 'white',
+        textColor: 'black'
+      };
+    }
+  };
+
+  const { bgColor, textColor } = getHeaderColors();
   
   useEffect(() => {
     const obtenerNombreUsuario = async () => {
@@ -174,6 +196,14 @@ const Header = () => {
     navigate("/cursos");
   }
 
+  const irAltaCursos = () => {
+    navigate("/crear-curso");
+  }
+
+  const irAltaUsuario = () => {
+    navigate("/crear-usuario");
+  }
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   }
@@ -186,20 +216,28 @@ const Header = () => {
   
   return (
     <>
-      <HeaderContainer>
-        <Logo>adan</Logo>
+      <HeaderContainer bgColor={bgColor}>
+        <Logo textColor={textColor}>adan</Logo>
         
         <NavigationSection>
-          {esUsuarioRegular && (
-            <NavButton onClick={irCursos}>
+            <NavButton textColor={textColor} onClick={irCursos}>
               Cursos
             </NavButton>
-          )}
+            {esUsuarioRegular ? null : (
+              <>
+                <NavButton textColor={textColor} onClick={irAltaCursos}>
+                  Crear Curso
+                </NavButton>
+                <NavButton textColor={textColor} onClick={irAltaUsuario}>
+                  Crear Usuario
+                </NavButton> 
+              </>
+            )}
         </NavigationSection>
         
         <UserMenuContainer>
-          <UserContainer onClick={toggleMenu}>
-            <UserName>{userName}</UserName>
+          <UserContainer textColor={textColor} onClick={toggleMenu}>
+            <UserName textColor={textColor}>{userName}</UserName>
             <UserIcon>
               👤
             </UserIcon>

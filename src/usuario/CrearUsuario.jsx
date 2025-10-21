@@ -4,127 +4,119 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
-const Div = styled.div`
+const Container = styled.div`
+  background-color: #9DCBD7;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0px 24px;
-  gap: 22px;
+  width: 100%;
+  max-width: 500px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
 `;
 
 const Select = styled.select`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  width: 327px;
-  height: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  flex: none;
-  order: 2;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 140%;
-  color: rgba(76, 36, 29, 0.5);
-`;
-
-
-const Header = styled.h1`
-  position: absolute;
-  width: 228px;
-  height: 60px;
-  left: 339px;
-  width: 228px;
-  height: 60px;
-  left: 339px;
-  top: 176px;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 800;
-  font-size: 32px;
-  line-height: 140%;
-  display: flex;
-  align-items: center;
-  letter-spacing: -0.02em;
-  color: #000000;
+  background-color: white;
+  color: #333;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
 `;
 
 const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 16px;
-  gap: 16px;
-  width: 327px;
-  height: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 0;
+  background-color: white;
+  color: #333;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
 `;
 
-
-
-const BtnAceptar = styled.input`
+const ButtonGroup = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 16px;
-  gap: 8px;
-  width: 327px;
-  height: 40px;
-  background: #4C241D;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  flex: none;
-  order: 3;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 140%;
-  color: #FFFFFF;
-  cursor: pointer;
+  gap: 15px;
+  margin-top: 30px;
 `;
 
-const BtnCancelar = styled.input`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 16px;
-  gap: 8px;
-  width: 327px;
-  height: 40px;
-  background: #E0E0E0;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 8px;
-  flex: none;
-  order: 4;
-  align-self: stretch;
-  flex-grow: 0;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 140%;
-  color: #000000;
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+`;
+
+const BtnAceptar = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+`;
+
+const BtnCancelar = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
 `;
 
 const CrearUsuario = () => {
@@ -192,25 +184,48 @@ const CrearUsuario = () => {
 
   return (
     <>
-        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
+      {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/usuario" />}
       
-        <Header>CREAR USUARIO</Header>
+      <Container>
+        <ContentWrapper>
+          <FormWrapper>
+            <Title>Crear Nuevo Usuario</Title>
 
-        <Div>
+            <FormGroup>
+              <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="Cédula: 12345678" />
+            </FormGroup>
 
-          <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="12345678" />
+            <FormGroup>
+              <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Nombres: Juan Carlos" />
+            </FormGroup>
 
-          <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Juan Carlos" />
+            <FormGroup>
+              <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Apellidos: Perez Lopez" />
+            </FormGroup>
 
-          <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Perez Lopez" />
+            <FormGroup>
+              <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="Correo: jperez@adan.com" />
+            </FormGroup>
 
-          <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="jperez@adan.com" />
+            <FormGroup>
+              <Select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                <option value="USUARIO">Usuario Regular</option>
+                <option value="ADMINISTRADOR">Administrador</option>
+                <option value="PROFESOR">Profesor</option>
+              </Select>
+            </FormGroup>
 
-          <BtnAceptar type="button" value="Crear usuario" onClick={() => crear()} />
-
-          <BtnCancelar type="button" value="Cancelar" onClick={() => navigate('/curso')} />
-        
-        </Div>
+            <ButtonGroup>
+              <BtnAceptar type="button" onClick={() => crear()}>
+                Crear Usuario
+              </BtnAceptar>
+              <BtnCancelar type="button" onClick={() => navigate('/curso')}>
+                Cancelar
+              </BtnCancelar>
+            </ButtonGroup>
+          </FormWrapper>
+        </ContentWrapper>
+      </Container>
     </>
   )
 }
