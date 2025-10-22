@@ -1,8 +1,38 @@
-import styled from "styled-components";
+import styled, { css, keyframes } from 'styled-components';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const LightBlueBackground = '#a7d9ed'; // Color de fondo uniforme del cuerpo
-const CardBackground = '#f4f4f4'; // Fondo claro para las tarjetas y botones inactivos
-const DarkBackground = '#2a2a2a'; // Fondo oscuro para el buscador y botones primarios
+// =======================================================
+// ESTILOS DE LA ESTRUCTURA Y CONTROLES
+// =======================================================
+
+const LightBlueBackground = '#a7d9ed';
+const CardBackground = '#f4f4f4';
+const DarkBackground = '#2a2a2a';
+
+
+// Definición de la animación para desplegar/contraer
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const FilterWrapper = styled.div`
+  /* Ocultar/Mostrar con altura dinámica para la transición */
+  max-height: ${props => (props.isVisible ? '100px' : '0')}; 
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  opacity: ${props => (props.isVisible ? '1' : '0')};
+  
+  /* Animación de entrada suave si es visible */
+  ${props => props.isVisible && css`
+    animation: ${fadeIn} 0.3s ease-out;
+  `}
+`;
+
+// --------------------------------------------------
+// ESTILOS DE LA PÁGINA Y CONTROLES
+// --------------------------------------------------
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -10,18 +40,16 @@ const PageContainer = styled.div`
   background-color: ${LightBlueBackground};
   display: flex;
   justify-content: center;
-  padding: 40px 0; /* Padding vertical para centrar un poco el contenido */
+  padding: 40px 0;
 `;
 
 const ContentWrapper = styled.div`
   width: 100%;
-  max-width: 900px; /* Ancho máximo para el contenido de la aplicación */
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 `;
-
-// --- CONTROLES DE NAVEGACIÓN (Fila 1) ---
 
 const PrimaryControls = styled.div`
   display: flex;
@@ -36,39 +64,33 @@ const PrimaryButton = styled.button`
   font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
-  
-  /* Estilo Activo (Mis cursos) */
-  background-color: ${props => (props.active ? CardBackground : 'transparent')};
+  background-color: ${CardBackground};
   color: #333;
 `;
 
-const SearchInputWrapper = styled.div`
+const PrimarySearchButton = styled.button`
   display: flex;
   align-items: center;
   background-color: ${DarkBackground};
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
-  flex-grow: 0.5; /* Ocupa más espacio que un botón normal */
-  max-width: 350px;
-`;
-
-const SearchInput = styled.input`
-  background: none;
   border: none;
-  color: white;
   font-size: 1.1em;
-  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+  gap: 10px;
+  transition: background-color 0.2s;
   
-  &::placeholder {
-    color: #ccc;
-  }
-  &:focus {
-    outline: none;
+  &:hover {
+    background-color: #404040;
   }
 `;
 
-// --- CONTROLES DE FILTRO (Fila 2) ---
+const SearchIcon = styled.img`
+  width: 15px;
+  height: 15px;
+`;
 
 const SecondaryControls = styled.div`
   display: flex;
@@ -76,19 +98,30 @@ const SecondaryControls = styled.div`
   gap: 15px;
 `;
 
-const FilterInputWrapper = styled(SearchInputWrapper)`
+const FilterInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
   background-color: white;
   color: #333;
   border: 1px solid #ccc;
-  flex-grow: 1; /* Ocupa más espacio que los botones */
-  max-width: 450px;
   padding: 12px 15px;
+  border-radius: 8px;
+  flex-grow: 1; 
+  max-width: 450px;
 `;
 
-const FilterInput = styled(SearchInput)`
+const FilterInput = styled.input`
+  background: none;
+  border: none;
   color: #333;
+  font-size: 1.1em;
+  width: 100%;
+  
   &::placeholder {
     color: #666;
+  }
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -108,16 +141,8 @@ const ResetButton = styled(SearchButton)`
   min-width: 150px;
 `;
 
-const SearchIcon = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  /* Si los iconos son negros y necesitas que se vean blancos en fondo oscuro: */
-  filter: ${props => (props.isDark ? 'none' : 'invert(100%)')};
-`;
-
 // =======================================================
-// ESTILOS DE LA LISTA Y TARJETAS (Cards)
+// ESTILOS DE LA LISTA Y TARJETAS (MODIFICADAS)
 // =======================================================
 
 const CourseList = styled.div`
@@ -134,24 +159,6 @@ const CourseCard = styled.div`
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-const IconContainer = styled.div`
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  background-color: ${props => props.color}; /* Color dinámico de la tarjeta */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 20px;
-`;
-
-const IconImage = styled.img`
-  /* Ajustar el logo del curso para que se vea bien en el contenedor */
-  height: 60px;
-  width: 60px;
-  /* El logo debe tener el gorro de graduación como se ve en la imagen */
 `;
 
 const Details = styled.div`
@@ -181,48 +188,72 @@ const CourseMeta = styled.p`
 
 const ListadoCursos = () => {
 
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+
+  const toggleFilter = () => {
+    setIsFilterVisible(prev => !prev);
+  };
+
+  useEffect(() => {
+    const cargarCursos = async () => {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.get(`${urlBase}/cursos/buscar?texto=`, config);
+      console.log(response);
+    };
+
+    cargarCursos();
+  }, []);
+
   const cursos = [
-    { name: 'Curso 2', code: 'C002', turn: 'Matutino 2025', professor: 'Nombre Profesor', icon: '/header/logo_1.png', color: '#ff7f9d' }, // Rosa
-    { name: 'Curso 6', code: 'C006', turn: 'Matutino 2025', professor: 'Nombre Profesor', icon: '/header/logo_1.png', color: '#90f3e6' }, // Aguamarina/Menta
+    { name: 'Curso 2', code: 'C002', turn: 'Matutino 2025', professor: 'Nombre Profesor' },
+    { name: 'Curso 6', code: 'C006', turn: 'Matutino 2025', professor: 'Nombre Profesor' }
   ];
 
-  
+
   return (
     <>
       <PageContainer>
-        <ContentWrapper>
-          <PrimaryControls>
-            <PrimaryButton active>Mis cursos</PrimaryButton>
-            <SearchInputWrapper>
-              <SearchIcon src="/search/lupa_black.png" alt="Buscar" />
-              <SearchInput placeholder="Buscar curso" />
-            </SearchInputWrapper>
-          </PrimaryControls>
+      <ContentWrapper>
+        
+        {/* FILA 1: Botón "Mis cursos" y Buscador Principal (AHORA UN BOTÓN) */}
+        <PrimaryControls>
+          <PrimaryButton>Mis cursos</PrimaryButton>
+          <PrimarySearchButton onClick={toggleFilter}>
+            <SearchIcon src="/search/lupa_white.png" alt="Buscar" />
+            Buscar curso
+          </PrimarySearchButton>
+        </PrimaryControls>
+        <FilterWrapper isVisible={isFilterVisible}>
           <SecondaryControls>
             <FilterInputWrapper>
-              <SearchIcon src="/search/lupa_white.png" alt="Filtro" />
+              <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
               <FilterInput placeholder="Filtrar cursos..." />
             </FilterInputWrapper>
             <SearchButton>Buscar</SearchButton>
             <ResetButton>Restablecer resultados</ResetButton>
           </SecondaryControls>
-          <CourseList>
-            {cursos.map((curso, index) => (
-              <CourseCard key={index}>
-                <IconContainer color={curso.color}>
-                  <IconImage src={curso.icon} alt="Icono Curso" />
-                </IconContainer>
-                <Details>
-                  <CourseName>{curso.name} <CourseCode>{curso.code}</CourseCode></CourseName>
-                  <CourseMeta>{curso.turn}</CourseMeta>
-                  <CourseMeta>{curso.professor}</CourseMeta>
-                </Details>
-              </CourseCard>
-            ))}
-          </CourseList>
+        </FilterWrapper>
+        <CourseList>
+          {cursos.map((curso, index) => (
+            <CourseCard key={index}>
+              <Details>
+                <CourseName>{curso.name} <CourseCode>{curso.code}</CourseCode></CourseName>
+                <CourseMeta>{curso.turn}</CourseMeta>
+                <CourseMeta>{curso.professor}</CourseMeta>
+              </Details>
+            </CourseCard>
+          ))}
+        </CourseList>
 
-        </ContentWrapper>
-      </PageContainer>
+      </ContentWrapper>
+    </PageContainer>
     </>
   )
 }
