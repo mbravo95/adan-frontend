@@ -164,12 +164,15 @@ const Header = () => {
         <LeftSection>
           <LogoImage src="/header/logo_1.png" alt="Logo ADAN" onClick={() => navigate('/home')}/>
         </LeftSection>
-        { rol == "ADMINISTRADOR" &&
         <CenterSection>
-          <Button onClick={() => navigate('/crear-usuario')}>Crear nuevo usuario</Button>
-          <Button onClick={() => navigate('/crear-curso')}>Crear nuevo curso</Button>
+          { rol == "ADMINISTRADOR" &&
+            <Button onClick={() => navigate('/crear-usuario')}>Crear nuevo usuario</Button>
+          }
+          { rol == "ADMINISTRADOR" &&
+            <Button onClick={() => navigate('/crear-curso')}>Crear nuevo curso</Button>
+          }
+          <Button onClick={() => navigate('/busqueda')}>Buscar cursos</Button>
         </CenterSection>
-        }
         <RightSection>
           <Icon src="/header/logo_2.png" alt="Icono 2" onClick={() => navigate('/home')} />
           <MessagesIcon src="/header/mensajes.png" alt="Mensajes" onClick={() => console.log('Ir a los mensajes')} />
