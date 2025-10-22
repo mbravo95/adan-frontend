@@ -9,6 +9,8 @@ import EditProfile from "./usuario/EditProfile";
 import CrearUsuario from "./usuario/CrearUsuario";
 import Perfil from "./usuario/Perfil";
 import { AuthProvider } from "./context/AuthProvider";
+import OlvidoPassword from "./usuario/OlvidoPassword";
+import ListadoCursos from "./cursos/ListadoCursos";
 
 function App() {
 
@@ -20,6 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<AuthLayout />}>
               <Route path="login" element={<Login />}/>
+              <Route path="olvido-password" element={<OlvidoPassword />}/>
             </Route>
             <Route path="/usuario" element={<RutaProtegidaLayout/>}>
               <Route index element={<Perfil />} />
@@ -33,6 +36,9 @@ function App() {
             </Route>
             <Route path="/home" element={<RutaProtegidaLayout/>}>
               <Route index element={<HomeUsuario />} />
+            </Route>
+            <Route path="/busqueda" element={<RutaProtegidaLayout/>}>
+              <Route index element={<ListadoCursos />} />
             </Route>
           </Routes>
         </BrowserRouter>
