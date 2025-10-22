@@ -58,13 +58,18 @@ const PrimaryButton = styled.button`
   cursor: pointer;
   background-color: ${CardBackground};
   color: #333;
+
+  ${props => props.isActive && css`
+    background-color: ${DarkBackground};
+    color: white;
+  `}
 `;
 
 const PrimarySearchButton = styled.button`
   display: flex;
   align-items: center;
-  background-color: ${DarkBackground};
-  color: white;
+  background-color: ${CardBackground};
+  color: black;
   padding: 12px 20px;
   border-radius: 8px;
   border: none;
@@ -73,6 +78,11 @@ const PrimarySearchButton = styled.button`
   cursor: pointer;
   gap: 10px;
   transition: background-color 0.2s;
+
+  ${props => props.isActive && css`
+    background-color: ${DarkBackground};
+    color: white;
+  `}
   
   &:hover {
     background-color: #404040;
@@ -253,6 +263,7 @@ const ListadoCursos = () => {
     setBusqueda("");
     setCursosFiltrados(cursos);
     setIsFilterVisible(false);
+    setIsButtonActive(true);
   }
 
 
@@ -265,7 +276,7 @@ const ListadoCursos = () => {
             <PrimaryButton onClick={() => mostrarMisCursos()} isActive={isButtonActive}>Mis cursos</PrimaryButton>
           }
           <PrimarySearchButton onClick={toggleFilter} isActive={isFilterVisible}>
-            <SearchIcon src="/search/lupa_white.png" alt="Buscar" />
+            <SearchIcon src={isFilterVisible ? "/search/lupa_white.png" : "/search/lupa_black.png"} alt="Buscar" />
             Buscar curso
           </PrimarySearchButton>
         </PrimaryControls>
@@ -273,7 +284,7 @@ const ListadoCursos = () => {
           <SecondaryControls>
             <FilterInputWrapper>
               <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
-              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} />
+              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} value={busqueda} />
             </FilterInputWrapper>
             <SearchButton onClick={() => filtrarCursos()}>Buscar</SearchButton>
             <ResetButton onClick={() => resetearBusqueda()}>Restablecer resultados</ResetButton>
