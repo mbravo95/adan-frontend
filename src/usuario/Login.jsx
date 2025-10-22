@@ -176,7 +176,7 @@ const Login = () => {
               <SeparatorText>o</SeparatorText>
               <SeparatorLine />
             </SeparatorContainer>
-            <ForgotPasswordLink href="#">¿Olvidó su contraseña?</ForgotPasswordLink>
+            <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
           </Form>
           </LoginColumn>
           <LoginColumn>

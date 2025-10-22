@@ -1,15 +1,13 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 const AuthLayout = () => {
     const token = localStorage.getItem("token");
-    const location = useLocation();
-    const path = location.pathname;
-    return (
-    <>
-        {(path == "/" && token) ? <Navigate to="/home" /> : <Navigate to="/login" /> }
-        {token ? <Navigate to="/home" /> : <Outlet /> }
-    </>
-  )
+    
+    if(token) {
+      return <Navigate to="/home" />;
+    }
+    
+    return <Outlet />;
 }
 
 export default AuthLayout;

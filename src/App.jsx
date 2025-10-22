@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Login from "./usuario/Login";
 import RutaProtegidaLayout from "./layout/RutaProtegidaLayout";
@@ -11,8 +11,11 @@ import Perfil from "./usuario/Perfil";
 import { AuthProvider } from "./context/AuthProvider";
 import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
+import NotFound from "./general/NotFound";
 
 function App() {
+
+  const token = localStorage.getItem("token");
 
   return (
     <>
@@ -20,6 +23,7 @@ function App() {
         <ToastContainer />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={token ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />} />
             <Route path="/" element={<AuthLayout />}>
               <Route path="login" element={<Login />}/>
               <Route path="olvido-password" element={<OlvidoPassword />}/>
@@ -40,6 +44,7 @@ function App() {
             <Route path="/busqueda" element={<RutaProtegidaLayout/>}>
               <Route index element={<ListadoCursos />} />
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
