@@ -2,9 +2,6 @@ import styled, { css, keyframes } from 'styled-components';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// =======================================================
-// ESTILOS DE LA ESTRUCTURA Y CONTROLES
-// =======================================================
 
 const LightBlueBackground = '#a7d9ed';
 const CardBackground = '#f4f4f4';
@@ -18,7 +15,6 @@ const fadeIn = keyframes`
 `;
 
 const FilterWrapper = styled.div`
-  /* Ocultar/Mostrar con altura dinámica para la transición */
   max-height: ${props => (props.isVisible ? '100px' : '0')}; 
   overflow: hidden;
   transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
@@ -29,10 +25,6 @@ const FilterWrapper = styled.div`
     animation: ${fadeIn} 0.3s ease-out;
   `}
 `;
-
-// --------------------------------------------------
-// ESTILOS DE LA PÁGINA Y CONTROLES
-// --------------------------------------------------
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -141,10 +133,6 @@ const ResetButton = styled(SearchButton)`
   min-width: 150px;
 `;
 
-// =======================================================
-// ESTILOS DE LA LISTA Y TARJETAS (MODIFICADAS)
-// =======================================================
-
 const CourseList = styled.div`
   display: flex;
   flex-direction: column;
@@ -186,11 +174,31 @@ const CourseMeta = styled.p`
   margin: 2px 0;
 `;
 
-const ListadoCursos = () => {
+const NoResultsMessage = styled.div`
+  background-color: #ffffff; /* Fondo blanco */
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: #555; /* Texto gris suave */
+  /* Sombras ligeras para darle volumen, similar a las tarjetas */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  margin-top: 20px;
+`;
 
+
+const ListadoCursos = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isButtonActive, setIsButtonActive] = useState(false);
+  const [cursos, setCursos] = useState([]);
+  const [cursosFiltrados, setCursosFiltrados] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+
+  const rol = localStorage.getItem("tipo");
 
   const toggleFilter = () => {
+    setIsButtonActive(false);
     setIsFilterVisible(prev => !prev);
   };
 
@@ -204,28 +212,59 @@ const ListadoCursos = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.get(`${urlBase}/cursos/buscar?texto=`, config);
-      console.log(response);
+      const response = await axios.get(`${urlBase}/cursos`, config);
+      setCursos(response.data);
+      setCursosFiltrados(response.data);
     };
 
     cargarCursos();
   }, []);
 
-  const cursos = [
-    { name: 'Curso 2', code: 'C002', turn: 'Matutino 2025', professor: 'Nombre Profesor' },
-    { name: 'Curso 6', code: 'C006', turn: 'Matutino 2025', professor: 'Nombre Profesor' }
-  ];
+
+  const filtrarCursos = async () => {
+    if(busqueda == ""){
+      setCursosFiltrados(cursos);
+      return;
+    }
+    const texto = busqueda.toLowerCase();
+    const urlBase = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
+      setCursosFiltrados(response.data); 
+    } catch (error) {
+      console.log(error);
+      setCursosFiltrados([]);
+    }
+  }
+
+  const resetearBusqueda = () => {
+    setBusqueda("");
+    setCursosFiltrados(cursos);
+  }
+
+  const mostrarMisCursos = () => {
+    setBusqueda("");
+    setCursosFiltrados(cursos);
+    setIsFilterVisible(false);
+  }
 
 
   return (
     <>
       <PageContainer>
       <ContentWrapper>
-        
-        {/* FILA 1: Botón "Mis cursos" y Buscador Principal (AHORA UN BOTÓN) */}
         <PrimaryControls>
-          <PrimaryButton>Mis cursos</PrimaryButton>
-          <PrimarySearchButton onClick={toggleFilter}>
+          { rol != "ADMINISTRADOR" &&
+            <PrimaryButton onClick={() => mostrarMisCursos()} isActive={isButtonActive}>Mis cursos</PrimaryButton>
+          }
+          <PrimarySearchButton onClick={toggleFilter} isActive={isFilterVisible}>
             <SearchIcon src="/search/lupa_white.png" alt="Buscar" />
             Buscar curso
           </PrimarySearchButton>
@@ -234,24 +273,28 @@ const ListadoCursos = () => {
           <SecondaryControls>
             <FilterInputWrapper>
               <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
-              <FilterInput placeholder="Filtrar cursos..." />
+              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} />
             </FilterInputWrapper>
-            <SearchButton>Buscar</SearchButton>
-            <ResetButton>Restablecer resultados</ResetButton>
+            <SearchButton onClick={() => filtrarCursos()}>Buscar</SearchButton>
+            <ResetButton onClick={() => resetearBusqueda()}>Restablecer resultados</ResetButton>
           </SecondaryControls>
         </FilterWrapper>
         <CourseList>
-          {cursos.map((curso, index) => (
+          {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
             <CourseCard key={index}>
               <Details>
-                <CourseName>{curso.name} <CourseCode>{curso.code}</CourseCode></CourseName>
-                <CourseMeta>{curso.turn}</CourseMeta>
-                <CourseMeta>{curso.professor}</CourseMeta>
+                <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
+                <CourseMeta>{curso.turno}</CourseMeta>
+                <CourseMeta>{curso.profesores.length > 0 ? curso.profesores[0] : 'Sin profesor asignado'}</CourseMeta>
               </Details>
             </CourseCard>
           ))}
+          { cursosFiltrados.length == 0 && 
+              <NoResultsMessage>
+                No se encontraron cursos que coincidan con la búsqueda
+              </NoResultsMessage>
+          }
         </CourseList>
-
       </ContentWrapper>
     </PageContainer>
     </>
