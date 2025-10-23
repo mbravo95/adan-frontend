@@ -268,8 +268,8 @@ const ListadoCursos = () => {
     setIsButtonActive(true);
   }
 
-  const irAlCurso = (id) =>{
-    navigate(`/curso/${id}`);
+  const irAlCurso = (codigo) =>{
+    navigate(`/curso/${codigo}`);
   }
 
 
