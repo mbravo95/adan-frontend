@@ -1,3 +1,6 @@
+  const agregarTarea = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-tarea`);
+  } 
 import { Outlet, useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
@@ -202,7 +205,34 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: ${props => props.collapsed ? '0' : '15px'};
+  cursor: pointer;
+  padding: 10px 0;
+  
+  &:hover {
+    background-color: rgba(76, 36, 29, 0.05);
+  }
+`;
+
+const SectionTitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+`;
+
+const CollapseIcon = styled.span`
+  font-size: 16px;
+  color: #4C241D;
+  transition: transform 0.3s ease;
+  transform: ${props => props.collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
+`;
+
+const SectionContent = styled.div`
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: ${props => props.collapsed ? '0' : '200px'};
+  padding: ${props => props.collapsed ? '0' : '10px 0'};
 `;
 
 const SectionTitle = styled.h3`
@@ -240,11 +270,49 @@ const ActionButton = styled.button`
   }
 `;
 
-const PlaceholderContent = styled.div`
-  text-align: center;
-  padding: 20px;
-  color: #999;
+const SectionSubtitle = styled.p`
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 15px 0;
   font-style: italic;
+`;
+
+const SectionDescription = styled.p`
+  color: #555;
+  font-size: 14px;
+  margin: 5px 0;
+  line-height: 1.4;
+`;
+
+const SectionInfo = styled.div`
+  margin-bottom: 10px;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 16px;
+  font-style: italic;
+`;
+
+const NoSectionsMessage = styled.div`
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  
+  h3 {
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    margin: 5px 0;
+  }
 `;
 
 const PaginaCurso = () => {
@@ -256,7 +324,18 @@ const PaginaCurso = () => {
     nombre: "nombreCurso",
     codigo: "codigoCurso"
   });
+  const [secciones, setSecciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSecciones, setLoadingSecciones] = useState(true);
+  const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
+  // Colapsar todas las secciones por default cuando se actualizan
+  useEffect(() => {
+    if (secciones.length > 0) {
+      const colapsadas = {};
+      secciones.forEach(s => { colapsadas[s.id] = true; });
+      setSeccionesColapsadas(colapsadas);
+    }
+  }, [secciones]);
 
   useEffect(() => {
     const obtenerCurso = async () => {
@@ -311,9 +390,42 @@ const PaginaCurso = () => {
         setLoading(false);
       }
     };
+    // HAY QUE HACER UN ENDPOINT QUE DE SECCIONES DE UN CURSO POR CODIGO
+    const obtenerSecciones = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          return;
+        }
+        
+        const response = await axios.get(`${urlBase}/secciones`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        
+        const seccionesFiltradas = response.data.filter(seccion => 
+          seccion.codigoCurso === codigo
+        );
+        
+        console.log("Secciones filtradas para el curso", codigo, ":", seccionesFiltradas);
+        setSecciones(seccionesFiltradas);
+        
+      } catch (error) {
+        console.error("Error al obtener secciones:", error);
+        setSecciones([]);
+      } finally {
+        setLoadingSecciones(false);
+      }
+    };
 
     if (codigo) {
       obtenerCurso();
+      obtenerSecciones();
     }
   }, [codigo]);
 
@@ -330,6 +442,11 @@ const PaginaCurso = () => {
       state: { cursoActual }
     });
   };
+  const agregarTarea = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-tarea`, {
+      state: { cursoActual }
+    });
+  }
 
   const agregarRecursos = (seccionId) => {
   };
@@ -338,6 +455,13 @@ const PaginaCurso = () => {
   };
 
   const eliminarSeccion = (seccionId) => {
+  };
+  
+  const toggleSeccion = (seccionId) => {
+    setSeccionesColapsadas(prev => ({
+      ...prev,
+      [seccionId]: !prev[seccionId]
+    }));
   };
   
 //SOLO PARA DEBUG, DESPUES SE BORRA
@@ -363,17 +487,21 @@ const PaginaCurso = () => {
         <IndexSection>
           <IndexTitle>Indice del Curso</IndexTitle>
           <IndexList>
-            {indiceItems.map((item, index) => (
-              <IndexItem key={index}>
-                {item}
-              </IndexItem>
-            ))}
+            {secciones.length > 0 ? (
+              secciones.map((seccion, idx) => (
+                <IndexItem
+                  key={seccion.id}
+                  style={{ cursor: 'pointer', color: '#4C241D' }}
+                  onClick={() => toggleSeccion(seccion.id)}
+                >
+                  {seccion.titulo || `Sección ${idx + 1}`}
+                </IndexItem>
+              ))
+            ) : (
+              <IndexItem style={{ color: '#999' }}>Sin secciones</IndexItem>
+            )}
           </IndexList>
         </IndexSection>
-        
-        <UploadMaterialButton onClick={() => irSubirMaterial()}>
-          DEBUG--Subir Material
-        </UploadMaterialButton>
       </Sidebar>
       
       <MainContent>
@@ -401,34 +529,90 @@ const PaginaCurso = () => {
         </AddSectionButton>
         
         <SectionsContainer>
-          <SectionPlaceholder>
-            <SectionHeader>
-              <div>
-                <SectionTitle>Sección placeholder</SectionTitle>
-                
-              </div>
-              <ButtonGroup>
-                <ActionButton 
-                  variant="success" 
-                  onClick={() => agregarRecursos(1)}
-                >
-                  Agregar Material
-                </ActionButton>
-                <ActionButton 
-                  variant="warning" 
-                  onClick={() => modificarSeccion(1)}
-                >
-                  Modificar seccion
-                </ActionButton>
-                <ActionButton 
-                  variant="danger" 
-                  onClick={() => eliminarSeccion(1)}
-                >
-                  Eliminar
-                </ActionButton>
-              </ButtonGroup>
-            </SectionHeader>
-          </SectionPlaceholder>
+          {loadingSecciones ? (
+            <LoadingMessage>
+              Cargando secciones...
+            </LoadingMessage>
+          ) : secciones.length > 0 ? (
+            secciones.map((seccion) => {
+              const collapsed = seccionesColapsadas[seccion.id] ?? true;
+              return (
+                <SectionPlaceholder key={seccion.id}>
+                  <SectionHeader 
+                    collapsed={collapsed}
+                    onClick={() => toggleSeccion(seccion.id)}
+                  >
+                    <SectionTitleContainer>
+                      <CollapseIcon collapsed={collapsed}>
+                        ▼
+                      </CollapseIcon>
+                      <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
+                    </SectionTitleContainer>
+                  </SectionHeader>
+                  <ButtonGroup style={{ marginBottom: '10px' }}>
+                    <ActionButton 
+                      variant="success" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        agregarRecursos(seccion.id);
+                      }}
+                    >
+                      Recursos
+                    </ActionButton>
+                    <ActionButton 
+                      variant="success" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        agregarTarea(seccion.id);
+                      }}
+                    >
+                      Agregar Tarea
+                    </ActionButton>
+                    <ActionButton 
+                      variant="info" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irSubirMaterial(seccion.id);
+                      }}
+                    >
+                      Subir Material
+                    </ActionButton>
+                    <ActionButton 
+                      variant="warning" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        modificarSeccion(seccion.id);
+                      }}
+                    >
+                      Modificar
+                    </ActionButton>
+                    <ActionButton 
+                      variant="danger" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        eliminarSeccion(seccion.id);
+                      }}
+                    >
+                      Eliminar
+                    </ActionButton>
+                  </ButtonGroup>
+                  <SectionContent collapsed={collapsed}>
+                    <SectionInfo>
+                      <SectionDescription>
+                        <strong>Recursos:</strong> {seccion.recursos?.length || 0} archivo(s)
+                      </SectionDescription>
+                    </SectionInfo>
+                  </SectionContent>
+                </SectionPlaceholder>
+              );
+            })
+          ) : (
+            <NoSectionsMessage>
+              <h3>No hay secciones creadas</h3>
+              <p>Aún no se han creado secciones para este curso.</p>
+              <p>Utiliza el botón "Agregar Sección" para crear la primera sección.</p>
+            </NoSectionsMessage>
+          )}
         </SectionsContainer>
 
       </MainContent>

@@ -45,10 +45,12 @@ function App() {
               <Route path="/usuario/editar" element={<EditProfile />} />
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
-              <Route path="/crear-tarea" element={<CrearTarea />} />
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/curso/:id" element={<VerCurso />} />
+            </Route>
+            <Route path="/curso/:codigo/:seccion/crear-tarea" element={<RutaProtegidaLayout />}>
+              <Route index element={<CrearTarea />} />
             </Route>
             <Route path="*" element={<NotFound />} />
             <Route path="/cursos" element={<RutaProtegidaLayout />}>
