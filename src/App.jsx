@@ -20,6 +20,7 @@ import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
 import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
+import CrearForo from "./recursos/CrearForo";
 import HomeCurso from "./cursos/HomeCurso";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
               <Route path="/usuario/editar" element={<EditProfile />} />
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
+              <Route path="/crear-foro" element={<CrearForo />} />
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/curso/:id" element={<VerCurso />} />
