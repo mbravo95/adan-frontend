@@ -7,12 +7,16 @@ import { useNavigate } from "react-router-dom";
 const BlueBackground = '#9DCBD7'; 
 
 const FullScreenContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #9DCBD7;
   display: flex;
-  min-height: 100vh;
-  width: 100%;
-  background-color: ${BlueBackground};
-  margin: 0;
-  padding: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
 `;
 
 const ColumnBase = styled.div`
@@ -25,14 +29,17 @@ const ColumnBase = styled.div`
 `;
 
 const LoginColumn = styled(ColumnBase)`
-  flex-basis: 50%;
-  max-width: 500px;
+  flex: 1;
+  max-width: 400px;
+  padding: 40px;
 `;
 
 const LogoColumn = styled(ColumnBase)`
-  flex-basis: 50%;
-  align-items: flex-start;
-  padding-left: 0; 
+  flex: 1;
+  max-width: 400px;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
 `;
 
 
@@ -79,20 +86,21 @@ const LoginButton = styled.button`
 const SeparatorContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 5px 0;
-`;
-
-const SeparatorLine = styled.div`
-  flex-grow: 1;
-  height: 1px;
-  background-color: #5a2e2e;
+  padding: 12px 0;
+  gap: 16px;
+  width: 100%;
 `;
 
 const SeparatorText = styled.span`
   color: #5a2e2e;
   font-size: 0.9em;
   font-weight: 500;
+`;
+
+const SeparatorLine = styled.div`
+  height: 1px;
+  background-color: #E0E0E0;
+  flex: 1;
 `;
 
 const ForgotPasswordLink = styled.a`
@@ -109,7 +117,29 @@ const ForgotPasswordLink = styled.a`
 
 const LogoImage = styled.img`
   width: 300px;
-  height: auto;
+  height: 300px;
+  object-fit: contain;
+`;
+
+const Image = styled.img`
+  width: 450px;
+  height: 450px;
+  margin-top: 20px;
+  object-fit: contain;
+`;
+
+
+
+const DivMayor = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #9DCBD7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 
@@ -167,21 +197,21 @@ const Login = () => {
     <>
         <FullScreenContainer>
           <LoginColumn>
-          <Form>
-            <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
-            <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
-            <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
-            <SeparatorContainer>
-              <SeparatorLine />
-              <SeparatorText>o</SeparatorText>
-              <SeparatorLine />
-            </SeparatorContainer>
-            <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
-          </Form>
+            <Form>
+              <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
+              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
+              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
+              <SeparatorContainer>
+                <SeparatorLine />
+                <SeparatorText>o</SeparatorText>
+                <SeparatorLine />
+              </SeparatorContainer>
+              <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
+            </Form>
           </LoginColumn>
-          <LoginColumn>
+          <LogoColumn>
             <LogoImage src = "/logo.jpeg" alt="Logo ADAN" />
-          </LoginColumn>
+          </LogoColumn>
         </FullScreenContainer>
     </>
   )

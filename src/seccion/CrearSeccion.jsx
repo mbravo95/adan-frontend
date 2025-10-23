@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -74,21 +74,29 @@ const Input = styled.input`
   }
 `;
 
-const Select = styled.select`
+const TextArea = styled.textarea`
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  min-height: 80px;
+  resize: vertical;
   box-sizing: border-box;
   background-color: white;
   color: #333;
+  font-family: inherit;
   
   &:focus {
     outline: none;
     border-color: #4C241D;
   }
+  
+  &::placeholder {
+    color: #999;
+  }
 `;
+
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -133,19 +141,22 @@ const CancelButton = styled(Button)`
   }
 `;
 
-const CrearCurso = () => {
-  const rol = localStorage.getItem("tipo");
-  const navigate = useNavigate();
+const FileInfo = styled.div`
+  margin-top: 8px;
+  color: #666;
+  font-size: 12px;
+`;
 
-  const [nombre, setNombre] = useState("");
-  const [turno, setTurno] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [anio, setAnio] = useState("");
+const CrearSeccion = () => {
+  const { codigo } = useParams(); // Código del curso
+  const navigate = useNavigate();
+  
+  const [titulo, setTitulo] = useState("");
   const [loading, setLoading] = useState(false);
 
   const crear = async () => {
-    if (!nombre || !turno || !codigo || !anio) {
-      toast.error("Debe completar todos los campos", {
+    if (!titulo) {
+      toast.error("Debe completar el título de la sección", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
@@ -161,22 +172,23 @@ const CrearCurso = () => {
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
+      
+      const requestBody = {
+        titulo: titulo,
+        codigoCurso: codigo
+      };
+
       const config = {
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       };
       
-      const response = await axios.post(`${urlBase}/cursos/alta`, {
-        nombre, 
-        turno, 
-        codigo, 
-        anio: Number(anio)
-      }, config);
+      const response = await axios.post(`${urlBase}/secciones/alta`, requestBody, config);
       
       console.log(response);
-      toast.success("Curso creado exitosamente", {
+      toast.success("Sección creada exitosamente", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
@@ -186,11 +198,11 @@ const CrearCurso = () => {
         progress: undefined,
       });
       
-      navigate('/admin-cursos');
+      navigate(`/curso/${codigo}`);
       
     } catch (error) {
       console.log(error);
-      const message = error.response?.data || "Error al crear el curso";
+      const message = error.response?.data || "Error al crear la sección";
       toast.error(message, {
         position: "top-center",
         autoClose: 3000,
@@ -206,71 +218,29 @@ const CrearCurso = () => {
   };
 
   const cancelar = () => {
-    navigate('/admin-cursos');
+    navigate(`/curso/${codigo}`);
   };
-
-  if (rol !== "ADMINISTRADOR") {
-    return <Navigate to="/usuario" />;
-  }
 
   return (
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          <Title>Crear Nuevo Curso</Title>
+          <Title>Crear Nueva Sección</Title>
 
           <FormGroup>
-            <Label>Nombre del Curso</Label>
+            <Label>Título de la Sección</Label>
             <Input
               type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              placeholder="Ingrese el nombre del curso"
-              disabled={loading}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Turno</Label>
-            <Select
-              value={turno}
-              onChange={(e) => setTurno(e.target.value)}
-              disabled={loading}
-            >
-              <option value="">Seleccione un turno</option>
-              <option value="Matutino">Matutino</option>
-              <option value="Vespertino">Vespertino</option>
-              <option value="Nocturno">Nocturno</option>
-            </Select>
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Código del Curso</Label>
-            <Input
-              type="text"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-              placeholder="Ingrese el código del curso"
-              disabled={loading}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Año</Label>
-            <Input
-              type="number"
-              value={anio}
-              onChange={(e) => setAnio(e.target.value)}
-              placeholder="Ingrese el año"
-              min="2020"
-              max="2030"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              placeholder="Ingrese el título de la sección"
               disabled={loading}
             />
           </FormGroup>
 
           <ButtonGroup>
             <CreateButton onClick={crear} disabled={loading}>
-              {loading ? "Creando..." : "Crear Curso"}
+              {loading ? "Creando..." : "Crear Sección"}
             </CreateButton>
             <CancelButton onClick={cancelar} disabled={loading}>
               Cancelar
@@ -278,9 +248,8 @@ const CrearCurso = () => {
           </ButtonGroup>
         </FormWrapper>
       </ContentWrapper>
-      <Outlet />
     </Container>
   );
 };
 
-export default CrearCurso;
+export default CrearSeccion;

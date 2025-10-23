@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -6,99 +6,122 @@ import axios from "axios";
 
 
 const Container = styled.div`
+  background-color: #9DCBD7;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #a7d9ed;
-  padding: 20px;
+  width: 100%;
+  max-width: 500px;
 `;
 
-const Title = styled.h1`
-  font-size: 2.5em;
-  color: #333;
-  margin-bottom: 40px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
   width: 100%;
   max-width: 400px;
 `;
 
-const Input = styled.input`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+`;
 
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #4C241D;
   }
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
 `;
 
 const Button = styled.button`
-  padding: 15px;
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 1.2em;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-weight: bold;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-  
-  &:hover {
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
-  }
-
-  &:active {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    transform: translateY(1px);
-  }
+  transition: all 0.3s ease;
 `;
 
 const CreateButton = styled(Button)`
-  background-color: #5a2e2e;
-  color: #fff;
-  margin-top: 10px;
-
+  background-color: #4C241D;
+  color: white;
   &:hover {
-    background-color: #4b2525;
+    background-color: #3a1b16;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
   }
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #e0e0e0;
+  background-color: white;
   color: #333;
-
+  border: 2px solid #ddd;
   &:hover {
-    background-color: #d0d0d0;
+    background-color: #f8f8f8;
+    border-color: #bbb;
   }
 `;
 
 const TextArea = styled.textarea`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
   resize: vertical;
   min-height: 80px;
-
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #4C241D;
+  }
+  &::placeholder {
+    color: #999;
   }
 `;
 
@@ -182,99 +205,132 @@ const CrearTarea = () => {
     const [fechaFin, setFechaFin] = useState("");
 
     const location = useLocation();
-    const seccionid = location.state.seccionid;
-    const cursoid = location.state.id;
+    const params = useParams();
+    let seccionid = location.state?.seccionid;
+    let cursoid = location.state?.id;
+    // fallback: si no viene por state, tomar de params
+    if (seccionid === undefined && params.seccion) {
+      seccionid = params.seccion;
+    }
+    if (cursoid === undefined && params.codigo) {
+      cursoid = params.codigo;
+    }
     const navigate = useNavigate();
 
-    const crearTarea = async () => {
-
-        if(nombre == "" || descripcion == "" || fechaInicio == "" || fechaFin == 0){
-            toast.error("Debe completar todos los campos", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
-
-        const fechaI = new Date(fechaInicio);
-        const fechaF = new Date(fechaFin);
-
-        if(fechaI >= fechaF){
-            toast.error("La fecha de inicio debe ser menor a la fecha de fin", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
-
-        try {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            const response = await axios.post(`${urlBase}/recursos/tareas`, {nombre, descripcion, visible, fechaInicio, fechaFin, idSeccion: seccionid}, config);
-            console.log(response);
-            toast.success("Tarea agregada exitosamente", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            navigate(`/curso/${cursoid}`);
-        } catch (error) {
-            console.log(error);
-        }
+  const crearTarea = async () => {
+    if(nombre == "" || descripcion == "" || fechaInicio == "" || fechaFin == 0){
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
 
+    const fechaI = new Date(fechaInicio);
+    const fechaF = new Date(fechaFin);
+
+    if(fechaI >= fechaF){
+      toast.error("La fecha de inicio debe ser menor a la fecha de fin", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+        const fechaInicioISO = fechaInicio ? new Date(fechaInicio).toISOString() : "";
+        const fechaFinISO = fechaFin ? new Date(fechaFin).toISOString() : "";
+        const idSeccionNum = Number(seccionid);
+        if (isNaN(idSeccionNum)) {
+          console.error("idSeccion es NaN. Valor recibido:", seccionid);
+          toast.error("No se pudo determinar el id de la sección. No se envía la tarea.");
+          return;
+        }
+        const datosTarea = {
+          nombre: String(nombre),
+          visible: Boolean(visible),
+          fechaInicio: fechaInicioISO,
+          fechaFin: fechaFinISO,
+          descripcion: String(descripcion),
+          idSeccion: idSeccionNum
+        };
+        console.log("Datos enviados al crear tarea:", datosTarea);
+
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(`${urlBase}/recursos/tareas`, datosTarea, config);
+      console.log(response);
+      toast.success("Tarea agregada exitosamente", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate(`/curso/${cursoid}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
-    <>
-        <Container>
-          <Title>CREAR TAREA</Title>
-          <Form>
-            <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
-            <TextArea onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripcion" rows="4" />
-            <LabeledInputGroup>
-                <Label htmlFor="inicio">
-                    Fecha de inicio
-                </Label>
-                <Input id="inicio" type="datetime-local" onChange={(e) => setFechaInicio(e.target.value)} />
-            </LabeledInputGroup>
-            <LabeledInputGroup>
-                <Label htmlFor="fin">
-                    Fecha de fin
-                </Label>
-                <Input type="datetime-local" onChange={(e) => setFechaFin(e.target.value)} />
-            </LabeledInputGroup>
-            <CheckboxGroup>
-            <CheckboxLabel htmlFor="task-visible">
-                <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} />
-                <CustomCheckbox />
-                Visible
-            </CheckboxLabel>
-            </CheckboxGroup>
-            <CreateButton type="button" onClick={() => crearTarea()}>Crear tarea</CreateButton>
-            <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
-          </Form>
-        </Container>
-    </>
-  )
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Crear Tarea</Title>
+          <form>
+            <FormGroup>
+              <Label htmlFor="nombre">Nombre</Label>
+              <Input id="nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre de la tarea" />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="descripcion">Descripción</Label>
+              <TextArea id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} placeholder="Descripción de la tarea" rows="4" />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="inicio">Fecha de inicio</Label>
+              <Input id="inicio" type="datetime-local" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="fin">Fecha de fin</Label>
+              <Input id="fin" type="datetime-local" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
+            </FormGroup>
+            <FormGroup>
+              <CheckboxGroup>
+                <CheckboxLabel htmlFor="task-visible">
+                  <CheckboxInput type="checkbox" id="task-visible" checked={visible} onChange={() => setVisible(!visible)} />
+                  <CustomCheckbox />
+                  Visible
+                </CheckboxLabel>
+              </CheckboxGroup>
+            </FormGroup>
+            <ButtonGroup>
+              <CreateButton type="button" onClick={crearTarea}>Crear tarea</CreateButton>
+              <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
+    </Container>
+  );
 }
 
 export default CrearTarea
