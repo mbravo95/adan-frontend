@@ -41,6 +41,11 @@ const VerCurso = () => {
     navigate(`/crear-tarea`, { state: { seccionid, id}, replace: true });
   }
 
+  const crearForo = (seccionid) => {
+    const { id } = curso;
+    navigate(`/crear-foro`, { state: { seccionid, id}, replace: true });
+  }
+
   return (
     <>
         <h1>{curso.nombre}</h1>
@@ -51,6 +56,9 @@ const VerCurso = () => {
                 </li>
                 <li>
                     <button type="button" onClick={() => crearTarea(seccion.id)}>Crear tarea</button>
+                </li>
+                <li>
+                    <button type="button" onClick={() => crearForo(seccion.id)}>Crear foro</button>
                 </li>
             </ul>
           ))}

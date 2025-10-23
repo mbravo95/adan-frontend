@@ -14,6 +14,7 @@ import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
 import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
+import CrearForo from "./recursos/CrearForo";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/crear-tarea" element={<CrearTarea />} />
+              <Route path="/crear-foro" element={<CrearForo />} />
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/curso/:id" element={<VerCurso />} />
