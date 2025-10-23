@@ -3,12 +3,17 @@ import Header from "../general/Header";
 
 const RutaProtegidaLayout = () => {
     const token = localStorage.getItem("token");
-  return (
-    <>
+
+    if(!token) {
+      return <Navigate to="/login" />;
+    }
+
+    return (
+      <>
         <Header />
-        {token ? <Outlet /> : <Navigate to="/login" />}
-    </>
-  )
+        <Outlet />
+      </>
+    );
 }
 
 export default RutaProtegidaLayout
