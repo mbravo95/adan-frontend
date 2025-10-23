@@ -5,13 +5,15 @@ import axios from "axios";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
+  background-color: #9DCBD7;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #a7d9ed;
+  align-items: center;
   padding: 20px;
+  box-sizing: border-box;
 `;
 
 const Title = styled.h1`

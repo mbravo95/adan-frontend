@@ -464,9 +464,8 @@ const PaginaCurso = () => {
     }));
   };
   
-//SOLO PARA DEBUG, DESPUES SE BORRA
-  const irSubirMaterial = () => {
-    navigate(`/curso/${codigo}/subir-material`);
+  const irSubirMaterial = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
   return (
