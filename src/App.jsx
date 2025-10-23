@@ -13,7 +13,7 @@ import Perfil from "./usuario/Perfil";
 import CrearSeccion from "./seccion/CrearSeccion";
 import ParticipantesCurso from "./cursos/ParticipantesCurso";
 import MatricularEstudianteCurso from "./cursos/MatricularEstudianteCurso";
-import SubirMaterial from "./recursos/SubirMaterial"; 
+import SubirMaterial from "./recursos/subirMaterial"; 
 import { AuthProvider } from "./context/AuthProvider";
 import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
