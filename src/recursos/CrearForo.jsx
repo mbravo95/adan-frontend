@@ -192,7 +192,7 @@ const CrearForo = () => {
             navigate(`/curso/${cursoid}`);
         } catch (error) {
             console.log(error);
-            toast.success("Ya existe un foro con ese nombre en la seccion seleccionada", {
+            toast.error("Ya existe un foro con ese nombre en la seccion seleccionada", {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
