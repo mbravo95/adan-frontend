@@ -29,25 +29,28 @@ const FilterWrapper = styled.div`
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  width: 100%;
+  width: 100vw;
   background-color: ${LightBlueBackground};
   display: flex;
-  justify-content: center;
-  padding: 40px 0;
+  justify-content: stretch;
+  align-items: stretch;
+  padding: 0;
 `;
 
 const ContentWrapper = styled.div`
-  width: 100%;
-  max-width: 900px;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 40px 40px 0 40px;
+  box-sizing: border-box;
 `;
 
 const PrimaryControls = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
+  margin-top: 40px;
 `;
 
 const PrimaryButton = styled.button`
