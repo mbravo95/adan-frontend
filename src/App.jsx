@@ -13,6 +13,7 @@ import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
 import VerCurso from "./cursos/VerCurso";
+import CrearTarea from "./recursos/CrearTarea";
 
 function App() {
 
@@ -24,29 +25,23 @@ function App() {
         <ToastContainer />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={token ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />} />
-            <Route path="/" element={<AuthLayout />}>
+            <Route
+              path="/"
+              element={token ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />}
+            />
+            <Route element={<AuthLayout />}>
               <Route path="login" element={<Login />}/>
               <Route path="olvido-password" element={<OlvidoPassword />}/>
             </Route>
-            <Route path="/usuario" element={<RutaProtegidaLayout/>}>
-              <Route index element={<Perfil />} />
-              <Route path="editar" element={<EditProfile />} />
-            </Route>
-            <Route path="/crear-usuario" element={<RutaProtegidaLayout/>}>
-              <Route index element={<CrearUsuario />} />
-            </Route>
-            <Route path="/crear-curso" element={<RutaProtegidaLayout/>}>
-              <Route index element={<CrearCurso />} />
-            </Route>
-            <Route path="/home" element={<RutaProtegidaLayout/>}>
-              <Route index element={<HomeUsuario />} />
-            </Route>
-            <Route path="/busqueda" element={<RutaProtegidaLayout/>}>
-              <Route index element={<ListadoCursos />} />
-            </Route>
-            <Route path="/curso/:id" element={<RutaProtegidaLayout/>}>
-              <Route index element={<VerCurso />} />
+            <Route element={<RutaProtegidaLayout/>}>
+              <Route path="/usuario" element={<Perfil />} />
+              <Route path="/usuario/editar" element={<EditProfile />} />
+              <Route path="/crear-usuario" element={<CrearUsuario />} />
+              <Route path="/crear-curso" element={<CrearCurso />} />
+              <Route path="/crear-tarea" element={<CrearTarea />} />
+              <Route path="/home" element={<HomeUsuario />} />
+              <Route path="/busqueda" element={<ListadoCursos />} />
+              <Route path="/curso/:id" element={<VerCurso />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

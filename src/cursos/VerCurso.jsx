@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const VerCurso = () => {
 
@@ -8,6 +8,7 @@ const VerCurso = () => {
 
   const params = useParams();
   const { id } = params;
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -22,7 +23,10 @@ const VerCurso = () => {
                 },
             };
             const response = await axios.get(`${urlBase}/cursos/${id}`, config);
-            console.log(response);
+            //Parche
+            response.data.secciones = [{id: 152, titulo: 'Tema 1', codigoCurso: 'CALC1', visible: true, recursos: []},
+                                       {id: 153, titulo: 'Tema 2', codigoCurso: 'CALC1', visible: true, recursos: []},
+                                       {id: 154, titulo: 'Tema 3', codigoCurso: 'CALC1', visible: true, recursos: []}]
             setCurso(response.data);
         } catch (error) {
             console.log(error);
@@ -32,9 +36,23 @@ const VerCurso = () => {
     cargarCurso();
   },[]);
 
+  const crearTarea = (seccionid) => {
+    navigate(`/crear-tarea`, { state: { seccionid }, replace: true });
+  }
+
   return (
     <>
         <h1>{curso.nombre}</h1>
+        {curso.secciones.map((seccion, index) => (
+            <ul key={seccion.id}>
+                <li>
+                    {seccion.titulo}
+                </li>
+                <li>
+                    <button type="button" onClick={() => crearTarea(seccion.id)}>Crear tarea</button>
+                </li>
+            </ul>
+          ))}
     </>
   )
 }
