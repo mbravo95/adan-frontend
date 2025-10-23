@@ -12,6 +12,7 @@ import { AuthProvider } from "./context/AuthProvider";
 import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
+import VerCurso from "./cursos/VerCurso";
 
 function App() {
 
@@ -43,6 +44,9 @@ function App() {
             </Route>
             <Route path="/busqueda" element={<RutaProtegidaLayout/>}>
               <Route index element={<ListadoCursos />} />
+            </Route>
+            <Route path="/curso/:id" element={<RutaProtegidaLayout/>}>
+              <Route index element={<VerCurso />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

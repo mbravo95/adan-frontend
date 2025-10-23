@@ -1,6 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 const LightBlueBackground = '#a7d9ed';
@@ -206,6 +207,7 @@ const ListadoCursos = () => {
   const [busqueda, setBusqueda] = useState("");
 
   const rol = localStorage.getItem("tipo");
+  const navigate = useNavigate();
 
   const toggleFilter = () => {
     setIsButtonActive(false);
@@ -266,6 +268,10 @@ const ListadoCursos = () => {
     setIsButtonActive(true);
   }
 
+  const irAlCurso = (id) =>{
+    navigate(`/curso/${id}`);
+  }
+
 
   return (
     <>
@@ -292,7 +298,7 @@ const ListadoCursos = () => {
         </FilterWrapper>
         <CourseList>
           {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
-            <CourseCard key={index}>
+            <CourseCard key={index} onClick={() => irAlCurso(curso.id)}>
               <Details>
                 <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
                 <CourseMeta>{curso.turno}</CourseMeta>
