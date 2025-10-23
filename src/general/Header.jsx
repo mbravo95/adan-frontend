@@ -235,6 +235,11 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   }
 
+  const irBusquedaCursos = () => {
+    navigate("/busqueda");
+    setIsMenuOpen(false);
+  }
+
   const handleClickOutside = () => {
     setIsMenuOpen(false);
   }
@@ -257,6 +262,9 @@ const Header = () => {
                 </NavButton>
                 <NavButton textColor={textColor} onClick={irAltaUsuario}>
                   Crear Usuario
+                </NavButton> 
+                <NavButton textColor={textColor} onClick={irBusquedaCursos}>
+                  Buscar Cursos
                 </NavButton> 
               </>
             )}

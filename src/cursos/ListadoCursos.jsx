@@ -268,8 +268,8 @@ const ListadoCursos = () => {
     setIsButtonActive(true);
   }
 
-  const irAlCurso = (id) =>{
-    navigate(`/curso/${id}`);
+  const irAlCurso = (codigo) =>{
+    navigate(`/curso/${codigo}`);
   }
 
 
@@ -298,7 +298,7 @@ const ListadoCursos = () => {
         </FilterWrapper>
         <CourseList>
           {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
-            <CourseCard key={index} onClick={() => irAlCurso(curso.id)}>
+            <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
               <Details>
                 <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
                 <CourseMeta>{curso.turno}</CourseMeta>
