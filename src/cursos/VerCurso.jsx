@@ -10,6 +10,11 @@ const VerCurso = () => {
   const { id } = params;
   const navigate = useNavigate();
 
+  // Parche BORRAR
+  const secciones = [{id: 152, titulo: 'Tema 1', codigoCurso: 'CALC1', visible: true, recursos: []},
+                                       {id: 153, titulo: 'Tema 2', codigoCurso: 'CALC1', visible: true, recursos: []},
+                                       {id: 154, titulo: 'Tema 3', codigoCurso: 'CALC1', visible: true, recursos: []}];
+
   useEffect(() => {
 
     const cargarCurso = async() => {
@@ -23,27 +28,23 @@ const VerCurso = () => {
                 },
             };
             const response = await axios.get(`${urlBase}/cursos/${id}`, config);
-            //Parche
-            response.data.secciones = [{id: 152, titulo: 'Tema 1', codigoCurso: 'CALC1', visible: true, recursos: []},
-                                       {id: 153, titulo: 'Tema 2', codigoCurso: 'CALC1', visible: true, recursos: []},
-                                       {id: 154, titulo: 'Tema 3', codigoCurso: 'CALC1', visible: true, recursos: []}]
             setCurso(response.data);
         } catch (error) {
             console.log(error);
         }
     }
-
     cargarCurso();
   },[]);
 
   const crearTarea = (seccionid) => {
-    navigate(`/crear-tarea`, { state: { seccionid }, replace: true });
+    const { id } = curso;
+    navigate(`/crear-tarea`, { state: { seccionid, id}, replace: true });
   }
 
   return (
     <>
         <h1>{curso.nombre}</h1>
-        {curso.secciones.map((seccion, index) => (
+        {secciones.map((seccion, index) => (
             <ul key={seccion.id}>
                 <li>
                     {seccion.titulo}
