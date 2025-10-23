@@ -20,6 +20,7 @@ import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
 import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
+import HomeCurso from "./cursos/HomeCurso";
 
 function App() {
 
@@ -36,8 +37,8 @@ function App() {
               element={token ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />}
             />
             <Route element={<AuthLayout />}>
-              <Route path="login" element={<Login />}/>
-              <Route path="olvido-password" element={<OlvidoPassword />}/>
+              <Route path="/login" element={<Login />}/>
+              <Route path="/olvido-password" element={<OlvidoPassword />}/>
             </Route>
             <Route element={<RutaProtegidaLayout/>}>
               <Route path="/usuario" element={<Perfil />} />
