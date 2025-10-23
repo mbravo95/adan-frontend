@@ -264,18 +264,32 @@ const SubirMaterial = () => {
     }
 
     setUploading(true);
-
     try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const form = new FormData();
+      form.append("archivo", selectedFile);
+      form.append("titulo", formData.titulo);
+      form.append("descripcion", formData.descripcion);
 
+      const response = await fetch(`${urlBase}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: form
+      });
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast.success("Material subido exitosamente");
-
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData?.message || "Error al subir el material";
+        throw new Error(errorMsg);
+      }
+      const data = await response.json().catch(() => ({}));
+      const successMsg = data?.message || "Material subido exitosamente";
+      toast.success(successMsg);
       setFormData({ titulo: "", descripcion: "" });
       setSelectedFile(null);
-
-      
     } catch (error) {
       toast.error("Error al subir el material");
     } finally {
