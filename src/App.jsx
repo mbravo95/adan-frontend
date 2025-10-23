@@ -73,9 +73,9 @@ function App() {
             <Route path="/curso/:codigo/participantes/matricular" element={<RutaProtegidaLayout />}>
           <Route index element={<MatricularEstudianteCurso />} />
           </Route>
-            <Route path="/curso/:codigo/subir-material" element={<RutaProtegidaLayout />}>
-          <Route index element={<SubirMaterial />} />
-          </Route>
+            <Route path="/curso/:codigo/:seccion/subir-material" element={<RutaProtegidaLayout />}>
+            <Route index element={<SubirMaterial />} />
+            </Route>
         </Routes>
         </BrowserRouter>
       </AuthProvider>
