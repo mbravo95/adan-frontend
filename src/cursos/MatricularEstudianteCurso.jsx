@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Container = styled.div`
-  background-color: #9DCBD7;
+  background-color: #ffffffff;
   width: 100vw;
   min-height: calc(100vh - 60px);
   margin-top: 60px;
