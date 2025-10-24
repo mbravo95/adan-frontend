@@ -46,7 +46,6 @@ function App() {
               <Route path="/usuario/editar" element={<EditProfile />} />
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
-              <Route path="/crear-foro" element={<CrearForo />} />
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/curso/:id" element={<VerCurso />} />
@@ -74,8 +73,11 @@ function App() {
           <Route index element={<MatricularEstudianteCurso />} />
           </Route>
             <Route path="/curso/:codigo/:seccion/subir-material" element={<RutaProtegidaLayout />}>
-            <Route index element={<SubirMaterial />} />
-            </Route>
+          <Route index element={<SubirMaterial />} />
+          </Route>
+            <Route path="/curso/:codigo/:seccion/crear-foro" element={<RutaProtegidaLayout />}>
+          <Route index element={<CrearForo />} />
+          </Route>
         </Routes>
         </BrowserRouter>
       </AuthProvider>

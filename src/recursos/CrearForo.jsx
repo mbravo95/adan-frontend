@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -147,13 +147,11 @@ const CustomCheckbox = styled.span`
 
 const CrearForo = () => {
 
-    const [nombre, setNombre] = useState("");
-    const [visible, setVisible] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [visible, setVisible] = useState(false);
 
-    const location = useLocation();
-    const seccionid = location.state.seccionid;
-    const cursoid = location.state.id;
-    const navigate = useNavigate();
+  const { codigo, seccion } = useParams();
+  const navigate = useNavigate();
 
     const crearForo = async () => {
         if(nombre == ""){
@@ -178,7 +176,7 @@ const CrearForo = () => {
                 Authorization: `Bearer ${token}`,
                 },
             };
-            const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: seccionid}, config);
+            const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: Number(seccion)}, config);
             console.log(response);
             toast.success("Foro agregado exitosamente", {
                 position: "top-center",
@@ -189,7 +187,7 @@ const CrearForo = () => {
                 draggable: true,
                 progress: undefined,
             });
-            navigate(`/curso/${cursoid}`);
+            navigate(`/curso/${codigo}`);
         } catch (error) {
             console.log(error);
             toast.error("Ya existe un foro con ese nombre en la seccion seleccionada", {
@@ -219,7 +217,7 @@ const CrearForo = () => {
                 </CheckboxLabel>
             </CheckboxGroup>
             <CreateButton type="button" onClick={() => crearForo()}>Crear foro</CreateButton>
-            <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
+            <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>Cancelar</CancelButton>
           </Form>
         </Container>
     

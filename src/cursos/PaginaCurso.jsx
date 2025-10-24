@@ -328,7 +328,6 @@ const PaginaCurso = () => {
   const [loading, setLoading] = useState(true);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
-  // Colapsar todas las secciones por default cuando se actualizan
   useEffect(() => {
     if (secciones.length > 0) {
       const colapsadas = {};
@@ -444,6 +443,11 @@ const PaginaCurso = () => {
   };
   const agregarTarea = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-tarea`, {
+      state: { cursoActual }
+    });
+  }
+  const agregarForo = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-foro`, {
       state: { cursoActual }
     });
   }
@@ -575,6 +579,15 @@ const PaginaCurso = () => {
                       }}
                     >
                       Subir Material
+                    </ActionButton>
+                    <ActionButton 
+                      variant="success" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        agregarForo(seccion.id);
+                      }}
+                    >
+                      Agregar Foro
                     </ActionButton>
                     <ActionButton 
                       variant="warning" 

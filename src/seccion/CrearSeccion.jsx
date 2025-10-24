@@ -148,7 +148,7 @@ const FileInfo = styled.div`
 `;
 
 const CrearSeccion = () => {
-  const { codigo } = useParams(); // Código del curso
+  const { codigo } = useParams();
   const navigate = useNavigate();
   
   const [titulo, setTitulo] = useState("");
