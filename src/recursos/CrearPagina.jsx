@@ -2,10 +2,18 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent } from 'ckeditor5';
 import 'ckeditor5/ckeditor5.css';
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
+
+const GlobalCKEditorStyles = createGlobalStyle`
+  .ck-editor__editable_inline {
+    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+`;
 
 const Title = styled.h1`
   font-size: 1.5em;
@@ -15,20 +23,21 @@ const Title = styled.h1`
 `;
 
 const Button = styled.button`
-  flex: 1;
-  padding: 14px 20px;
+  padding: 14px 30px;
   border: none;
   border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 180px;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   gap: 15px;
   margin-top: 30px;
+  justify-content: center;
 `;
 
 const CreateButton = styled(Button)`
@@ -61,13 +70,16 @@ const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
-  font-size: 14px;
+  color: #1e1e1e;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  min-width: 80px;
+  text-align: right;
 `;
 
 const Input = styled.input`
-  width: 100%;
-  padding: 12px;
+  width: 400px;
+  padding: 10px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
@@ -86,19 +98,15 @@ const Input = styled.input`
 `;
 
 const DivEditor = styled.div`
-  margin-left: 10%;
-  margin-right: 10%;
-`;
-
-const DivBoton = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
+  margin: 0 auto;
+  width: 80%;
+  max-width: 900px;
 `;
 
 const Margen = styled.div`
-  margin-right: 10px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
 `;
 
 const Centrar = styled.div`
@@ -106,27 +114,40 @@ const Centrar = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  margin-top: 5 px;
+  margin-bottom: 25px;
+  margin-top: 25px;
 `;
 
 const CrearPagina = () => {
+
     const [pagina, setPagina] = useState("");
     const [nombre, setNombre] = useState("");
 
+    const navigate = useNavigate();
+    const { codigo, seccion } = useParams();
+
+    console.log("Codigo del curso:", codigo);
+    console.log("ID de la sección:", seccion);
+
     const enviarDatos = () => {
-      console.log(pagina);
+      console.log("Nombre:", nombre);
+      console.log("Contenido:", pagina);
     };
   return (
     <>
-        <Title>Crea una nueva pagina</Title>
+        <GlobalCKEditorStyles />
+        <Title>Crea una nueva página</Title>
         <Centrar>
           <Margen>
-          <Label>Nombre</Label>
+            <Label htmlFor="nombre-input">Titulo</Label>
           </Margen>
-            <Input type="text" 
+            <Input 
+                  id="nombre-input"
+                  type="text" 
                   value={nombre} 
-                  onChange={(e) => setNombre(e.target.value)} />
+                  onChange={(e) => setNombre(e.target.value)} 
+                  placeholder="Introduce el nombre de la página"
+            />
         </Centrar >
         <DivEditor>
             <CKEditor
@@ -143,11 +164,11 @@ const CrearPagina = () => {
             />
         </DivEditor>
         <ButtonGroup>
-            <CreateButton onClick={() => enviarDatos()}>Crear pagina</CreateButton>
-            <CancelButton onClick={() => enviarDatos()}>Descartar pagina</CancelButton>
+            <CreateButton onClick={enviarDatos}>Crear página</CreateButton>
+            <CancelButton onClick={() => navigate(`/curso/${codigo}`)}>Descartar página</CancelButton>
         </ButtonGroup>
     </>
   )
 }
 
-export default CrearPagina
+export default CrearPagina;

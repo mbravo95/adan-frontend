@@ -1,5 +1,5 @@
 # Version liviana de Node.js
-FROM node:24-alpine3.21
+FROM node:25-alpine3.21
  
 # Setear el directorio de trabajo dentro del contenedor
 WORKDIR /app
