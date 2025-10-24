@@ -46,6 +46,7 @@ const Input = styled.input`
   border: none;
   border-radius: 8px;
   font-size: 1.1em;
+  color: black;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
@@ -179,35 +180,33 @@ const CrearUsuario = () => {
           draggable: true,
           progress: undefined,
         });
-        <Container>
-          <FormWrapper>
-            <Title>CREAR USUARIO</Title>
-            <Form>
-              <RadioGroup>
-                <RadioLabel>
-                  <RadioInput type="radio" name="tipo" value="Administrador" checked={tipo == 'ADMINISTRADOR'} onChange={() => setTipo("ADMINISTRADOR")}/>
-                  Administrador
-                </RadioLabel>
-                <RadioLabel>
-                  <RadioInput type="radio" name="tipo" value="Profesor/Estudiante" checked={tipo == 'USUARIO'} onChange={() => setTipo("USUARIO")} />
-                  Profesor/Estudiante
-                </RadioLabel>
-              </RadioGroup>
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Nombre" />
-              }  
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Apellido" />
-              }
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="Cedula de Identidad" />
-              }
-              <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="Correo electronico" />
-              <CreateButton type="button" onClick={() => crear()}>Crear usuario</CreateButton>
-              <CancelButton type="button" onClick={() => navigate('/home')}>Cancelar</CancelButton>
-            </Form>
-          </FormWrapper>
-        </Container>
+        return;
+      }
+  
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+         const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          };
+        const response = await axios.post(`${urlBase}/usuarios/alta`, {cedula, nombres, apellidos, correo, tipoUsuario: tipo}, config);
+        console.log(response);
+        toast.success("Usuario agregado exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        navigate('/home');
+      } catch (error) {
+        console.log(error);
+        const {response} = error;
         const {data} = response;
         toast.error(data, {
           position: "top-center",
@@ -223,36 +222,36 @@ const CrearUsuario = () => {
 
   return (
     <>
-        {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
-        <Container>
-          <FormWrapper>
-            <Title>Crear Nuevo Usuario</Title>
-            <Form>
-              <RadioGroup>
-                <RadioLabel>
-                  <RadioInput type="radio" name="tipo" value="Administrador" checked={tipo == 'ADMINISTRADOR'} onChange={() => setTipo("ADMINISTRADOR")}/>
-                  Administrador
-                </RadioLabel>
-                <RadioLabel>
-                  <RadioInput type="radio" name="tipo" value="Profesor/Estudiante" checked={tipo == 'USUARIO'} onChange={() => setTipo("USUARIO")} />
-                  Profesor/Estudiante
-                </RadioLabel>
-              </RadioGroup>
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Nombre" />
-              }  
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Apellido" />
-              }
-              { (tipo == "" || tipo == "USUARIO") && 
-                <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="Cedula de Identidad" />
-              }
-              <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="Correo electronico" />
-              <CreateButton type="button" onClick={() => crear()}>Crear usuario</CreateButton>
-              <CancelButton type="button" onClick={() => navigate('/curso')}>Cancelar</CancelButton>
-            </Form>
-          </FormWrapper>
-        </Container>
+      {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
+      <Container>
+        <FormWrapper>
+          <Title>CREAR USUARIO</Title>
+          <Form>
+            <RadioGroup>
+              <RadioLabel>
+                <RadioInput type="radio" name="tipo" value="Administrador" checked={tipo == 'ADMINISTRADOR'} onChange={() => setTipo("ADMINISTRADOR")}/>
+                Administrador
+              </RadioLabel>
+              <RadioLabel>
+                <RadioInput type="radio" name="tipo" value="Profesor/Estudiante" checked={tipo == 'USUARIO'} onChange={() => setTipo("USUARIO")} />
+                Profesor/Estudiante
+              </RadioLabel>
+            </RadioGroup>
+            { (tipo == "" || tipo == "USUARIO") && 
+              <Input type="text" onChange={(e) => setNombres(e.target.value)} placeholder="Nombre" />
+            }  
+            { (tipo == "" || tipo == "USUARIO") && 
+              <Input type="text" onChange={(e) => setApellidos(e.target.value)} placeholder="Apellido" />
+            }
+            { (tipo == "" || tipo == "USUARIO") && 
+              <Input type="number" onChange={(e) => setCedula(e.target.value)} placeholder="Cedula de Identidad" />
+            }
+            <Input type="email" onChange={(e) => setCorreo(e.target.value)} placeholder="Correo electronico" />
+            <CreateButton type="button" onClick={() => crear()}>Crear usuario</CreateButton>
+            <CancelButton type="button" onClick={() => navigate('/curso')}>Cancelar</CancelButton>
+          </Form>
+        </FormWrapper>
+      </Container>
     </>
   )
 }

@@ -504,8 +504,6 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
   }
 
-  const agregarRecursos = (seccionId) => {
-  };
 
   const modificarSeccion = (seccionId) => {
   };
@@ -605,15 +603,6 @@ const PaginaCurso = () => {
                     </SectionTitleContainer>
                   </SectionHeader>
                   <ButtonGroup style={{ marginBottom: '10px' }}>
-                    <ActionButton 
-                      variant="success" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        agregarRecursos(seccion.id);
-                      }}
-                    >
-                      Recursos
-                    </ActionButton>
                     <ActionButton 
                       variant="success" 
                       onClick={(e) => {
