@@ -269,8 +269,6 @@ const SubirMaterial = () => {
       const token = localStorage.getItem("token");
       const form = new FormData();
       form.append("archivo", selectedFile);
-      form.append("titulo", formData.titulo);
-      form.append("descripcion", formData.descripcion);
 
       const response = await window.axios.post(
         `${urlBase}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales`,
