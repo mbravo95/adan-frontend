@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -212,7 +213,7 @@ const Button = styled.button`
 `;
 
 const SubirMaterial = () => {
-  const { codigo, seccionId } = useParams();
+  const { codigo, seccion } = useParams();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -270,8 +271,8 @@ const SubirMaterial = () => {
       const form = new FormData();
       form.append("archivo", selectedFile);
 
-      const response = await window.axios.post(
-        `${urlBase}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales`,
+      const response = await axios.post(
+        `${urlBase}/recursos/cursos/${codigo}/secciones/${seccion}/materiales`,
         form,
         {
           headers: {
@@ -280,13 +281,14 @@ const SubirMaterial = () => {
           }
         }
       );
-
-  console.log("[SUBIR MATERIAL] Respuesta backend:", response.data);
-  const successMsg = response.data?.message || "Material subido exitosamente";
-  toast.success(successMsg);
-  setFormData({ titulo: "", descripcion: "" });
-  setSelectedFile(null);
+      console.log("[SUBIR MATERIAL] Respuesta backend (success):", response);
+      const successMsg = response.data?.message || "Material subido exitosamente";
+      toast.success(successMsg);
+      setFormData({ titulo: "", descripcion: "" });
+      setSelectedFile(null);
     } catch (error) {
+  console.log("[SUBIR MATERIAL] Respuesta backend (error):", error?.response);
+  console.log("[SUBIR MATERIAL] Error completo:", error);
       const errorMsg = error?.response?.data?.message || "Error al subir el material";
       toast.error(errorMsg);
     } finally {
