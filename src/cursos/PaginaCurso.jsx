@@ -3,6 +3,7 @@
   } 
 import { Outlet, useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { saveAs } from "file-saver";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -48,11 +49,11 @@ const ParticipantsButton = styled.button`
   
   &:hover {
     background-color: #333;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  &:active {
+                        {recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
+                          <li key={recurso.id} style={{paddingBottom: '8px', marginBottom: '8px', borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none'}}>
+                              <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span> <span style={{color:'#888'}}>({recurso.tipoRecurso})</span>
+                          </li>
+                        ))}
     transform: translateY(0);
   }
 `;
@@ -316,6 +317,35 @@ const NoSectionsMessage = styled.div`
 `;
 
 const PaginaCurso = () => {
+  const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
+    const token = localStorage.getItem("token");
+    const url = `${import.meta.env.VITE_BACKEND_URL}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales/${recurso.id}/descargar`;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error("Error al descargar el archivo");
+      const blob = await response.blob();
+      let filename = "material";
+      //CORS no expone disposition por defecto, hay que hacer que lo exponga en el back o buscar otra solucion para el nombre del archivo
+      //en swagger si se ve pero igual
+      const disposition = response.headers.get('Content-Disposition');
+      if (disposition && disposition.includes('filename=')) {
+        filename = disposition.split('filename=')[1].replace(/"/g, '').trim();
+      } else if (recurso.nombre && recurso.nombre !== null) {
+        filename = recurso.nombre;
+      } else if (recurso.urlMaterial) {
+        const parts = recurso.urlMaterial.split(/[/\\]/);
+        filename = parts[parts.length-1];
+      }
+      saveAs(blob, filename);
+    } catch (err) {
+      alert("No se pudo descargar el material");
+    }
+  };
   const { codigo } = useParams();
   const navigate = useNavigate();
   
@@ -325,6 +355,7 @@ const PaginaCurso = () => {
     codigo: "codigoCurso"
   });
   const [secciones, setSecciones] = useState([]);
+  const [recursosPorSeccion, setRecursosPorSeccion] = useState({});
   const [loading, setLoading] = useState(true);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
@@ -337,6 +368,22 @@ const PaginaCurso = () => {
   }, [secciones]);
 
   useEffect(() => {
+    const obtenerRecursosDeSeccion = async (id) => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${urlBase}/secciones/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        setRecursosPorSeccion(prev => ({ ...prev, [id]: response.data.recursos || [] }));
+      } catch (error) {
+        setRecursosPorSeccion(prev => ({ ...prev, [id]: [] }));
+      }
+    };
+
     const obtenerCurso = async () => {
       try {
         const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -411,11 +458,12 @@ const PaginaCurso = () => {
           seccion.codigoCurso === codigo
         );
         
-        console.log("Secciones filtradas para el curso", codigo, ":", seccionesFiltradas);
         setSecciones(seccionesFiltradas);
+        seccionesFiltradas.forEach(seccion => {
+          obtenerRecursosDeSeccion(seccion.id);
+        });
         
       } catch (error) {
-        console.error("Error al obtener secciones:", error);
         setSecciones([]);
       } finally {
         setLoadingSecciones(false);
@@ -623,9 +671,32 @@ const PaginaCurso = () => {
                   </ButtonGroup>
                   <SectionContent collapsed={collapsed}>
                     <SectionInfo>
-                      <SectionDescription>
-                        <strong>Recursos:</strong> {seccion.recursos?.length || 0} archivo(s)
-                      </SectionDescription>
+                      <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
+                        {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
+                          recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
+                            <li key={recurso.id} style={{paddingBottom: '8px', marginBottom: '8px', borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none', display:'flex', alignItems:'center', gap:'12px'}}>
+                              {recurso.tipoRecurso === 'MATERIAL' ? (
+                                <>
+                                  <span style={{color:'#222', display:'flex', alignItems:'center', gap:'6px'}}>
+                                    <span role="img" aria-label="archivo">📄</span>
+                                    {recurso.nombre === null ? '(null)' : recurso.nombre}
+                                  </span>
+                                  <button
+                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => handleDescargarMaterial(codigo, seccion.id, recurso)}
+                                  >
+                                    Descargar
+                                  </button>
+                                </>
+                              ) : (
+                                <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                              )}
+                            </li>
+                          ))
+                        ) : (
+                          <li style={{color:'#999'}}>No hay recursos en esta sección.</li>
+                        )}
+                      </ul>
                     </SectionInfo>
                   </SectionContent>
                 </SectionPlaceholder>
