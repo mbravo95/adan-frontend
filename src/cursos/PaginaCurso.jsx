@@ -452,6 +452,10 @@ const PaginaCurso = () => {
     });
   }
 
+  const agregarPagina = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
+  }
+
   const agregarRecursos = (seccionId) => {
   };
 
@@ -588,6 +592,15 @@ const PaginaCurso = () => {
                       }}
                     >
                       Agregar Foro
+                    </ActionButton>
+                    <ActionButton 
+                      variant="success" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        agregarPagina(seccion.id);
+                      }}
+                    >
+                      Agregar Pagina
                     </ActionButton>
                     <ActionButton 
                       variant="warning" 
