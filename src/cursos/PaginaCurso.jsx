@@ -5,6 +5,7 @@ import { Outlet, useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: white;
@@ -315,6 +316,47 @@ const NoSectionsMessage = styled.div`
   }
 `;
 
+
+const RecursosList = styled.ul`
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+    border-top: 1px dashed #e0e0e0; /* Separador visual */
+    padding-top: 15px;
+`;
+
+const RecursosListItem = styled.li`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dotted #f0f0f0;
+    font-size: 14px;
+    color: #555;
+
+    &:last-child {
+        border-bottom: none;
+    }
+`;
+
+const DownloadButton = styled.button`
+    background-color: #007bff; /* Azul para descarga */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 15px;
+
+    &:hover {
+        background-color: #0056b3;
+    }
+`;
+
 const PaginaCurso = () => {
   const { codigo } = useParams();
   const navigate = useNavigate();
@@ -476,6 +518,61 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
+
+  const descargarRecurso = async (recurso, seccionId) => {
+
+    try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.get(`${urlBase}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales/${recurso.id}/descargar`,{
+                responseType: 'blob', 
+                ...config
+                });
+            const archivo = response.data;
+            const url = window.URL.createObjectURL(archivo);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute(
+            'download',
+            `${recurso.nombreArchivo ? recurso.nombreArchivo : 'archivo_descargado'}`,
+            );
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.parentNode.removeChild(link);
+    
+            toast.success(`Descarga exitosa ${recurso.nombreArchivo ? recurso.nombreArchivo : 'archivo_descargado'}`, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al descargar los archivos", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+  };
+
   return (
     <Container>
       <Sidebar>
@@ -626,6 +723,19 @@ const PaginaCurso = () => {
                       <SectionDescription>
                         <strong>Recursos:</strong> {seccion.recursos?.length || 0} archivo(s)
                       </SectionDescription>
+
+                      <RecursosList>
+                          {seccion.recursos.filter(recurso => recurso.tipoRecurso == 'MATERIAL').map((recurso, index) => (
+                              <RecursosListItem key={recurso.id || index}>
+                                  <span>
+                                      {recurso.titulo || `Archivo sin nombre ${index + 1}`} 
+                                  </span>
+                                  <DownloadButton onClick={() => descargarRecurso(recurso, seccion.id)}>
+                                      Descargar
+                                  </DownloadButton>
+                              </RecursosListItem>
+                          ))}
+                      </RecursosList>
                     </SectionInfo>
                   </SectionContent>
                 </SectionPlaceholder>
