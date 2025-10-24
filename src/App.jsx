@@ -22,6 +22,7 @@ import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
 import CrearForo from "./recursos/CrearForo";
 import HomeCurso from "./cursos/HomeCurso";
+import CrearPagina from "./recursos/CrearPagina";
 
 function App() {
 
@@ -42,43 +43,26 @@ function App() {
               <Route path="/olvido-password" element={<OlvidoPassword />}/>
             </Route>
             <Route element={<RutaProtegidaLayout/>}>
+              <Route path="/home" element={<HomeUsuario />} />
+              <Route path="/busqueda" element={<ListadoCursos />} />
+              <Route path="/cursos" element={<CursosUsuario />} />
+              <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/usuario" element={<Perfil />} />
               <Route path="/usuario/editar" element={<EditProfile />} />
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
-              <Route path="/home" element={<HomeUsuario />} />
-              <Route path="/busqueda" element={<ListadoCursos />} />
+              <Route path="/curso/:codigo" element={<PaginaCurso />} />
               <Route path="/curso/:id" element={<VerCurso />} />
-            </Route>
-            <Route path="/curso/:codigo/:seccion/crear-tarea" element={<RutaProtegidaLayout />}>
-              <Route index element={<CrearTarea />} />
+              <Route path="/curso/:codigo/alta-seccion" element={<CrearSeccion />} />
+              <Route path="/curso/:codigo/participantes" element={<ParticipantesCurso />} />
+              <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />
+              <Route path="/curso/:codigo/:seccion/crear-tarea" element={<CrearTarea />} />
+              <Route path="/curso/:codigo/:seccion/crear-pagina" element={<CrearPagina />} />
+              <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
+              <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
             </Route>
             <Route path="*" element={<NotFound />} />
-            <Route path="/cursos" element={<RutaProtegidaLayout />}>
-            <Route index element={<CursosUsuario />} />
-          </Route>
-          <Route path="/admin-cursos" element={<RutaProtegidaLayout />}>
-            <Route index element={<HomeCurso />} />
-          </Route>
-          <Route path="/curso/:codigo" element={<RutaProtegidaLayout />}>
-            <Route index element={<PaginaCurso />} />
-          </Route>
-          <Route path="/curso/:codigo/alta-seccion" element={<RutaProtegidaLayout />}>
-            <Route index element={<CrearSeccion />} />
-          </Route>
-            <Route path="/curso/:codigo/participantes" element={<RutaProtegidaLayout />}>
-          <Route index element={<ParticipantesCurso />} />
-          </Route>
-            <Route path="/curso/:codigo/participantes/matricular" element={<RutaProtegidaLayout />}>
-          <Route index element={<MatricularEstudianteCurso />} />
-          </Route>
-            <Route path="/curso/:codigo/:seccion/subir-material" element={<RutaProtegidaLayout />}>
-          <Route index element={<SubirMaterial />} />
-          </Route>
-            <Route path="/curso/:codigo/:seccion/crear-foro" element={<RutaProtegidaLayout />}>
-          <Route index element={<CrearForo />} />
-          </Route>
-        </Routes>
+          </Routes>
         </BrowserRouter>
       </AuthProvider>
     </>
