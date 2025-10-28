@@ -7,6 +7,7 @@ import { saveAs } from "file-saver";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ModalConfirmacion from "../general/ModalConfirmacion";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: white;
@@ -533,7 +534,7 @@ const PaginaCurso = () => {
           Authorization: `Bearer ${token}`,
           },
       };
-      const response = await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, {nombre, visible, idSeccion: Number(seccion), urlHtml: pagina}, config);
+      const response = await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, config);
       console.log(response);
       toast.success("Página eliminada exitosamente", {
           position: "top-center",
@@ -544,10 +545,29 @@ const PaginaCurso = () => {
           draggable: true,
           progress: undefined,
       });
+      setRecursosPorSeccion(prevRecursos => {
+        const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
+          const recursosEnSeccion = prevRecursos[seccionId] || [];
+          return recursosEnSeccion.some(recurso => recurso.id === paginaEliminarId);
+        });
+
+        if (seccionIdConRecurso) {
+          const arrayActual = prevRecursos[seccionIdConRecurso];
+          const nuevoArrayFiltrado = arrayActual.filter(recurso => {
+            return recurso.id !== paginaEliminarId; 
+          });
+
+          return {
+            ...prevRecursos,
+            [seccionIdConRecurso]: nuevoArrayFiltrado
+          };
+        }
+        return prevRecursos;
+      });
       handleCancelar();
     } catch (error) {
-      console.error("Error al eliminar el registro:", error);
-      toast.error("Ocurrió un error al eliminar. Intenta de nuevo.", {
+      console.error("Error al eliminar la pagina:", error);
+      toast.error("Ocurrió un error al eliminar la pagina", {
           position: "top-center",
           autoClose: 3000,
           hideProgressBar: false,
