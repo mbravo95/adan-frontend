@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { saveAs } from "file-saver";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ModalConfirmacion from "../general/ModalConfirmacion";
 
 const Container = styled.div`
   background-color: white;
@@ -359,6 +360,10 @@ const PaginaCurso = () => {
   const [loading, setLoading] = useState(true);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paginaEliminarId, setPaginaEliminarId] = useState(null);
+  
+
   useEffect(() => {
     if (secciones.length > 0) {
       const colapsadas = {};
@@ -502,6 +507,58 @@ const PaginaCurso = () => {
 
   const agregarPagina = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
+  };
+
+  const handleAbrirModal = (id) => {
+    setPaginaEliminarId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleCancelar = () => {
+    setIsModalOpen(false);
+    setPaginaEliminarId(null);
+  };
+
+  const handleBorrarPagina = async () => {
+    if (!paginaEliminarId) return;
+
+    setLoadingSecciones(true);
+
+    try {    
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+          headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          },
+      };
+      const response = await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, {nombre, visible, idSeccion: Number(seccion), urlHtml: pagina}, config);
+      console.log(response);
+      toast.success("Página eliminada exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+      handleCancelar();
+    } catch (error) {
+      console.error("Error al eliminar el registro:", error);
+      toast.error("Ocurrió un error al eliminar. Intenta de nuevo.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+    } finally {
+      setLoadingSecciones(false);
+    }
   }
 
 
@@ -556,6 +613,14 @@ const PaginaCurso = () => {
           </IndexList>
         </IndexSection>
       </Sidebar>
+
+      <ModalConfirmacion
+        isOpen={isModalOpen}
+        message={`¿Estás seguro de que quieres eliminar esta pagina?`}
+        onConfirm={handleBorrarPagina}
+        onCancel={handleCancelar}
+        isLoading={loadingSecciones}
+      />
       
       <MainContent>
         <CourseInfoHeader>
@@ -675,6 +740,16 @@ const PaginaCurso = () => {
                                     onClick={() => handleDescargarMaterial(codigo, seccion.id, recurso)}
                                   >
                                     Descargar
+                                  </button>
+                                </>
+                              ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
+                                <>
+                                  <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                  <button
+                                    style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => handleAbrirModal(recurso.id)}
+                                  >
+                                    Eliminar
                                   </button>
                                 </>
                               ) : (
