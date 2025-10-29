@@ -591,6 +591,11 @@ const PaginaCurso = () => {
   }
 
 
+  const editarPagina = (recursoId) => {
+    console.log("Editar pagina con id:", recursoId);
+  }
+
+
   const modificarSeccion = (seccionId) => {
   };
 
@@ -782,6 +787,12 @@ const PaginaCurso = () => {
                               ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                 <>
                                   <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                  <button
+                                    style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => editarPagina(recurso.id)}
+                                  >
+                                    Editar
+                                  </button>
                                   <button
                                     style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
                                     onClick={() => handleAbrirModal(recurso.id)}
