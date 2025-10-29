@@ -209,13 +209,13 @@ const PaginaTarea = () => {
             {tarea.descripcion}
             </Description>
 
-            {!isCardVisible && (
+            {!mostrarDatos && (
             <ActionButton onClick={handleSubirEntrega}>
                 Subir solución
             </ActionButton>
             )}
 
-            <CardWrapper isVisible={isCardVisible}>
+            <CardWrapper isVisible={mostrarDatos}>
             <ActionCard>
                 <CardTitle>Confirmar Información</CardTitle>
                 
