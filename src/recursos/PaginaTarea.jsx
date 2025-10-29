@@ -53,7 +53,7 @@ const Description = styled.p`
   line-height: 1.5;
 `;
 
-const ActionButton = styled.button`
+const ActionButton = styled.label`
   padding: 15px 30px;
   border: none;
   border-radius: 8px;
@@ -150,6 +150,10 @@ const CancelCardButton = styled(CardButtonBase)`
   &:hover {
     background-color: #c0d0d0;
   }
+`;
+
+const HiddenFileInput = styled.input`
+  display: none;
 `;
 
 const PaginaTarea = () => {
@@ -279,7 +283,7 @@ const PaginaTarea = () => {
                <ActionButton onClick={handleSubirEntrega}>
                     Subir solución
                 </ActionButton>
-                <input type="file" onChange={handleFileChange} /> 
+                <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
             </>
             )}
 
