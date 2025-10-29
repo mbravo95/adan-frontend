@@ -279,7 +279,7 @@ const PaginaTarea = () => {
                <ActionButton onClick={handleSubirEntrega}>
                     Subir solución
                 </ActionButton>
-                <Input type="file" onChange={handleFileChange} /> 
+                <input type="file" onChange={handleFileChange} /> 
             </>
             )}
 
