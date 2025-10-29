@@ -599,6 +599,10 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
+  const verRecurso = (recursoId) => {
+    console.log("Ver recurso con ID:", recursoId);
+  }
+
   return (
     <Container>
       <Sidebar>
@@ -773,7 +777,7 @@ const PaginaCurso = () => {
                                   </button>
                                 </>
                               ) : (
-                                <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                <span onClick={() => verRecurso(recurso.id)} style={{color:'#222', '&:hover': { textDecoration: 'underline' }}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
                               )}
                             </li>
                           ))
