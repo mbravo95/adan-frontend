@@ -183,9 +183,44 @@ const CrearPagina = () => {
     const [pagina, setPagina] = useState("");
     const [nombre, setNombre] = useState("");
     const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
-    const { codigo, seccion } = useParams();
+    const { codigo, seccion, idpagina } = useParams();
+
+    useEffect(() => {
+        const fetchPagina = async () => {
+            if(idpagina == null) {
+              setLoading(false);
+              return;
+            } 
+            
+            try {
+                const urlBase = import.meta.env.VITE_BACKEND_URL;
+                const token = localStorage.getItem("token");
+                const config = {
+                    headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    },
+                };
+                const response = await axios.get(`${urlBase}/recursos/${idpagina}`, config);
+                console.log(response);
+                const {data} = response;
+                const {nombre, urlHtml, visible} = data;
+                setNombre(nombre);
+                setPagina(urlHtml);
+                setVisible(visible);
+            } catch (error) {
+                console.error("Error al obtener los datos de la página:", error);
+                toast.error("No se pudieron cargar los datos de la página.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPagina();
+    }, []);
 
     const enviarDatos = async () => {
       if(nombre == "" || pagina == ""){
@@ -238,10 +273,60 @@ const CrearPagina = () => {
     };
 
 
+    const actualizarDatos = async () => {
+      if(nombre == "" || pagina == ""){
+          toast.error("No puede dejar campos vacíos", {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+          });
+          return;
+      }
+
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            },
+        };
+        const response = await axios.put(`${urlBase}/recursos/paginas-tematicas/${idpagina}`, {nombre, visible, urlHtml: pagina}, config);
+        console.log(response);
+        toast.success("Página actualizada exitosamente", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+        navigate(`/curso/${codigo}`);
+      } catch (error) {
+        console.log(error);
+        toast.error("Ya existe una página con ese título en la sección seleccionada", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+      }
+    }
+
+
   return (
     <>
         <GlobalCKEditorStyles />
-        <Title>Crea una nueva página</Title>
+        <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
         <Centrar>
           <Margen>
             <Label htmlFor="nombre-input">Titulo</Label>
@@ -254,30 +339,35 @@ const CrearPagina = () => {
                   placeholder="Introduce el titulo de la página"
             />
         </Centrar >
-        <DivEditor>
-            <CKEditor
-            editor={ ClassicEditor }
-            config={ {
-                licenseKey: 'GPL',
-                plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent ],
-                toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
-                initialData: location.state ? location.state.contenido : '',
-            } }
-            onChange={ ( event, editor ) => {
-                setPagina(editor.getData());
-            } }
-            />
-        </DivEditor>
+        {loading ? (
+                <p>Cargando contenido del editor...</p> 
+            ) : (
+              <DivEditor>
+                  <CKEditor
+                  editor={ ClassicEditor }
+                  config={ {
+                      licenseKey: 'GPL',
+                      plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent ],
+                      toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
+                      initialData: pagina,
+                  } }
+                  onChange={ ( event, editor ) => {
+                      setPagina(editor.getData());
+                  } }
+                  />
+              </DivEditor>
+        )}
         <CheckboxGroup>
           <CheckboxLabel htmlFor="task-visible">
-              <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} />
+              <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
               <CustomCheckbox />
               Visible
           </CheckboxLabel>
         </CheckboxGroup>
         <ButtonGroup>
-            <CreateButton onClick={enviarDatos}>Crear página</CreateButton>
-            <CancelButton onClick={() => navigate(`/curso/${codigo}`)}>Descartar página</CancelButton>
+            {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
+            {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
+            <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
         </ButtonGroup>
     </>
   )
