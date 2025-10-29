@@ -608,8 +608,12 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
-  const verRecurso = (recursoId) => {
-    console.log("Ver recurso con ID:", recursoId);
+  const verTarea = (recursoId) => {
+    navigate(`/curso/${codigo}/tarea/${recursoId}`);
+  }
+
+  const verForo = (recursoId) => {
+    navigate(`/curso/${codigo}/foro/${recursoId}`);
   }
 
   return (
@@ -785,8 +789,16 @@ const PaginaCurso = () => {
                                     Eliminar
                                   </button>
                                 </>
+                              ) : recurso.tipoRecurso === 'TAREA' ? (
+                                <>
+                                  <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                </>
+                              ): recurso.tipoRecurso === 'FORO' ? (
+                                <>
+                                  <Recurso onClick={() => verForo(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                </>
                               ) : (
-                                <Recurso onClick={() => verRecurso(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                <span style={{color:'#222'}}>Recurso sin tipo</span>
                               )}
                             </li>
                           ))
