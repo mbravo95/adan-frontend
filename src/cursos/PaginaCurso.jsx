@@ -777,7 +777,7 @@ const PaginaCurso = () => {
                                   </button>
                                 </>
                               ) : (
-                                <span onClick={() => verRecurso(recurso.id)} style={{color:'#222', '&:hover': { textDecoration: 'underline' }}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                <a onClick={() => verRecurso(recurso.id)} style={{color:'#222', textDecoration: 'underline', cursor: 'pointer'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</a>
                               )}
                             </li>
                           ))
