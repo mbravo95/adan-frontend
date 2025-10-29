@@ -54,22 +54,23 @@ const Description = styled.p`
 `;
 
 const ActionButton = styled.label`
-  padding: 15px 30px;
+  display: inline-block;
+  padding: 18px 35px;
   border: none;
   border-radius: 8px;
-  font-size: 1.2em;
+  font-size: 1.5em;
   cursor: pointer;
   font-weight: bold;
   background-color: ${ButtonPrimaryColor};
   color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
-  max-width: 300px;
+  text-align: center;
 
   &:hover {
     background-color: #4b2525;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
   }
 `;
 
@@ -262,6 +263,7 @@ const PaginaTarea = () => {
     }
 
     const handleFileChange = (event) => {
+        console.log("Archivo seleccionado:", event);
         setSelectedFile(event.target.files[0]);
         setMostrarDatos(true);
     };
