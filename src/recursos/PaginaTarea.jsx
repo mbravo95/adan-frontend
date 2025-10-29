@@ -164,6 +164,9 @@ const PaginaTarea = () => {
     const [tarea, setTarea] = useState({});
     const [mostrarDatos, setMostrarDatos] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFileName, setSelectedFileName] = useState(null);
+    const [fechaEntrega, setFechaEntrega] = useState("");
+    const [fechaLimite, setFechaLimite] = useState("");
 
     const { profile } = useAuth();
     const navigate = useNavigate();
@@ -240,6 +243,7 @@ const PaginaTarea = () => {
                 progress: undefined,
             });
             setSelectedFile(null);
+            setSelectedFileName("");
             navigate(`/curso/${codigo}`);
         } catch (error) {
             console.error('Error al subir el archivo:', error);
@@ -260,13 +264,26 @@ const PaginaTarea = () => {
     const handleCancelarEntrega = () => {
         setMostrarDatos(false);
         setSelectedFile(null);
+        setSelectedFileName("");
     }
 
     const handleFileChange = (event) => {
-        console.log("Archivo seleccionado:", event);
         setSelectedFile(event.target.files[0]);
+        setSelectedFileName(event.target.files[0].name);
         setMostrarDatos(true);
+        const date = new Date(tarea.fechaFin);
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',  
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false,
+        };
+        setFechaLimite(new Intl.DateTimeFormat('es-ES', options).format(date));
+        setFechaEntrega(new Intl.DateTimeFormat('es-ES', options).format(new Date()));
     };
+
 
   return (
     <>
@@ -289,11 +306,11 @@ const PaginaTarea = () => {
             <CardWrapper isVisible={mostrarDatos}>
             <ActionCard>
                 <CardTitle>Confirmar Información</CardTitle>
-                
-                <InfoField>Nombre del Archivo: **Proyecto Alfa**</InfoField>
-                <InfoField>Fecha límite: **$5,000 USD**</InfoField>
-                <InfoField>Fecha subida: **XYZ-987**</InfoField>
-                
+
+                <InfoField>Nombre del Archivo: {selectedFileName}</InfoField>
+                <InfoField>Fecha límite: {fechaLimite}</InfoField>
+                <InfoField>Fecha subida: {fechaEntrega}</InfoField>
+
                 <ButtonContainer>
                 <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar entrega</ConfirmButton>
                 <CancelCardButton onClick={handleCancelarEntrega}>Cancelar entrega</CancelCardButton>
