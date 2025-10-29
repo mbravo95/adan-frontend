@@ -592,7 +592,7 @@ const PaginaCurso = () => {
 
 
   const editarPagina = (recursoId) => {
-    console.log("Editar pagina con id:", recursoId);
+    navigate(`/curso/${codigo}/pagina/${recursoId}/editar`);
   }
 
 

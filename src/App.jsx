@@ -25,6 +25,7 @@ import HomeCurso from "./cursos/HomeCurso";
 import CrearPagina from "./recursos/CrearPagina";
 import PaginaTarea from "./recursos/PaginaTarea";
 import PaginaForo from "./recursos/PaginaForo";
+import EditarPagina from "./recursos/EditarPagina";
 
 function App() {
 
@@ -60,6 +61,7 @@ function App() {
               <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />
               <Route path="/curso/:codigo/:seccion/crear-tarea" element={<CrearTarea />} />
               <Route path="/curso/:codigo/:seccion/crear-pagina" element={<CrearPagina />} />
+              <Route path="/curso/:codigo/pagina/:idpagina/editar" element={<EditarPagina />} />
               <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
               <Route path="/curso/:codigo/tarea/:tareaId" element={<PaginaTarea />} />
