@@ -11,8 +11,16 @@ const PaginaTarea = () => {
     useEffect(() => {
       const obtenerTarea = async () => {
         try {
-          const response = await axios.get(`/recursos/${tareaId}`);
-          console.log("Datos de la tarea:", response.data);
+          const urlBase = import.meta.env.VITE_BACKEND_URL;
+          const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+          };
+          const response = await axios.get(`${urlBase}/recursos/${tareaId}`, config);
+          console.log(response);
         } catch (error) {
           console.error("Error al obtener los datos de la tarea:", error);
           toast.error("Error al cargar la tarea", {
