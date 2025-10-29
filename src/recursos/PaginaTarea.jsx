@@ -197,9 +197,6 @@ const PaginaTarea = () => {
       obtenerTarea();
     }, []);
 
-    const handleSubirEntrega = () => {
-        setMostrarDatos(true);
-    }
 
     const handleConfirmarEntrega = async () => {
         
@@ -265,8 +262,8 @@ const PaginaTarea = () => {
     }
 
     const handleFileChange = (event) => {
-        console.log("Archivo seleccionado:", event);
         setSelectedFile(event.target.files[0]);
+        setMostrarDatos(true);
     };
 
   return (
@@ -280,7 +277,7 @@ const PaginaTarea = () => {
 
             {!mostrarDatos && (
             <>
-               <ActionButton onClick={handleSubirEntrega}>
+               <ActionButton htmlFor="subir-archivo">
                     Subir solución
                 </ActionButton>
                 <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
