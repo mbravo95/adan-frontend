@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import styled, { css, keyframes } from "styled-components";
 import { toast } from "react-toastify";
+import useAuth from "../hooks/useAuth";
 
 const BackgroundColor = '#a7d9ed';
 const ButtonPrimaryColor = '#5a2e2e';
@@ -157,6 +158,10 @@ const PaginaTarea = () => {
 
     const [tarea, setTarea] = useState({});
     const [mostrarDatos, setMostrarDatos] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const { profile } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
       const obtenerTarea = async () => {
@@ -192,13 +197,73 @@ const PaginaTarea = () => {
         setMostrarDatos(true);
     }
 
-    const handleConfirmarEntrega = () => {
+    const handleConfirmarEntrega = async () => {
+        
+        if (!selectedFile) {
+            toast.error("Debes seleccionar un archivo", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        return;
+        }
+    
+            const formData = new FormData();
+
+            formData.append('archivo', selectedFile);
+
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.post(`${urlBase}/entregables/subir?idTarea=${tareaId}&idAlumno=${profile.id}`, formData, config);
+            console.log('Respuesta del servidor:', response);
+
+            toast.success("Archivo subido con éxito", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            setSelectedFile(null);
+            navigate(`/curso/${codigo}`);
+        } catch (error) {
+            console.error('Error al subir el archivo:', error);
+            toast.error("Error al subir el archivo", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+        
         setMostrarDatos(false);
     }
 
     const handleCancelarEntrega = () => {
         setMostrarDatos(false);
+        setSelectedFile(null);
     }
+
+    const handleFileChange = (event) => {
+        console.log("Archivo seleccionado:", event);
+        setSelectedFile(event.target.files[0]);
+    };
 
   return (
     <>
@@ -210,22 +275,25 @@ const PaginaTarea = () => {
             </Description>
 
             {!mostrarDatos && (
-            <ActionButton onClick={handleSubirEntrega}>
-                Subir solución
-            </ActionButton>
+            <>
+               <ActionButton onClick={handleSubirEntrega}>
+                    Subir solución
+                </ActionButton>
+                <Input type="file" onChange={handleFileChange} /> 
+            </>
             )}
 
             <CardWrapper isVisible={mostrarDatos}>
             <ActionCard>
                 <CardTitle>Confirmar Información</CardTitle>
                 
-                <InfoField>Nombre del Elemento: **Proyecto Alfa**</InfoField>
-                <InfoField>Valor Estimado: **$5,000 USD**</InfoField>
-                <InfoField>Código Interno: **XYZ-987**</InfoField>
+                <InfoField>Nombre del Archivo: **Proyecto Alfa**</InfoField>
+                <InfoField>Fecha límite: **$5,000 USD**</InfoField>
+                <InfoField>Fecha subida: **XYZ-987**</InfoField>
                 
                 <ButtonContainer>
-                <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar</ConfirmButton>
-                <CancelCardButton onClick={handleCancelarEntrega}>Cancelar</CancelCardButton>
+                <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar entrega</ConfirmButton>
+                <CancelCardButton onClick={handleCancelarEntrega}>Cancelar entrega</CancelCardButton>
                 </ButtonContainer>
             </ActionCard>
             </CardWrapper>
