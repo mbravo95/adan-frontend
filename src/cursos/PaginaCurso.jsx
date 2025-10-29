@@ -318,6 +318,15 @@ const NoSectionsMessage = styled.div`
   }
 `;
 
+const Recurso = styled.a`
+  color: #222;
+  &:hover {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+  }
+`;
+
 const PaginaCurso = () => {
   const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
     const token = localStorage.getItem("token");
@@ -777,7 +786,7 @@ const PaginaCurso = () => {
                                   </button>
                                 </>
                               ) : (
-                                <a onClick={() => verRecurso(recurso.id)} style={{color:'#222', textDecoration: 'underline', cursor: 'pointer'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</a>
+                                <Recurso onClick={() => verRecurso(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
                               )}
                             </li>
                           ))
