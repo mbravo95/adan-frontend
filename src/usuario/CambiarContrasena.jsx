@@ -137,6 +137,8 @@ const CambiarContrasena = () => {
 
     const [nuevaContrasena, setNuevaContrasena] = useState("");
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
+    const [contrasenaActual, setContrasenaActual] = useState("");
+
     const navigate = useNavigate();
 
     const cambiarContrasena = async () => {
@@ -153,7 +155,7 @@ const CambiarContrasena = () => {
             return;
         }
 
-        if (nuevaContrasena === "" || confirmarContrasena === "") {
+        if (contrasenaActual === "" || nuevaContrasena === "") {
             toast.error("Las contraseñas no pueden estar vacías", {
                 position: "top-center",
                 autoClose: 3000,
@@ -176,7 +178,8 @@ const CambiarContrasena = () => {
                 },
             };
             const response = await axios.post(`${urlBase}/password/change`, {
-                nuevaPassword: nuevaContrasena
+                nuevaPassword: nuevaContrasena,
+                actualPassword: contrasenaActual
             }, config);
             console.log(response);
 
@@ -189,10 +192,20 @@ const CambiarContrasena = () => {
                 draggable: true,
                 progress: undefined,
             });
-            navigate("/usuario");
+            toast.success("Ingrese su nueva contraseña", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            localStorage.removeItem("token");
+            navigate("/");
         } catch (error) {
             console.error(error);
-            toast.error("Error al cambiar la contraseña", {
+            toast.error(error.response.data, {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -216,6 +229,17 @@ const CambiarContrasena = () => {
               <FormWrapper>
                 <Title>Cambiar Contraseña</Title>
 
+                <FormGroup>
+                  <Label>Contraseña Actual</Label>
+                  <Input
+                    type="password"
+                    value={contrasenaActual}
+                    onChange={(e) => setContrasenaActual(e.target.value)}
+                    placeholder="Ingrese la contraseña actual"
+                  />
+                </FormGroup>
+                
+                
                 <FormGroup>
                   <Label>Nueva Contraseña</Label>
                   <Input
