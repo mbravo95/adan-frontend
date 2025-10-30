@@ -44,6 +44,7 @@ function App() {
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<Login />}/>
               <Route path="/olvido-password" element={<OlvidoPassword />}/>
+              <Route path="/reset-password" element={<CambiarContrasena />} />
             </Route>
             <Route element={<RutaProtegidaLayout/>}>
               <Route path="/home" element={<HomeUsuario />} />

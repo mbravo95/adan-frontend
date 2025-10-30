@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -74,21 +74,6 @@ const Input = styled.input`
   }
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-  background-color: white;
-  color: #333;
-  
-  &:focus {
-    outline: none;
-    border-color: #4C241D;
-  }
-`;
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -140,6 +125,9 @@ const CambiarContrasena = () => {
     const [contrasenaActual, setContrasenaActual] = useState("");
 
     const navigate = useNavigate();
+
+    const [searchParams] = useSearchParams();
+    const tokenTemp = searchParams.get("token");
 
     const cambiarContrasena = async () => {
         if (nuevaContrasena !== confirmarContrasena) {
@@ -217,6 +205,82 @@ const CambiarContrasena = () => {
         }
     };
 
+    const resetearContrasena = async () => {
+        if (nuevaContrasena !== confirmarContrasena) {
+            toast.error("Las contraseñas no coinciden", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        if (nuevaContrasena === "") {
+            toast.error("Las contraseñas no pueden estar vacías", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.post(`${urlBase}/password/reset`, {
+                nuevaPassword: nuevaContrasena,
+                token: tokenTemp
+            }, config);
+            console.log(response);
+
+            toast.success("Contraseña cambiada exitosamente", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            toast.success("Ingrese su nueva contraseña", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            localStorage.removeItem("token");
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response.data, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    };
+
     const cancelar = () => {
         navigate("/usuario");
     };
@@ -229,15 +293,17 @@ const CambiarContrasena = () => {
               <FormWrapper>
                 <Title>Cambiar Contraseña</Title>
 
-                <FormGroup>
-                  <Label>Contraseña Actual</Label>
-                  <Input
-                    type="password"
-                    value={contrasenaActual}
-                    onChange={(e) => setContrasenaActual(e.target.value)}
-                    placeholder="Ingrese la contraseña actual"
-                  />
-                </FormGroup>
+                { !tokenTemp && (
+                  <FormGroup>
+                    <Label>Contraseña Actual</Label>
+                    <Input
+                      type="password"
+                      value={contrasenaActual}
+                      onChange={(e) => setContrasenaActual(e.target.value)}
+                      placeholder="Ingrese la contraseña actual"
+                    />
+                  </FormGroup>
+                ) }
                 
                 
                 <FormGroup>
@@ -260,14 +326,22 @@ const CambiarContrasena = () => {
                   />
                 </FormGroup>
 
-                <ButtonGroup>
-                  <CreateButton onClick={cambiarContrasena}>
-                    Cambiar Contraseña
-                  </CreateButton>
-                  <CancelButton onClick={cancelar}>
-                    Cancelar
-                  </CancelButton>
-                </ButtonGroup>
+                { !tokenTemp ? (
+                  <ButtonGroup>
+                    <CreateButton onClick={cambiarContrasena}>
+                      Cambiar Contraseña
+                    </CreateButton>
+                    <CancelButton onClick={cancelar}>
+                      Cancelar
+                    </CancelButton>
+                  </ButtonGroup>
+                ) : (
+                  <ButtonGroup>
+                    <CreateButton onClick={resetearContrasena}>
+                      Cambiar Contraseña
+                    </CreateButton>
+                  </ButtonGroup>
+                ) }
               </FormWrapper>
             </ContentWrapper>
             <Outlet />
