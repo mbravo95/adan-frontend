@@ -25,6 +25,7 @@ import HomeCurso from "./cursos/HomeCurso";
 import CrearPagina from "./recursos/CrearPagina";
 import PaginaTarea from "./recursos/PaginaTarea";
 import PaginaForo from "./recursos/PaginaForo";
+import CambiarContrasena from "./usuario/CambiarContrasena";
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
               <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/usuario" element={<Perfil />} />
               <Route path="/usuario/editar" element={<EditProfile />} />
+              <Route path="/usuario/cambiar-contrasena" element={<CambiarContrasena />} />
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/curso/:codigo" element={<PaginaCurso />} />
