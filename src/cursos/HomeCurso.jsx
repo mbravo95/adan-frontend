@@ -136,6 +136,68 @@ const AddButton = styled.button`
   }
 `;
 
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+`;
+
+const EditButton = styled(Button)`
+  background-color: #007bff;
+  color: white;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+  color: white;
+
+  &:hover {
+    background-color: #c82333;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const CreateButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const CourseActions = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
 const HomeCurso = () => {
   const rol = localStorage.getItem("tipo");
   const navigate = useNavigate();
@@ -183,6 +245,14 @@ const HomeCurso = () => {
 
   const irCrearCurso = () => {
     navigate('/cursos/crear');
+  };
+
+  const irEditarCurso = (curso) => {
+    console.log("Ir a editar curso", curso);
+  };
+
+  const irEliminarCurso = (cursoId) => {
+    console.log("Ir a eliminar curso", cursoId);
   };
 
   const formatearFecha = (fechaString) => {
@@ -246,6 +316,14 @@ const HomeCurso = () => {
                         <DetailValue>{formatearFecha(curso.fechaCreacion)}</DetailValue>
                       </DetailRow>
                     </CourseDetails>
+                    <CourseActions>
+                      <EditButton onClick={() => irEditarCurso(curso)}>
+                        Editar
+                      </EditButton>
+                      <DeleteButton onClick={() => irEliminarCurso(curso.id)}>
+                        Eliminar
+                      </DeleteButton>
+                    </CourseActions>
                   </CourseCard>
                 ))}
               </CoursesGrid>
@@ -267,4 +345,4 @@ const HomeCurso = () => {
   )
 }
 
-export default HomeCurso
+export default HomeCurso;
