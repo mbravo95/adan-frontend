@@ -26,6 +26,7 @@ import CrearPagina from "./recursos/CrearPagina";
 import PaginaTarea from "./recursos/PaginaTarea";
 import PaginaForo from "./recursos/PaginaForo";
 import CambiarContrasena from "./usuario/CambiarContrasena";
+import AsignarDocente from "./cursos/AsignarDocente";
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/cursos" element={<CursosUsuario />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
+              <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />
               <Route path="/usuario" element={<Perfil />} />
               <Route path="/usuario/editar" element={<EditProfile />} />
               <Route path="/usuario/cambiar-contrasena" element={<CambiarContrasena />} />

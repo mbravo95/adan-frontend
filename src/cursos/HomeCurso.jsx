@@ -258,8 +258,10 @@ const HomeCurso = () => {
     console.log("Ir a eliminar curso", cursoId);
   };
 
-  const irAsignarCursoDocente = (cursoId) => {
-    console.log("Ir a asignar curso a docente", cursoId);
+  const irAsignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/asignar-profesor', {
+      state: { curso }
+    });
   };
 
   const formatearFecha = (fechaString) => {
@@ -324,7 +326,7 @@ const HomeCurso = () => {
                       </DetailRow>
                     </CourseDetails>
                     <CourseActions>
-                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso.id)}>
+                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso)}>
                         Asignar Profesor
                       </AsignarDocenteButton>
                       <EditButton onClick={() => irEditarCurso(curso)}>
