@@ -137,7 +137,7 @@ const AddButton = styled.button`
 `;
 
 const Button = styled.button`
-  flex: 1;
+  flex: 1 1 calc(50% - 5px);
   padding: 14px 20px;
   border: none;
   border-radius: 4px;
@@ -145,6 +145,7 @@ const Button = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-align: center;
 `;
 
 const EditButton = styled(Button)`
@@ -177,12 +178,12 @@ const DeleteButton = styled(Button)`
   }
 `;
 
-const CreateButton = styled(Button)`
-  background-color: #4C241D;
+const AsignarDocenteButton = styled(Button)`
+  background-color: #1d4c4c;
   color: white;
   
   &:hover {
-    background-color: #3a1b16;
+    background-color: #163a38;
   }
   
   &:disabled {
@@ -194,8 +195,10 @@ const CreateButton = styled(Button)`
 
 const CourseActions = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 20px;
+  width: 100%;
 `;
 
 const HomeCurso = () => {
@@ -253,6 +256,10 @@ const HomeCurso = () => {
 
   const irEliminarCurso = (cursoId) => {
     console.log("Ir a eliminar curso", cursoId);
+  };
+
+  const irAsignarCursoDocente = (cursoId) => {
+    console.log("Ir a asignar curso a docente", cursoId);
   };
 
   const formatearFecha = (fechaString) => {
@@ -317,6 +324,9 @@ const HomeCurso = () => {
                       </DetailRow>
                     </CourseDetails>
                     <CourseActions>
+                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso.id)}>
+                        Asignar Profesor
+                      </AsignarDocenteButton>
                       <EditButton onClick={() => irEditarCurso(curso)}>
                         Editar
                       </EditButton>
