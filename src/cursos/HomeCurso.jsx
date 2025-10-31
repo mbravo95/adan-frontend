@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import ModalConfirmacion from "../general/ModalConfirmacion";
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -223,6 +225,8 @@ const HomeCurso = () => {
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const obtenerCursos = async () => {
@@ -269,10 +273,6 @@ const HomeCurso = () => {
     console.log("Ir a editar curso", curso);
   };
 
-  const irEliminarCurso = (cursoId) => {
-    console.log("Ir a eliminar curso", cursoId);
-  };
-
   const irAsignarCursoDocente = (curso) => {
     navigate('/admin-cursos/asignar-profesor', {
       state: { curso }
@@ -299,10 +299,71 @@ const HomeCurso = () => {
     return <Navigate to="/usuario" />;
   }
 
+  const handleAbrirModal = (id) => {
+      setCursoSeleccionado(id);
+      setIsModalOpen(true);
+    };
+  
+    const handleCancelar = () => {
+      setIsModalOpen(false);
+      setCursoSeleccionado(null);
+    };
+  
+    const handleBorrarPagina = async () => {
+      if (!cursoSeleccionado) return;
+  
+      setLoading(true);
+  
+      try {    
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            },
+        };
+        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, config);
+        console.log(response);
+        toast.success("Curso eliminado exitosamente", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+        setCursos(cursos.filter(curso => curso.id !== cursoSeleccionado));
+        handleCancelar();
+      } catch (error) {
+        console.error("Error al eliminar el curso:", error);
+        toast.error("Ocurrió un error al eliminar el curso", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
   return (
     <Container>
       <ContentWrapper>
         <Title>Administración de Cursos</Title>
+
+        <ModalConfirmacion
+                isOpen={isModalOpen}
+                message={`¿Estás seguro de que quieres eliminar este curso?`}
+                onConfirm={handleBorrarPagina}
+                onCancel={handleCancelar}
+                isLoading={loading}
+              />
         
         {loading && (
           <LoadingMessage>
@@ -356,7 +417,7 @@ const HomeCurso = () => {
                       <EditButton onClick={() => irEditarCurso(curso)}>
                         Editar
                       </EditButton>
-                      <DeleteButton onClick={() => irEliminarCurso(curso.id)}>
+                      <DeleteButton onClick={() => handleAbrirModal(curso.id)}>
                         Eliminar
                       </DeleteButton>
                     </CourseActions>
