@@ -193,6 +193,21 @@ const AsignarDocenteButton = styled(Button)`
   }
 `;
 
+const DesasignarDocenteButton = styled(Button)`
+  background-color: #4c2c1d;
+  color: white;
+  
+  &:hover {
+    background-color: #3a2716;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
 const CourseActions = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -264,6 +279,12 @@ const HomeCurso = () => {
     });
   };
 
+   const irDesasignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/desasignar-profesor', {
+      state: { curso }
+    });
+  };
+
   const formatearFecha = (fechaString) => {
     if (!fechaString) return "No disponible";
     try {
@@ -329,6 +350,9 @@ const HomeCurso = () => {
                       <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso)}>
                         Asignar Profesor
                       </AsignarDocenteButton>
+                      <DesasignarDocenteButton onClick={() => irDesasignarCursoDocente(curso)}>
+                        Desasignar Profesor
+                      </DesasignarDocenteButton>
                       <EditButton onClick={() => irEditarCurso(curso)}>
                         Editar
                       </EditButton>

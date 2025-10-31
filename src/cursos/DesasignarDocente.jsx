@@ -176,8 +176,10 @@ const EmptyListMessage = styled.div`
     font-weight: 500;
 `;
 
-const AsignarDocente = () => {
 
+const DesasignarDocente = () => {
+
+    
     const [usuarios, setUsuarios] = useState([]);
     
     const navigate = useNavigate();
@@ -185,7 +187,45 @@ const AsignarDocente = () => {
     const curso = location.state.curso;
 
     useEffect(() => {
-        const listarUsuarios = async () => {
+    const listarUsuarios = async () => {
+                try {
+                    const urlBase = import.meta.env.VITE_BACKEND_URL;
+                    const token = localStorage.getItem("token");
+                    const config = {
+                        headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                        },
+                    };
+                    const response = await axios.get(`${urlBase}/usuarios`, config);
+                    const usuariosData = response.data;
+                    const usuariosFiltrados = usuariosData.filter((usuario) => usuario.tipoUsuario === "USUARIO" && usuario.cursosComoProfesor.some((cursoProfesor) => cursoProfesor.id === curso.id));
+                    setUsuarios(usuariosFiltrados);
+                    console.log("Usuarios obtenidos:", usuariosFiltrados);
+                } catch (error) {
+                    console.error("Error al obtener los usuarios:", error);
+                    const message = error.response?.data?.message || "Error al obtener los usuarios";
+                    toast.error(message, {
+                            position: "top-center",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                          });
+                }
+            };
+            listarUsuarios();
+        }, []);
+    
+        const [docenteSeleccionado, setDocenteSeleccionado] = useState(null);
+    
+        const handleSelectChange = (event) => {
+            setDocenteSeleccionado(parseInt(event.target.value));
+        };
+    
+        const handleSave = async () => {
             try {
                 const urlBase = import.meta.env.VITE_BACKEND_URL;
                 const token = localStorage.getItem("token");
@@ -195,14 +235,24 @@ const AsignarDocente = () => {
                     Authorization: `Bearer ${token}`,
                     },
                 };
-                const response = await axios.get(`${urlBase}/usuarios`, config);
-                const usuariosData = response.data;
-                const usuariosFiltrados = usuariosData.filter((usuario) => usuario.tipoUsuario === "USUARIO" && !usuario.cursosComoEstudiante.some((cursoEstudiante) => cursoEstudiante.id === curso.id) && !usuario.cursosComoProfesor.some((cursoProfesor) => cursoProfesor.id === curso.id));
-                setUsuarios(usuariosFiltrados);
-                console.log("Usuarios obtenidos:", usuariosFiltrados);
+                const response = await axios.post(`${urlBase}/cursos/desmatricularProfesor`, {
+                    idUsuario: docenteSeleccionado,
+                    idCurso: curso.id
+                }, config);
+                console.log(response);
+                toast.success("Docente desasignado exitosamente", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  });
+                navigate('/admin-cursos');
             } catch (error) {
-                console.error("Error al obtener los usuarios:", error);
-                const message = error.response?.data?.message || "Error al obtener los usuarios";
+                console.error("Error al desasignar el docente:", error);
+                const message = error.response?.data?.message || "Error al desasignar el docente";
                 toast.error(message, {
                         position: "top-center",
                         autoClose: 3000,
@@ -214,72 +264,23 @@ const AsignarDocente = () => {
                       });
             }
         };
-        listarUsuarios();
-    }, []);
-
-    const [docenteSeleccionado, setDocenteSeleccionado] = useState(null);
-
-    const handleSelectChange = (event) => {
-        setDocenteSeleccionado(parseInt(event.target.value));
-    };
-
-    const handleSave = async () => {
-        try {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            const response = await axios.post(`${urlBase}/cursos/profesores`, {
-                idUsuario: docenteSeleccionado,
-                idCurso: curso.id
-            }, config);
-            console.log(response);
-            toast.success("Docente asignado exitosamente", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              });
+    
+        const handleDiscard = () => {
             navigate('/admin-cursos');
-        } catch (error) {
-            console.error("Error al asignar el docente:", error);
-            const message = error.response?.data?.message || "Error al asignar el docente";
-            toast.error(message, {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                  });
-        }
-    };
-
-    const handleDiscard = () => {
-        navigate('/admin-cursos');
-    };
+        };
 
   return (
-    <>
-        <Container>
+    <Container>
             <ContentWrapper>
-                <Title>Asignar Docente al Curso</Title>
+                <Title>Desasignar Docente del Curso</Title>
                 <Description>
-                    Seleccione un profesor para asignar al curso {curso.nombre}
+                    Seleccione un profesor para desasignar del curso {curso.nombre}
                 </Description>
 
                 <UserCard>
                     {usuarios.length === 0 ? (
                         <EmptyListMessage>
-                            Este curso no tiene docentes disponibles para asignar.
+                            Este curso no tiene docentes asignados.
                         </EmptyListMessage>
                     ) : (
                     <UserList>
@@ -317,8 +318,7 @@ const AsignarDocente = () => {
 
             </ContentWrapper>
         </Container>
-    </>
   )
 }
 
-export default AsignarDocente;
+export default DesasignarDocente
