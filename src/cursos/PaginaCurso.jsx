@@ -367,6 +367,7 @@ const PaginaCurso = () => {
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paginaEliminarId, setPaginaEliminarId] = useState(null);
+  const [seccionEliminarId, setSeccionEliminarId] = useState(null);
   
 
   useEffect(() => {
@@ -522,6 +523,7 @@ const PaginaCurso = () => {
   const handleCancelar = () => {
     setIsModalOpen(false);
     setPaginaEliminarId(null);
+    setSeccionEliminarId(null);
   };
 
   const handleBorrarPagina = async () => {
@@ -595,6 +597,8 @@ const PaginaCurso = () => {
   };
 
   const eliminarSeccion = (seccionId) => {
+    setSeccionEliminarId(seccionId);
+    setIsModalOpen(true);
   };
   
   const toggleSeccion = (seccionId) => {
@@ -615,6 +619,49 @@ const PaginaCurso = () => {
   const verForo = (recursoId) => {
     navigate(`/curso/${codigo}/foro/${recursoId}`);
   }
+
+  const handleBorrarSeccion = async () => {
+    if (!seccionEliminarId) return;
+
+    setLoadingSecciones(true);
+
+    try {    
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+          headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          },
+      };
+      const response = await axios.delete(`${urlBase}/secciones/eliminar/${codigo}/${seccionEliminarId}`, config);
+      console.log(response);
+      toast.success("Sección eliminada exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+      setSecciones(secciones.filter(seccion => seccion.id !== seccionEliminarId));
+      handleCancelar();
+    } catch (error) {
+      console.error("Error al eliminar la sección:", error);
+      toast.error("Ocurrió un error al eliminar la sección", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+    } finally {
+      setLoadingSecciones(false);
+    }
+  };
 
   return (
     <Container>
@@ -653,8 +700,8 @@ const PaginaCurso = () => {
 
       <ModalConfirmacion
         isOpen={isModalOpen}
-        message={`¿Estás seguro de que quieres eliminar esta pagina?`}
-        onConfirm={handleBorrarPagina}
+        message={seccionEliminarId ? `¿Estás seguro de que quieres eliminar esta sección?` : `¿Estás seguro de que quieres eliminar este recurso?`}
+        onConfirm={seccionEliminarId ? handleBorrarSeccion : handleBorrarPagina}
         onCancel={handleCancelar}
         isLoading={loadingSecciones}
       />
@@ -748,7 +795,7 @@ const PaginaCurso = () => {
                         modificarSeccion(seccion.id);
                       }}
                     >
-                      Modificar
+                      Modificar sección
                     </ActionButton>
                     <ActionButton 
                       variant="danger" 
@@ -757,7 +804,7 @@ const PaginaCurso = () => {
                         eliminarSeccion(seccion.id);
                       }}
                     >
-                      Eliminar
+                      Eliminar sección
                     </ActionButton>
                   </ButtonGroup>
                   <SectionContent collapsed={collapsed}>
