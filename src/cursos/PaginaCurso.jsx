@@ -51,11 +51,6 @@ const ParticipantsButton = styled.button`
   
   &:hover {
     background-color: #333;
-                        {recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
-                          <li key={recurso.id} style={{paddingBottom: '8px', marginBottom: '8px', borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none'}}>
-                              <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span> <span style={{color:'#888'}}>({recurso.tipoRecurso})</span>
-                          </li>
-                        ))}
     transform: translateY(0);
   }
 `;
