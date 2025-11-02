@@ -29,6 +29,7 @@ import CambiarContrasena from "./usuario/CambiarContrasena";
 import AsignarDocente from "./cursos/AsignarDocente";
 import DesasignarDocente from "./cursos/DesasignarDocente";
 import Busqueda from "./usuario/Busqueda";
+import HomeMensajes from "./mensajes/HomeMensajes";
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/busqueda" element={<ListadoCursos />} />
               <Route path="/cursos" element={<CursosUsuario />} />
+              <Route path="/mensajes" element={<HomeMensajes />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />
               <Route path="/admin-cursos/desasignar-profesor" element={<DesasignarDocente />} />
