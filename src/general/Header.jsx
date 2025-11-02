@@ -5,7 +5,7 @@ import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
 const HeaderContainer = styled.header`
-  background-color: ${props => props.bgColor || 'white'};
+  background-color: ${props => props.bgcolor || 'white'};
   width: 100%;
   height: 60px;
   display: flex;
@@ -41,7 +41,7 @@ const NavigationSection = styled.div`
 const NavButton = styled.button`
   background: none;
   border: none;
-  color: ${props => props.textColor || 'black'};
+  color: ${props => props.textcolor || 'black'};
   font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
@@ -50,7 +50,7 @@ const NavButton = styled.button`
   transition: background-color 0.2s, color 0.3s ease;
   
   &:hover {
-    background-color: ${props => props.textColor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
   }
 `;
 
@@ -68,12 +68,12 @@ const UserContainer = styled.div`
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: ${props => props.textColor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
   }
 `;
 
 const UserName = styled.span`
-  color: ${props => props.textColor || 'black'};
+  color: ${props => props.textcolor || 'black'};
   font-size: 14px;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -101,7 +101,7 @@ const DropdownMenu = styled.div`
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 150px;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+  display: ${props => props.$isopen ? 'block' : 'none'};
   z-index: 1001;
   transform: translateX(0);
   max-width: 200px;
@@ -130,18 +130,18 @@ const Header = () => {
     
     if (path.startsWith('/curso/')) {
       return {
-        bgColor: '#9DCBD7',
-        textColor: 'black'
+        bgcolor: '#9DCBD7',
+        textcolor: 'black'
       };
     } else {
       return {
-        bgColor: 'white',
-        textColor: 'black'
+        bgcolor: 'white',
+        textcolor: 'black'
       };
     }
   };
 
-  const { bgColor, textColor } = getHeaderColors();
+  const { bgcolor, textcolor } = getHeaderColors();
   
   useEffect(() => {
     const obtenerNombreUsuario = async () => {
@@ -244,40 +244,48 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
+  const irBusquedaUsuarios = () => {
+    navigate("/buscar-usuarios");
+    setIsMenuOpen(false);
+  }
+
   const esUsuarioRegular = localStorage.getItem("tipo") !== "ADMINISTRADOR";
   
   return (
     <>
-      <HeaderContainer bgColor={bgColor}>
+      <HeaderContainer bgcolor={bgcolor}>
         <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irCursos} />
         
         <NavigationSection>
-            <NavButton textColor={textColor} onClick={irCursos}>
+            <NavButton textcolor={textcolor} onClick={irCursos}>
               Cursos
             </NavButton>
             {esUsuarioRegular ? null : (
               <>
-                <NavButton textColor={textColor} onClick={irAltaCursos}>
+                <NavButton textcolor={textcolor} onClick={irAltaCursos}>
                   Crear Curso
                 </NavButton>
-                <NavButton textColor={textColor} onClick={irAltaUsuario}>
+                <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
                   Crear Usuario
                 </NavButton> 
-                <NavButton textColor={textColor} onClick={irBusquedaCursos}>
+                <NavButton textcolor={textcolor} onClick={irBusquedaCursos}>
                   Buscar Cursos
+                </NavButton> 
+                <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
+                  Buscar Usuarios
                 </NavButton> 
               </>
             )}
         </NavigationSection>
         
         <UserMenuContainer>
-          <UserContainer textColor={textColor} onClick={toggleMenu}>
-            <UserName textColor={textColor}>{userName}</UserName>
+          <UserContainer textcolor={textcolor} onClick={toggleMenu}>
+            <UserName textcolor={textcolor}>{userName}</UserName>
             <UserIcon>
               👤
             </UserIcon>
           </UserContainer>
-          <DropdownMenu isOpen={isMenuOpen}>
+          <DropdownMenu $isopen={isMenuOpen}>
             <MenuItem onClick={irPerfil}>
               Perfil
             </MenuItem>

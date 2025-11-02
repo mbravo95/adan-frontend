@@ -8,21 +8,19 @@ const LightBlueBackground = '#a7d9ed';
 const CardBackground = '#f4f4f4';
 const DarkBackground = '#2a2a2a';
 
-
-// Definición de la animación para desplegar/contraer
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
 const FilterWrapper = styled.div`
-  max-height: ${props => (props.isVisible ? '100px' : '0')}; 
+  max-height: ${props => (props.$isvisible ? '100px' : '0')}; 
   overflow: hidden;
   transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-  opacity: ${props => (props.isVisible ? '1' : '0')};
+  opacity: ${props => (props.$isvisible ? '1' : '0')};
   
-  /* Animación de entrada suave si es visible */
-  ${props => props.isVisible && css`
+
+  ${props => props.$isvisible && css`
     animation: ${fadeIn} 0.3s ease-out;
   `}
 `;
@@ -63,7 +61,7 @@ const PrimaryButton = styled.button`
   background-color: ${CardBackground};
   color: #333;
 
-  ${props => props.isActive && css`
+  ${props => props.$isactive && css`
     background-color: ${DarkBackground};
     color: white;
   `}
@@ -83,7 +81,7 @@ const PrimarySearchButton = styled.button`
   gap: 10px;
   transition: background-color 0.2s;
 
-  ${props => props.isActive && css`
+  ${props => props.$isactive && css`
     background-color: ${DarkBackground};
     color: white;
   `}
@@ -189,14 +187,13 @@ const CourseMeta = styled.p`
 `;
 
 const NoResultsMessage = styled.div`
-  background-color: #ffffff; /* Fondo blanco */
+  background-color: #ffffff;
   padding: 30px;
   border-radius: 12px;
   text-align: center;
   font-size: 1.2em;
   font-weight: 500;
-  color: #555; /* Texto gris suave */
-  /* Sombras ligeras para darle volumen, similar a las tarjetas */
+  color: #555;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
   margin-top: 20px;
 `;
@@ -219,17 +216,21 @@ const ListadoCursos = () => {
 
   useEffect(() => {
     const cargarCursos = async () => {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const response = await axios.get(`${urlBase}/cursos`, config);
-      setCursos(response.data);
-      setCursosFiltrados(response.data);
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/cursos`, config);
+        setCursos(response.data);
+        setCursosFiltrados(response.data); 
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     cargarCursos();
@@ -282,14 +283,14 @@ const ListadoCursos = () => {
       <ContentWrapper>
         <PrimaryControls>
           { rol != "ADMINISTRADOR" &&
-            <PrimaryButton onClick={() => mostrarMisCursos()} isActive={isButtonActive}>Mis cursos</PrimaryButton>
+            <PrimaryButton onClick={() => mostrarMisCursos()} $isactive={isButtonActive}>Mis cursos</PrimaryButton>
           }
-          <PrimarySearchButton onClick={toggleFilter} isActive={isFilterVisible}>
+          <PrimarySearchButton onClick={toggleFilter} $isactive={isFilterVisible}>
             <SearchIcon src={isFilterVisible ? "/search/lupa_white.png" : "/search/lupa_black.png"} alt="Buscar" />
             Buscar curso
           </PrimarySearchButton>
         </PrimaryControls>
-        <FilterWrapper isVisible={isFilterVisible}>
+        <FilterWrapper $isvisible={isFilterVisible}>
           <SecondaryControls>
             <FilterInputWrapper>
               <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
