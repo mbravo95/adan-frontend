@@ -228,6 +228,7 @@ const ListadoCursos = () => {
         const response = await axios.get(`${urlBase}/cursos`, config);
         setCursos(response.data);
         setCursosFiltrados(response.data); 
+        console.log(response);
       } catch (error) {
         console.log(error);
       }
@@ -276,6 +277,13 @@ const ListadoCursos = () => {
     navigate(`/curso/${codigo}`);
   }
 
+  const formatearListaProfesores = (profesores) => {
+    const nombresCompletos = profesores.map(profesor => {
+        return `${profesor.nombres} ${profesor.apellidos}`;
+    });
+    return nombresCompletos.join(', ');
+};
+
 
   return (
     <>
@@ -306,7 +314,7 @@ const ListadoCursos = () => {
               <Details>
                 <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
                 <CourseMeta>{curso.turno}</CourseMeta>
-                <CourseMeta>{curso.profesores.length > 0 ? curso.profesores[0] : 'Sin profesor asignado'}</CourseMeta>
+                <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
               </Details>
             </CourseCard>
           ))}
