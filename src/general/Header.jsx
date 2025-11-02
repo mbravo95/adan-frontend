@@ -4,120 +4,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
-const HeaderContainer = styled.header`
-  background-color: ${props => props.bgcolor || 'white'};
-  width: 100%;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  box-sizing: border-box;
-  transition: background-color 0.3s ease;
-`;
-
-const Logo = styled.img`
-  height: 40px;
-  width: auto;
-  transition: opacity 0.3s ease;
-  cursor: pointer;
-  
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const NavigationSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const NavButton = styled.button`
-  background: none;
-  border: none;
-  color: ${props => props.textcolor || 'black'};
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.3s ease;
-  
-  &:hover {
-    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
-  }
-`;
-
-const UserMenuContainer = styled.div`
-  position: relative;
-`;
-
-const UserContainer = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  gap: 12px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
-  }
-`;
-
-const UserName = styled.span`
-  color: ${props => props.textcolor || 'black'};
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.3s ease;
-`;
-
-const UserIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #666;
-  border: 2px solid #ddd;
-`;
-
-const DropdownMenu = styled.div`
-  position: absolute;
-  top: 45px;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 150px;
-  display: ${props => props.$isopen ? 'block' : 'none'};
-  z-index: 1001;
-  transform: translateX(0);
-  max-width: 200px;
-`;
-
-const MenuItem = styled.div`
-  padding: 12px 16px;
-  cursor: pointer;
-  color: black;
-  font-size: 14px;
-  
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState("Usuario");
@@ -312,4 +198,118 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;
+
+const HeaderContainer = styled.header`
+  background-color: ${props => props.bgcolor || 'white'};
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+`;
+
+const Logo = styled.img`
+  height: 40px;
+  width: auto;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const NavigationSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  color: ${props => props.textcolor || 'black'};
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.3s ease;
+  
+  &:hover {
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+  }
+`;
+
+const UserMenuContainer = styled.div`
+  position: relative;
+`;
+
+const UserContainer = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+  }
+`;
+
+const UserName = styled.span`
+  color: ${props => props.textcolor || 'black'};
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+`;
+
+const UserIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666;
+  border: 2px solid #ddd;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  display: ${props => props.$isopen ? 'block' : 'none'};
+  z-index: 1001;
+  transform: translateX(0);
+  max-width: 200px;
+`;
+
+const MenuItem = styled.div`
+  padding: 12px 16px;
+  cursor: pointer;
+  color: black;
+  font-size: 14px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;

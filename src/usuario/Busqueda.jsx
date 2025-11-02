@@ -3,6 +3,162 @@ import styled from 'styled-components';
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
 
+const Busqueda = () => {
+
+    const [busqueda, setBusqueda] = useState('');
+    const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+
+    const {profile} = useAuth();
+
+    useEffect(() => {
+        const cargarUsuarios = async () => {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            try {
+                const response = await axios.get(`${urlBase}/usuarios`, config);
+                console.log(response.data);
+                setUsuarios(response.data.filter(user => user.id !== profile.id));
+                setUsuariosFiltrados(response.data.filter(user => user.id !== profile.id));
+            } catch (error) {
+                console.log(error);
+                setUsuarios([]);
+                setUsuariosFiltrados([]);
+            }
+        };
+
+        cargarUsuarios();
+    }, []);
+
+    const handleReset = () => {
+        setBusqueda('');
+        setUsuariosFiltrados(usuarios);
+    };
+
+    const handleSearchClick = async() => {
+        if (busqueda.trim() === '') {
+            setUsuariosFiltrados(usuarios);
+            return;
+        }
+
+        const filtro = busqueda.toLowerCase();
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.get(`${urlBase}/usuarios/buscar?texto=${filtro}`, config);
+            setUsuariosFiltrados(response.data);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al buscar los usuarios", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } 
+    };
+
+    const handleDeleteUser = (userId) => {
+        console.log(`Eliminando usuario con ID: ${userId}`);
+    }
+
+    const formatearFecha = (fechaString) => {
+        const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+        const fecha = new Date(fechaString);
+        return fecha.toLocaleDateString('es-ES', opciones);
+    };
+
+  return (
+    <>
+        <Container>
+            <ContentWrapper>
+                <Title>Gestión de Usuarios</Title>
+                
+                <FilterBar>
+                    <FilterInput
+                        type="text"
+                        placeholder="Filtrar por nombre, correo, rol o cédula..."
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                    />
+                    <SearchButton onClick={handleSearchClick}>
+                        <SearchIconSVG /> Buscar
+                    </SearchButton>
+                    <ResetButton onClick={handleReset}>
+                        <ResetIconSVG /> Restablecer resultados
+                    </ResetButton>
+                </FilterBar>
+
+                <UserGrid>
+                    {usuariosFiltrados.length > 0 ? (
+                        usuariosFiltrados.map((user) => (
+                            <UserCard key={user.id}>
+                                <UserIcon role={user.tipoUsuario}>
+                                    {user.fotoPerfil ? (
+                                        <img 
+                                            src={user.fotoPerfil} 
+                                            alt={`${user.nombres} ${user.apellidos}`} 
+                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                                        />
+                                    ) : (
+                                        <img 
+                                            src="/header/avatar.png"
+                                            alt={`${user.nombres} ${user.apellidos}`} 
+                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                                        />
+                                    )}
+                                </UserIcon>
+                                <UserDetails>
+                                    <UserName>{user.nombres} {user.apellidos}</UserName>
+                                    <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
+                                    <DetailRow>
+                                        <DetailLabel>Cédula:</DetailLabel>
+                                        <DetailValue>{user.cedula}</DetailValue>
+                                    </DetailRow>
+                                    <DetailRow>
+                                        <DetailLabel>Correo:</DetailLabel>
+                                        <DetailValue>{user.correo}</DetailValue>
+                                    </DetailRow>
+                                    <DetailRow>
+                                        <DetailLabel>Fecha de creación:</DetailLabel>
+                                        <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
+                                    </DetailRow>
+                                </UserDetails>
+                                
+                                <ActionGroup>
+                                    <ActionButton onClick={() => handleDeleteUser(user.id)} danger>Eliminar</ActionButton>
+                                </ActionGroup>
+                            </UserCard>
+                        ))
+                    ) : (
+                        <NoResults>No se encontraron usuarios que coincidan con el filtro.</NoResults>
+                    )}
+                </UserGrid>
+                
+            </ContentWrapper>
+        </Container>
+    </>
+  )
+}
+
+export default Busqueda;
+
+
 const BackgroundColor = '#9DCBD7';
 const CardBackground = 'white';
 const PrimaryColor = '#5a2e2e';
@@ -231,158 +387,3 @@ const ResetIconSVG = () => (
         <path d="M11.173 2.004a.5.5 0 0 1 .634.032l2.364 2.363a.5.5 0 0 1 0 .708l-2.364 2.364a.5.5 0 0 1-.708-.708l1.791-1.79H9c-2.4 0-4.5 1.7-5.1 4.1a.5.5 0 0 1-.9.3c.4-2.8 2.8-5 5.9-5h3.966L9.899 2.712a.5.5 0 0 1 .032-.634zM4.09 9.902a.5.5 0 0 1 .707 0l1.79 1.79H13c2.4 0 4.5-1.7 5.1-4.1a.5.5 0 0 1 .9-.3c-.4 2.8-2.8 5-5.9 5h-3.966l1.791 1.79a.5.5 0 0 1-.707.707l-2.364-2.364a.5.5 0 0 1 0-.708l2.364-2.363z"/>
     </svg>
 );
-
-const Busqueda = () => {
-
-    const [busqueda, setBusqueda] = useState('');
-    const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
-    const [usuarios, setUsuarios] = useState([]);
-
-    const {profile} = useAuth();
-
-    useEffect(() => {
-        const cargarUsuarios = async () => {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            try {
-                const response = await axios.get(`${urlBase}/usuarios`, config);
-                console.log(response.data);
-                setUsuarios(response.data.filter(user => user.id !== profile.id));
-                setUsuariosFiltrados(response.data.filter(user => user.id !== profile.id));
-            } catch (error) {
-                console.log(error);
-                setUsuarios([]);
-                setUsuariosFiltrados([]);
-            }
-        };
-
-        cargarUsuarios();
-    }, []);
-
-    const handleReset = () => {
-        setBusqueda('');
-        setUsuariosFiltrados(usuarios);
-    };
-
-    const handleSearchClick = async() => {
-        if (busqueda.trim() === '') {
-            setUsuariosFiltrados(usuarios);
-            return;
-        }
-
-        const filtro = busqueda.toLowerCase();
-        try {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            const response = await axios.get(`${urlBase}/usuarios/buscar?texto=${filtro}`, config);
-            setUsuariosFiltrados(response.data);
-        } catch (error) {
-            console.log(error);
-            toast.error("Error al buscar los usuarios", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        } 
-    };
-
-    const handleDeleteUser = (userId) => {
-        console.log(`Eliminando usuario con ID: ${userId}`);
-    }
-
-    const formatearFecha = (fechaString) => {
-        const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-        const fecha = new Date(fechaString);
-        return fecha.toLocaleDateString('es-ES', opciones);
-    };
-
-  return (
-    <>
-        <Container>
-            <ContentWrapper>
-                <Title>Gestión de Usuarios</Title>
-                
-                <FilterBar>
-                    <FilterInput
-                        type="text"
-                        placeholder="Filtrar por nombre, correo, rol o cédula..."
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
-                    />
-                    <SearchButton onClick={handleSearchClick}>
-                        <SearchIconSVG /> Buscar
-                    </SearchButton>
-                    <ResetButton onClick={handleReset}>
-                        <ResetIconSVG /> Restablecer resultados
-                    </ResetButton>
-                </FilterBar>
-
-                <UserGrid>
-                    {usuariosFiltrados.length > 0 ? (
-                        usuariosFiltrados.map((user) => (
-                            <UserCard key={user.id}>
-                                <UserIcon role={user.tipoUsuario}>
-                                    {user.fotoPerfil ? (
-                                        <img 
-                                            src={user.fotoPerfil} 
-                                            alt={`${user.nombres} ${user.apellidos}`} 
-                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                                        />
-                                    ) : (
-                                        <img 
-                                            src="/header/avatar.png"
-                                            alt={`${user.nombres} ${user.apellidos}`} 
-                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                                        />
-                                    )}
-                                </UserIcon>
-                                <UserDetails>
-                                    <UserName>{user.nombres} {user.apellidos}</UserName>
-                                    <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
-                                    <DetailRow>
-                                        <DetailLabel>Cédula:</DetailLabel>
-                                        <DetailValue>{user.cedula}</DetailValue>
-                                    </DetailRow>
-                                    <DetailRow>
-                                        <DetailLabel>Correo:</DetailLabel>
-                                        <DetailValue>{user.correo}</DetailValue>
-                                    </DetailRow>
-                                    <DetailRow>
-                                        <DetailLabel>Fecha de creación:</DetailLabel>
-                                        <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
-                                    </DetailRow>
-                                </UserDetails>
-                                
-                                <ActionGroup>
-                                    <ActionButton onClick={() => handleDeleteUser(user.id)} danger>Eliminar</ActionButton>
-                                </ActionGroup>
-                            </UserCard>
-                        ))
-                    ) : (
-                        <NoResults>No se encontraron usuarios que coincidan con el filtro.</NoResults>
-                    )}
-                </UserGrid>
-                
-            </ContentWrapper>
-        </Container>
-    </>
-  )
-}
-
-export default Busqueda

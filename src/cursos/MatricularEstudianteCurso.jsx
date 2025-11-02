@@ -4,190 +4,6 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const Container = styled.div`
-  background-color: #ffffffff;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-  box-sizing: border-box;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 800px;
-`;
-
-const FormWrapper = styled.div`
-  background-color: white;
-  border-radius: 10px;
-  padding: 40px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-  width: 100%;
-  margin-bottom: 30px;
-`;
-
-const Title = styled.h1`
-  color: #333;
-  font-size: 28px;
-  margin-bottom: 10px;
-  text-align: center;
-  font-weight: 600;
-`;
-
-const CourseInfo = styled.p`
-  color: #666;
-  font-size: 16px;
-  text-align: center;
-  margin-bottom: 30px;
-`;
-
-const SearchSection = styled.div`
-  margin-bottom: 30px;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-  background-color: white;
-  color: #333;
-  
-  &:focus {
-    outline: none;
-    border-color: #4C241D;
-  }
-  
-  &::placeholder {
-    color: #999;
-  }
-`;
-
-const UsersSection = styled.div`
-  width: 100%;
-`;
-
-const UsersList = styled.div`
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: white;
-`;
-
-const UserCard = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s ease;
-  
-  &:hover {
-    background-color: #f8f9fa;
-  }
-  
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const UserInfo = styled.div`
-  flex: 1;
-`;
-
-const UserName = styled.h3`
-  color: #333;
-  font-size: 16px;
-  margin: 0 0 4px 0;
-  font-weight: 600;
-`;
-
-const UserDetails = styled.p`
-  color: #666;
-  font-size: 14px;
-  margin: 0;
-`;
-
-const EnrollButton = styled.button`
-  background-color: #4C241D;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: #3a1b16;
-  }
-  
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 15px;
-  margin-top: 30px;
-  justify-content: center;
-`;
-
-const BackButton = styled.button`
-  background-color: white;
-  color: #333;
-  border: 2px solid #ddd;
-  padding: 12px 24px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: #f8f8f8;
-    border-color: #bbb;
-  }
-`;
-
-const LoadingMessage = styled.div`
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 16px;
-`;
-
-const NoUsersMessage = styled.div`
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-`;
-
 const MatricularEstudianteCurso = () => {
   const { codigo } = useParams();
   const navigate = useNavigate();
@@ -403,3 +219,189 @@ const MatricularEstudianteCurso = () => {
 };
 
 export default MatricularEstudianteCurso;
+
+
+
+const Container = styled.div`
+  background-color: #ffffffff;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  box-sizing: border-box;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  margin-bottom: 30px;
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const CourseInfo = styled.p`
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+`;
+
+const SearchSection = styled.div`
+  margin-bottom: 30px;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const UsersSection = styled.div`
+  width: 100%;
+`;
+
+const UsersList = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+`;
+
+const UserCard = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const UserInfo = styled.div`
+  flex: 1;
+`;
+
+const UserName = styled.h3`
+  color: #333;
+  font-size: 16px;
+  margin: 0 0 4px 0;
+  font-weight: 600;
+`;
+
+const UserDetails = styled.p`
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+`;
+
+const EnrollButton = styled.button`
+  background-color: #4C241D;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: center;
+`;
+
+const BackButton = styled.button`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+`;
+
+const NoUsersMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+`;

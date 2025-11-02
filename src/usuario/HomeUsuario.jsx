@@ -1,6 +1,61 @@
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
+const HomeUsuario = () => {
+    const navigate = useNavigate();
+    const userRole = 'PROFESOR'; 
+
+    const handleNavigation = (path) => {
+        navigate(path);
+    };
+
+    return (
+        <Container>
+            <ContentWrapper>
+                <Title>Home</Title>
+                <MenuContainer>
+                    
+                    <CentralLogo>
+                        <LogoImage src="/logo.jpeg" alt="Logo de la Aplicación" />
+                    </CentralLogo>
+                    
+                    <ActionCard position="bottom-center" onClick={() => handleNavigation('/usuario')}>
+                        <IconWrapper>👤</IconWrapper>
+                        <ActionText>Mi Perfil</ActionText>
+                    </ActionCard>
+
+                    <ActionCard position="top-right" onClick={() => handleNavigation('/mensajes')}>
+                        <IconWrapper>✉️</IconWrapper>
+                        <ActionText>Mensajes</ActionText>
+                    </ActionCard>
+
+                    <ActionCard position="top-left" onClick={() => handleNavigation('/cursos')}>
+                        <IconWrapper>📚</IconWrapper>
+                        <ActionText>Mis Cursos</ActionText>
+                    </ActionCard>
+                     {/* Acciones extra o para el admin
+                    <ActionCard position="bottom-right" onClick={() => handleNavigation('/recursos')}>
+                        <IconWrapper>📁</IconWrapper>
+                        <ActionText>Recursos</ActionText>
+                    </ActionCard>
+                    
+                    {userRole === 'ADMINISTRADOR' && (
+                        <ActionCard position="bottom-center" onClick={() => handleNavigation('/admin')}>
+                            <IconWrapper>⚙️</IconWrapper>
+                            <ActionText>Administración</ActionText>
+                        </ActionCard>
+                    )}
+                    */}
+                    
+                </MenuContainer>
+            </ContentWrapper>
+        </Container>
+    );
+};
+
+export default HomeUsuario;
+
+
 const BackgroundColor = '#9DCBD7'; 
 const PrimaryColor = '#5a2e2e'; 
 const AccentColor = 'white';
@@ -174,57 +229,3 @@ const ActionText = styled.span`
     font-size: 0.7em;
   }
 `;
-
-const HomeUsuario = () => {
-    const navigate = useNavigate();
-    const userRole = 'PROFESOR'; 
-
-    const handleNavigation = (path) => {
-        navigate(path);
-    };
-
-    return (
-        <Container>
-            <ContentWrapper>
-                <Title>Home</Title>
-                <MenuContainer>
-                    
-                    <CentralLogo>
-                        <LogoImage src="/logo.jpeg" alt="Logo de la Aplicación" />
-                    </CentralLogo>
-                    
-                    <ActionCard position="bottom-center" onClick={() => handleNavigation('/usuario')}>
-                        <IconWrapper>👤</IconWrapper>
-                        <ActionText>Mi Perfil</ActionText>
-                    </ActionCard>
-
-                    <ActionCard position="top-right" onClick={() => handleNavigation('/mensajes')}>
-                        <IconWrapper>✉️</IconWrapper>
-                        <ActionText>Mensajes</ActionText>
-                    </ActionCard>
-
-                    <ActionCard position="top-left" onClick={() => handleNavigation('/cursos')}>
-                        <IconWrapper>📚</IconWrapper>
-                        <ActionText>Mis Cursos</ActionText>
-                    </ActionCard>
-                     {/* Acciones extra o para el admin
-                    <ActionCard position="bottom-right" onClick={() => handleNavigation('/recursos')}>
-                        <IconWrapper>📁</IconWrapper>
-                        <ActionText>Recursos</ActionText>
-                    </ActionCard>
-                    
-                    {userRole === 'ADMINISTRADOR' && (
-                        <ActionCard position="bottom-center" onClick={() => handleNavigation('/admin')}>
-                            <IconWrapper>⚙️</IconWrapper>
-                            <ActionText>Administración</ActionText>
-                        </ActionCard>
-                    )}
-                    */}
-                    
-                </MenuContainer>
-            </ContentWrapper>
-        </Container>
-    );
-};
-
-export default HomeUsuario;

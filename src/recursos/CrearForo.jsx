@@ -4,6 +4,88 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
 
+const CrearForo = () => {
+
+  const [nombre, setNombre] = useState("");
+  const [visible, setVisible] = useState(false);
+
+  const { codigo, seccion } = useParams();
+  const navigate = useNavigate();
+
+    const crearForo = async () => {
+        if(nombre == ""){
+            toast.error("Debe ingresar un nombre para el foro", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: Number(seccion)}, config);
+            console.log(response);
+            toast.success("Foro agregado exitosamente", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            navigate(`/curso/${codigo}`);
+        } catch (error) {
+            console.log(error);
+            toast.error("Ya existe un foro con ese nombre en la seccion seleccionada", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+    }
+
+  return (
+    <>
+
+        <Container>
+          <Title>CREAR FORO</Title>
+          <Form>
+            <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
+            <CheckboxGroup>
+                <CheckboxLabel htmlFor="task-visible">
+                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} />
+                    <CustomCheckbox />
+                    Visible
+                </CheckboxLabel>
+            </CheckboxGroup>
+            <CreateButton type="button" onClick={() => crearForo()}>Crear foro</CreateButton>
+            <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>Cancelar</CancelButton>
+          </Form>
+        </Container>
+    
+    </>
+  )
+}
+
+export default CrearForo;
+
 
 const Container = styled.div`
   display: flex;
@@ -144,86 +226,3 @@ const CustomCheckbox = styled.span`
         box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
     }
 `;
-
-
-const CrearForo = () => {
-
-  const [nombre, setNombre] = useState("");
-  const [visible, setVisible] = useState(false);
-
-  const { codigo, seccion } = useParams();
-  const navigate = useNavigate();
-
-    const crearForo = async () => {
-        if(nombre == ""){
-            toast.error("Debe ingresar un nombre para el foro", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
-
-        try {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: Number(seccion)}, config);
-            console.log(response);
-            toast.success("Foro agregado exitosamente", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            navigate(`/curso/${codigo}`);
-        } catch (error) {
-            console.log(error);
-            toast.error("Ya existe un foro con ese nombre en la seccion seleccionada", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        }
-    }
-
-  return (
-    <>
-
-        <Container>
-          <Title>CREAR FORO</Title>
-          <Form>
-            <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
-            <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} />
-                    <CustomCheckbox />
-                    Visible
-                </CheckboxLabel>
-            </CheckboxGroup>
-            <CreateButton type="button" onClick={() => crearForo()}>Crear foro</CreateButton>
-            <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>Cancelar</CancelButton>
-          </Form>
-        </Container>
-    
-    </>
-  )
-}
-
-export default CrearForo

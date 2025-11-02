@@ -18,7 +18,6 @@ import { AuthProvider } from "./context/AuthProvider";
 import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
-import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
 import CrearForo from "./recursos/CrearForo";
 import HomeCurso from "./cursos/HomeCurso";
@@ -65,7 +64,6 @@ function App() {
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/curso/:codigo" element={<PaginaCurso />} />
-              <Route path="/curso/:id" element={<VerCurso />} />
               <Route path="/curso/:codigo/alta-seccion" element={<CrearSeccion />} />
               <Route path="/curso/:codigo/participantes" element={<ParticipantesCurso />} />
               <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />

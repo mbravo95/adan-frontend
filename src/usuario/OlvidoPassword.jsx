@@ -4,6 +4,89 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Outlet, useNavigate } from "react-router-dom";
 
+
+const OlvidoPassword = () => {
+  const [correo, setCorreo] = useState("");
+  const navigate = useNavigate();
+
+  const enviarCorreo = async () => {
+    if (correo === "") {
+      toast.error("El correo no puede estar vacío", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const response = await axios.post(`${urlBase}/password/forgot`, {
+        correo: correo
+      });
+      console.log(response);
+      toast.success("Correo enviado exitosamente", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al enviar el correo", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+  
+  
+  return (
+    <>
+        <Container>
+          <ContentWrapper>
+            <FormWrapper>
+              <Title>Olvido Password</Title>
+
+              <FormGroup>
+                <Label>Correo Electrónico</Label>
+                <Input
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  placeholder="Ingrese su correo electrónico"
+                />
+              </FormGroup>
+
+              <ButtonGroup>
+                <CreateButton onClick={enviarCorreo}>
+                  Enviar Correo
+                </CreateButton>
+              </ButtonGroup>
+            </FormWrapper>
+          </ContentWrapper>
+          <Outlet />
+        </Container>
+    </>
+  )
+}
+
+export default OlvidoPassword;
+
+
 const Container = styled.div`
   background-color: #9DCBD7;
   width: 100vw;
@@ -106,85 +189,3 @@ const CreateButton = styled(Button)`
     background-color: #999;
   }
 `;
-
-
-const OlvidoPassword = () => {
-  const [correo, setCorreo] = useState("");
-  const navigate = useNavigate();
-
-  const enviarCorreo = async () => {
-    if (correo === "") {
-      toast.error("El correo no puede estar vacío", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.post(`${urlBase}/password/forgot`, {
-        correo: correo
-      });
-      console.log(response);
-      toast.success("Correo enviado exitosamente", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-      toast.error("Error al enviar el correo", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
-  
-  
-  return (
-    <>
-        <Container>
-          <ContentWrapper>
-            <FormWrapper>
-              <Title>Olvido Password</Title>
-
-              <FormGroup>
-                <Label>Correo Electrónico</Label>
-                <Input
-                  type="email"
-                  value={correo}
-                  onChange={(e) => setCorreo(e.target.value)}
-                  placeholder="Ingrese su correo electrónico"
-                />
-              </FormGroup>
-
-              <ButtonGroup>
-                <CreateButton onClick={enviarCorreo}>
-                  Enviar Correo
-                </CreateButton>
-              </ButtonGroup>
-            </FormWrapper>
-          </ContentWrapper>
-          <Outlet />
-        </Container>
-    </>
-  )
-}
-
-export default OlvidoPassword

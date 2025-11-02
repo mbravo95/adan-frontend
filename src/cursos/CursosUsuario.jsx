@@ -3,6 +3,141 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const CursosUsuario = () => {
+  const navigate = useNavigate();
+  
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const obtenerPerfilYCursos = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          setError("No hay sesión activa");
+          setLoading(false);
+          return;
+        }
+
+        console.log("Obteniendo perfil del usuario desde:", `${urlBase}/usuarios/perfil`);
+        
+        const perfilResponse = await axios.get(`${urlBase}/usuarios/perfil`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const userIdFromProfile = perfilResponse.data.id;
+        setUserId(userIdFromProfile);
+
+        const cursosResponse = await axios.get(`${urlBase}/usuarios/${userIdFromProfile}/cursos`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = cursosResponse.data;
+        const cursosProfesor = data.cursosComoProfesor || [];
+        const cursosEstudiante = data.cursosComoEstudiante || [];
+
+        const todosLosCursos = [
+          ...cursosProfesor.map(curso => ({ ...curso, rolEnCurso: 'PROFESOR' })),
+          ...cursosEstudiante.map(curso => ({ ...curso, rolEnCurso: 'ESTUDIANTE' }))
+        ];
+
+        setCursos(todosLosCursos);
+        
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setCursos([]);
+        } else {
+          setError("Error al cargar los datos");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    obtenerPerfilYCursos();
+  }, []);
+
+  const obtenerRolEnCurso = (curso) => {
+    return curso.rolEnCurso || 'ESTUDIANTE';
+  };
+
+  const irACurso = (curso) => {
+    navigate(`/curso/${curso.codigo}`);
+  };
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <Title>Mis Cursos</Title>
+        
+        {loading && (
+          <LoadingMessage>
+            Cargando
+          </LoadingMessage>
+        )}
+        
+        {error && (
+          <ErrorMessage>
+            {error}
+          </ErrorMessage>
+        )}
+        
+        {!loading && !error && (
+          <>
+            {cursos.length > 0 ? (
+              <CoursesGrid>
+                {cursos.map((curso) => (
+                  <CourseCard key={curso.id}>
+                    <CourseTitle onClick={() => irACurso(curso)}>
+                      {curso.nombre || "Curso sin nombre"}
+                    </CourseTitle>
+                    <CourseDetails>
+                      <DetailRow>
+                        <DetailLabel>Código:</DetailLabel>
+                        <DetailValue>{curso.codigo || "No disponible"}</DetailValue>
+                      </DetailRow>
+                      <DetailRow>
+                        <DetailLabel>Turno:</DetailLabel>
+                        <DetailValue>{curso.turno || "No especificado"}</DetailValue>
+                      </DetailRow>
+                      <DetailRow>
+                        <DetailLabel>Rol:</DetailLabel>
+                        <StatusBadge status={obtenerRolEnCurso(curso)}>
+                          {obtenerRolEnCurso(curso)}
+                        </StatusBadge>
+                      </DetailRow>
+                    </CourseDetails>
+                  </CourseCard>
+                ))}
+              </CoursesGrid>
+            ) : (
+              <EmptyState>
+                <h3>No hay cursos asociados</h3>
+                <p>
+                  No hay cursos asociados en el sistema <br />
+                </p>
+              </EmptyState>
+            )}
+          </>
+        )}
+      </ContentWrapper>
+    </Container>
+  )
+}
+
+export default CursosUsuario;
+
+
 const Container = styled.div`
   background-color: #9DCBD7;
   width: 100vw;
@@ -177,137 +312,3 @@ const EmptyState = styled.div`
     margin: 0;
   }
 `;
-
-const CursosUsuario = () => {
-  const navigate = useNavigate();
-  
-  const [cursos, setCursos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    const obtenerPerfilYCursos = async () => {
-      try {
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
-          setError("No hay sesión activa");
-          setLoading(false);
-          return;
-        }
-
-        console.log("Obteniendo perfil del usuario desde:", `${urlBase}/usuarios/perfil`);
-        
-        const perfilResponse = await axios.get(`${urlBase}/usuarios/perfil`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        const userIdFromProfile = perfilResponse.data.id;
-        setUserId(userIdFromProfile);
-
-        const cursosResponse = await axios.get(`${urlBase}/usuarios/${userIdFromProfile}/cursos`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        const data = cursosResponse.data;
-        const cursosProfesor = data.cursosComoProfesor || [];
-        const cursosEstudiante = data.cursosComoEstudiante || [];
-
-        const todosLosCursos = [
-          ...cursosProfesor.map(curso => ({ ...curso, rolEnCurso: 'PROFESOR' })),
-          ...cursosEstudiante.map(curso => ({ ...curso, rolEnCurso: 'ESTUDIANTE' }))
-        ];
-
-        setCursos(todosLosCursos);
-        
-      } catch (error) {
-        if (error.response?.status === 404) {
-          setCursos([]);
-        } else {
-          setError("Error al cargar los datos");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    obtenerPerfilYCursos();
-  }, []);
-
-  const obtenerRolEnCurso = (curso) => {
-    return curso.rolEnCurso || 'ESTUDIANTE';
-  };
-
-  const irACurso = (curso) => {
-    navigate(`/curso/${curso.codigo}`);
-  };
-
-  return (
-    <Container>
-      <ContentWrapper>
-        <Title>Mis Cursos</Title>
-        
-        {loading && (
-          <LoadingMessage>
-            Cargando
-          </LoadingMessage>
-        )}
-        
-        {error && (
-          <ErrorMessage>
-            {error}
-          </ErrorMessage>
-        )}
-        
-        {!loading && !error && (
-          <>
-            {cursos.length > 0 ? (
-              <CoursesGrid>
-                {cursos.map((curso) => (
-                  <CourseCard key={curso.id}>
-                    <CourseTitle onClick={() => irACurso(curso)}>
-                      {curso.nombre || "Curso sin nombre"}
-                    </CourseTitle>
-                    <CourseDetails>
-                      <DetailRow>
-                        <DetailLabel>Código:</DetailLabel>
-                        <DetailValue>{curso.codigo || "No disponible"}</DetailValue>
-                      </DetailRow>
-                      <DetailRow>
-                        <DetailLabel>Turno:</DetailLabel>
-                        <DetailValue>{curso.turno || "No especificado"}</DetailValue>
-                      </DetailRow>
-                      <DetailRow>
-                        <DetailLabel>Rol:</DetailLabel>
-                        <StatusBadge status={obtenerRolEnCurso(curso)}>
-                          {obtenerRolEnCurso(curso)}
-                        </StatusBadge>
-                      </DetailRow>
-                    </CourseDetails>
-                  </CourseCard>
-                ))}
-              </CoursesGrid>
-            ) : (
-              <EmptyState>
-                <h3>No hay cursos asociados</h3>
-                <p>
-                  No hay cursos asociados en el sistema <br />
-                </p>
-              </EmptyState>
-            )}
-          </>
-        )}
-      </ContentWrapper>
-    </Container>
-  )
-}
-
-export default CursosUsuario

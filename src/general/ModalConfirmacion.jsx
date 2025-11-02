@@ -1,6 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled, { css } from 'styled-components';
+
+
+const ModalConfirmacion = ({ isOpen, message, onConfirm, onCancel, isLoading }) => {
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (isOpen && event.key === 'Escape') {
+        onCancel();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onCancel]);
+
+  if (!isOpen) return null;
+
+  const modalRoot = document.getElementById('modal-root') || document.body;
+
+  return createPortal(
+    <ModalOverlay 
+      $isVisible={isOpen} 
+      onClick={onCancel}
+    >
+      <ModalContent onClick={e => e.stopPropagation()}> 
+        <Title>¿Estás seguro/a?</Title>
+        <Message>{message}</Message>
+        <ButtonGroup>
+          <Button 
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            $primary
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Eliminando...' : 'Confirmar Eliminación'}
+          </Button>
+        </ButtonGroup>
+      </ModalContent>
+    </ModalOverlay>,
+    modalRoot
+  );
+};
+
+export default ModalConfirmacion;
+
+
 
 const ModalOverlay = styled.div`
   ${({ $isVisible }) => css`
@@ -71,50 +120,3 @@ const Button = styled.button`
       }
     `}
 `;
-
-
-const ModalConfirmacion = ({ isOpen, message, onConfirm, onCancel, isLoading }) => {
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (isOpen && event.key === 'Escape') {
-        onCancel();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onCancel]);
-
-  if (!isOpen) return null;
-
-  const modalRoot = document.getElementById('modal-root') || document.body;
-
-  return createPortal(
-    <ModalOverlay 
-      $isVisible={isOpen} 
-      onClick={onCancel}
-    >
-      <ModalContent onClick={e => e.stopPropagation()}> 
-        <Title>¿Estás seguro/a?</Title>
-        <Message>{message}</Message>
-        <ButtonGroup>
-          <Button 
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Cancelar
-          </Button>
-          <Button
-            $primary
-            onClick={onConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Eliminando...' : 'Confirmar Eliminación'}
-          </Button>
-        </ButtonGroup>
-      </ModalContent>
-    </ModalOverlay>,
-    modalRoot
-  );
-};
-
-export default ModalConfirmacion;
