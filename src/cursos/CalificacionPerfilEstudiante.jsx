@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: white;
@@ -26,6 +27,19 @@ const Card = styled.div`
 const CalificarButton = styled.button`
   margin-top: 32px;
   background: #4C241D;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #eee;
+`;
+
+const DesmatricularButton = styled.button`
+  margin-top: 18px;
+  background: #c0386e;
   color: #fff;
   border: none;
   padding: 12px 28px;
@@ -76,6 +90,28 @@ const CalificacionPerfilEstudiante = () => {
     if (estudianteId && id) fetchDatos();
   }, [estudianteId, id]);
 
+
+  const handleDesmatricular = async () => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.post(`${urlBase}/cursos/desmatricularEstudiante`, {
+        idCurso: Number(id),
+        idUsuario: Number(estudianteId)
+      }, config);
+      toast.success("Estudiante desmatriculado correctamente");
+      navigate(-1);
+    } catch (err) {
+      toast.error("Error al desmatricular estudiante");
+    }
+  };
+
   if (loading) return <Container>Cargando datos...</Container>;
   if (error) return <Container>Error: {error}</Container>;
   if (!estudiante) return <Container>No se encontró el estudiante.</Container>;
@@ -92,6 +128,9 @@ const CalificacionPerfilEstudiante = () => {
           <CalificarButton onClick={() => navigate(`/curso/${id}/estudiante/${estudianteId}/calificar`)}>
             Calificar Estudiante
           </CalificarButton>
+          <DesmatricularButton onClick={handleDesmatricular}>
+            Desmatricular estudiante
+          </DesmatricularButton>
         </div>
       </Card>
     </Container>

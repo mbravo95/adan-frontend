@@ -25,6 +25,7 @@ import HomeCurso from "./cursos/HomeCurso";
 import CrearPagina from "./recursos/CrearPagina";
 import CalificacionEstudianteCurso from "./cursos/CalificacionPerfilEstudiante";
 import CalificarEstudiante from "./cursos/CalificarEstudiante";
+import Foro from "./recursos/Foro";
 
 function App() {
 
@@ -64,6 +65,8 @@ function App() {
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
+              <Route path="/curso/:codigo/:seccion/:foroId" element={<Foro />} />
+
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

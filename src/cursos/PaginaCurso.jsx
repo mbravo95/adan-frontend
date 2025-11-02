@@ -663,7 +663,23 @@ const PaginaCurso = () => {
                       <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
                         {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
                           recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
-                            <li key={recurso.id} style={{paddingBottom: '8px', marginBottom: '8px', borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none', display:'flex', alignItems:'center', gap:'12px'}}>
+                            <li
+                              key={recurso.id}
+                              style={{
+                                paddingBottom: '8px',
+                                marginBottom: '8px',
+                                borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                cursor: recurso.tipoRecurso === 'FORO' ? 'pointer' : 'default',
+                              }}
+                              onClick={
+                                recurso.tipoRecurso === 'FORO'
+                                  ? () => navigate(`/curso/${codigo}/${seccion.id}/${recurso.id}`)
+                                  : undefined
+                              }
+                            >
                               {recurso.tipoRecurso === 'MATERIAL' ? (
                                 <>
                                   <span style={{color:'#222', display:'flex', alignItems:'center', gap:'6px'}}>
@@ -672,11 +688,19 @@ const PaginaCurso = () => {
                                   </span>
                                   <button
                                     style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={() => handleDescargarMaterial(codigo, seccion.id, recurso)}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      handleDescargarMaterial(codigo, seccion.id, recurso);
+                                    }}
                                   >
                                     Descargar
                                   </button>
                                 </>
+                              ) : recurso.tipoRecurso === 'FORO' ? (
+                                <span style={{color:'#222', fontWeight:'bold'}}>
+                                  <span role="img" aria-label="foro">💬</span>
+                                  {recurso.nombre === null ? '(null)' : recurso.nombre}
+                                </span>
                               ) : (
                                 <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
                               )}
