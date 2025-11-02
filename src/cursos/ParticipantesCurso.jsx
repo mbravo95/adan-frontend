@@ -20,14 +20,27 @@ const ParticipantesCurso = () => {
   const [participantes, setParticipantes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const prepararParticipantes = (estudiantes, profesores) => {
+    const estudiantesConRol = estudiantes.map(estudiante => ({
+        ...estudiante,
+        rol: 'ESTUDIANTE'
+    }));
+
+  
+    const profesoresConRol = profesores.map(profesor => ({
+        ...profesor,
+        rol: 'PROFESOR'
+    }));
+
+    let participantes = [...estudiantesConRol, ...profesoresConRol];
+    participantes.sort((a, b) => a.id - b.id);
+
+    return participantes;
+  }
+
   useEffect(() => {
     const obtenerDatosCurso = async () => {
       try {
-        // Si ya tenemos los datos del curso desde PaginaCurso, los usamos
-        if (cursoDesdePagina) {
-          console.log("Usando datos del curso desde PaginaCurso:", cursoDesdePagina);
-          setCursoActual(cursoDesdePagina);
-        } else {
           // Si no tenemos los datos, los obtenemos de la API
           console.log("Obteniendo datos del curso desde la API...");
           const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -38,14 +51,14 @@ const ParticipantesCurso = () => {
             return;
           }
 
-          const cursoResponse = await axios.get(`${urlBase}/cursos/buscar?texto=${codigo}`, {
+          const cursoResponse = await axios.get(`${urlBase}/cursos`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
 
-          const cursoEncontrado = Array.isArray(cursoResponse.data) ? cursoResponse.data[0] : cursoResponse.data;
+          const cursoEncontrado = cursoResponse.data.filter(curso => curso.id == cursoActual.id)[0];
           
           if (cursoEncontrado) {
             setCursoActual({
@@ -61,10 +74,8 @@ const ParticipantesCurso = () => {
               codigo: codigo
             });
           }
-        }
 
-        setParticipantes([
-        ]);
+        setParticipantes(prepararParticipantes(cursoEncontrado.estudiantes, cursoEncontrado.profesores));
         
       } catch (error) {
         console.error("Error al obtener datos:", error);
@@ -121,8 +132,8 @@ const ParticipantesCurso = () => {
           <ParticipantsGrid>
             {participantes.map((participante) => (
               <ParticipantCard key={participante.id}>
-                <ParticipantName>{participante.nombre}</ParticipantName>
-                <ParticipantEmail>{participante.email}</ParticipantEmail>
+                <ParticipantName>{participante.nombres}</ParticipantName>
+                <ParticipantEmail>{participante.correo}</ParticipantEmail>
                 <ParticipantRole role={participante.rol}>
                   {participante.rol}
                 </ParticipantRole>

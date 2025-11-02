@@ -31,7 +31,7 @@ const HomeUsuario = () => {
 
                     <ActionCard position="top-left" onClick={() => handleNavigation('/cursos')}>
                         <IconWrapper>📚</IconWrapper>
-                        <ActionText>Mis Cursos</ActionText>
+                        <ActionText>Cursos</ActionText>
                     </ActionCard>
                      {/* Acciones extra o para el admin
                     <ActionCard position="bottom-right" onClick={() => handleNavigation('/recursos')}>
