@@ -2,17 +2,20 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
+import Spinner from '../general/Spinner';
 
 const Busqueda = () => {
 
     const [busqueda, setBusqueda] = useState('');
     const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const {profile} = useAuth();
 
     useEffect(() => {
         const cargarUsuarios = async () => {
+            setLoading(true);
             const urlBase = import.meta.env.VITE_BACKEND_URL;
             const token = localStorage.getItem("token");
             const config = {
@@ -30,6 +33,8 @@ const Busqueda = () => {
                 console.log(error);
                 setUsuarios([]);
                 setUsuariosFiltrados([]);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -104,51 +109,54 @@ const Busqueda = () => {
                     </ResetButton>
                 </FilterBar>
 
-                <UserGrid>
-                    {usuariosFiltrados.length > 0 ? (
-                        usuariosFiltrados.map((user) => (
-                            <UserCard key={user.id}>
-                                <UserIcon role={user.tipoUsuario}>
-                                    {user.fotoPerfil ? (
-                                        <img 
-                                            src={user.fotoPerfil} 
-                                            alt={`${user.nombres} ${user.apellidos}`} 
-                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                                        />
-                                    ) : (
-                                        <img 
-                                            src="/header/avatar.png"
-                                            alt={`${user.nombres} ${user.apellidos}`} 
-                                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                                        />
-                                    )}
-                                </UserIcon>
-                                <UserDetails>
-                                    <UserName>{user.nombres} {user.apellidos}</UserName>
-                                    <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
-                                    <DetailRow>
-                                        <DetailLabel>Cédula:</DetailLabel>
-                                        <DetailValue>{user.cedula}</DetailValue>
-                                    </DetailRow>
-                                    <DetailRow>
-                                        <DetailLabel>Correo:</DetailLabel>
-                                        <DetailValue>{user.correo}</DetailValue>
-                                    </DetailRow>
-                                    <DetailRow>
-                                        <DetailLabel>Fecha de creación:</DetailLabel>
-                                        <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
-                                    </DetailRow>
-                                </UserDetails>
-                                
-                                <ActionGroup>
-                                    <ActionButton onClick={() => handleDeleteUser(user.id)} danger>Eliminar</ActionButton>
-                                </ActionGroup>
-                            </UserCard>
-                        ))
-                    ) : (
-                        <NoResults>No se encontraron usuarios que coincidan con el filtro.</NoResults>
-                    )}
-                </UserGrid>
+                {loading && <Spinner />}
+                {!loading &&
+                    <UserGrid>
+                        {usuariosFiltrados.length > 0 ? (
+                            usuariosFiltrados.map((user) => (
+                                <UserCard key={user.id}>
+                                    <UserIcon role={user.tipoUsuario}>
+                                        {user.fotoPerfil ? (
+                                            <img 
+                                                src={user.fotoPerfil} 
+                                                alt={`${user.nombres} ${user.apellidos}`} 
+                                                style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                                            />
+                                        ) : (
+                                            <img 
+                                                src="/header/avatar.png"
+                                                alt={`${user.nombres} ${user.apellidos}`} 
+                                                style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                                            />
+                                        )}
+                                    </UserIcon>
+                                    <UserDetails>
+                                        <UserName>{user.nombres} {user.apellidos}</UserName>
+                                        <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
+                                        <DetailRow>
+                                            <DetailLabel>Cédula:</DetailLabel>
+                                            <DetailValue>{user.cedula}</DetailValue>
+                                        </DetailRow>
+                                        <DetailRow>
+                                            <DetailLabel>Correo:</DetailLabel>
+                                            <DetailValue>{user.correo}</DetailValue>
+                                        </DetailRow>
+                                        <DetailRow>
+                                            <DetailLabel>Fecha de creación:</DetailLabel>
+                                            <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
+                                        </DetailRow>
+                                    </UserDetails>
+                                    
+                                    <ActionGroup>
+                                        <ActionButton onClick={() => handleDeleteUser(user.id)} danger>Eliminar</ActionButton>
+                                    </ActionGroup>
+                                </UserCard>
+                            ))
+                        ) : (
+                            <NoResults>No se encontraron usuarios que coincidan con el filtro.</NoResults>
+                        )}
+                    </UserGrid>
+                }
                 
             </ContentWrapper>
         </Container>

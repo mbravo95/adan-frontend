@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import useAuth from "../hooks/useAuth";
+import Spinner from '../general/Spinner';
 
 
 const ListadoCursos = () => {
@@ -11,6 +12,7 @@ const ListadoCursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cursosFiltrados, setCursosFiltrados] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const rol = localStorage.getItem("tipo");
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const ListadoCursos = () => {
   useEffect(() => {
     const cargarCursos = async () => {
       try {
+        setLoading(true);
         const urlBase = import.meta.env.VITE_BACKEND_URL;
         const token = localStorage.getItem("token");
         const config = {
@@ -46,6 +49,8 @@ const ListadoCursos = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,11 +73,14 @@ const ListadoCursos = () => {
       },
     };
     try {
+      setLoading(true);
       const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
       setCursosFiltrados(response.data); 
     } catch (error) {
       console.log(error);
       setCursosFiltrados([]);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -136,23 +144,26 @@ const ListadoCursos = () => {
             <ResetButton onClick={() => resetearBusqueda()}>Restablecer resultados</ResetButton>
           </SecondaryControls>
         </FilterWrapper>
-        <CourseList>
-          {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
-            <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
-              <Details>
-                <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
-                <CourseMeta>{curso.turno}</CourseMeta>
-                <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
-                <CourseMeta>{rolEnCurso(curso)}</CourseMeta>
-              </Details>
-            </CourseCard>
-          ))}
-          { cursosFiltrados.length == 0 && 
-              <NoResultsMessage>
-                No se encontraron cursos que coincidan con la búsqueda
-              </NoResultsMessage>
-          }
-        </CourseList>
+        {loading && <Spinner />}
+        {!loading && 
+          <CourseList>
+            {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
+              <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
+                <Details>
+                  <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
+                  <CourseMeta>{curso.turno}</CourseMeta>
+                  <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
+                  <CourseMeta>{rolEnCurso(curso)}</CourseMeta>
+                </Details>
+              </CourseCard>
+            ))}
+            { cursosFiltrados.length == 0 && 
+                <NoResultsMessage>
+                  No se encontraron cursos que coincidan con la búsqueda
+                </NoResultsMessage>
+            }
+          </CourseList>
+        }
       </ContentWrapper>
     </PageContainer>
     </>

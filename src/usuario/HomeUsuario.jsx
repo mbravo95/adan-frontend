@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 const HomeUsuario = () => {
     const navigate = useNavigate();
-    const userRole = 'PROFESOR'; 
+    //Si se quiere agregar botones segun el rol
+    //const userRole = 'PROFESOR'; 
 
     const handleNavigation = (path) => {
         navigate(path);

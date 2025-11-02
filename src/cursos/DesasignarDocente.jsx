@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Spinner from '../general/Spinner';
 
 const DesasignarDocente = () => {
 
     
     const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
     const location = useLocation();
@@ -20,6 +22,7 @@ const DesasignarDocente = () => {
     }
     const listarUsuarios = async () => {
                 try {
+                    setLoading(true);
                     const urlBase = import.meta.env.VITE_BACKEND_URL;
                     const token = localStorage.getItem("token");
                     const config = {
@@ -45,6 +48,8 @@ const DesasignarDocente = () => {
                             draggable: true,
                             progress: undefined,
                           });
+                } finally {
+                  setLoading(false);
                 }
             };
             listarUsuarios();
@@ -102,52 +107,55 @@ const DesasignarDocente = () => {
 
   return (
     <Container>
-            <ContentWrapper>
-                <Title>Desasignar Docente del Curso</Title>
-                <Description>
-                    Seleccione un profesor para desasignar del curso {curso.nombre}
-                </Description>
+            {loading && <Spinner />}
+            {!loading &&
+              <ContentWrapper>
+                  <Title>Desasignar Docente del Curso</Title>
+                  <Description>
+                      Seleccione un profesor para desasignar del curso {curso.nombre}
+                  </Description>
 
-                <UserCard>
-                    {usuarios.length === 0 ? (
-                        <EmptyListMessage>
-                            Este curso no tiene docentes asignados.
-                        </EmptyListMessage>
-                    ) : (
-                    <UserList>
-                        {usuarios.map((usuario) => (
-                            <UserItem key={usuario.id}>
-                                <Label htmlFor={`teacher-${usuario.id}`}>
-                                    <RadioButton
-                                        type="radio"
-                                        id={`teacher-${usuario.id}`}
-                                        name="selectedTeacher"
-                                        value={usuario.id}
-                                        checked={docenteSeleccionado === usuario.id}
-                                        onChange={handleSelectChange}
-                                    />
-                                    <UserInfo>
-                                        <UserName>{usuario.nombres} {usuario.apellidos}</UserName>
-                                        <UserCedula>{usuario.cedula}</UserCedula>
-                                    </UserInfo>
-                                </Label>
-                            </UserItem>
-                        ))}
-                    </UserList>
-                    )}
-                </UserCard>
+                  <UserCard>
+                      {usuarios.length === 0 ? (
+                          <EmptyListMessage>
+                              Este curso no tiene docentes asignados.
+                          </EmptyListMessage>
+                      ) : (
+                      <UserList>
+                          {usuarios.map((usuario) => (
+                              <UserItem key={usuario.id}>
+                                  <Label htmlFor={`teacher-${usuario.id}`}>
+                                      <RadioButton
+                                          type="radio"
+                                          id={`teacher-${usuario.id}`}
+                                          name="selectedTeacher"
+                                          value={usuario.id}
+                                          checked={docenteSeleccionado === usuario.id}
+                                          onChange={handleSelectChange}
+                                      />
+                                      <UserInfo>
+                                          <UserName>{usuario.nombres} {usuario.apellidos}</UserName>
+                                          <UserCedula>{usuario.cedula}</UserCedula>
+                                      </UserInfo>
+                                  </Label>
+                              </UserItem>
+                          ))}
+                      </UserList>
+                      )}
+                  </UserCard>
 
 
-                <ButtonContainer>
-                    <SaveButton onClick={handleSave} disabled={docenteSeleccionado === null}>
-                        Guardar Cambios
-                    </SaveButton>
-                    <DiscardButton onClick={handleDiscard}>
-                        Descartar
-                    </DiscardButton>
-                </ButtonContainer>
+                  <ButtonContainer>
+                      <SaveButton onClick={handleSave} disabled={docenteSeleccionado === null}>
+                          Guardar Cambios
+                      </SaveButton>
+                      <DiscardButton onClick={handleDiscard}>
+                          Descartar
+                      </DiscardButton>
+                  </ButtonContainer>
 
-            </ContentWrapper>
+              </ContentWrapper>
+            }
         </Container>
   )
 }

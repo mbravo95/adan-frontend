@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled, { css, keyframes } from "styled-components";
 import { toast } from "react-toastify";
 import useAuth from "../hooks/useAuth";
+import Spinner from "../general/Spinner";
 
 const PaginaTarea = () => {
 
@@ -15,6 +16,7 @@ const PaginaTarea = () => {
     const [selectedFileName, setSelectedFileName] = useState(null);
     const [fechaEntrega, setFechaEntrega] = useState("");
     const [fechaLimite, setFechaLimite] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const { profile } = useAuth();
     const navigate = useNavigate();
@@ -22,6 +24,7 @@ const PaginaTarea = () => {
     useEffect(() => {
       const obtenerTarea = async () => {
         try {
+          setLoading(true);
           const urlBase = import.meta.env.VITE_BACKEND_URL;
           const token = localStorage.getItem("token");
           const config = {
@@ -43,6 +46,8 @@ const PaginaTarea = () => {
                     draggable: true,
                     progress: undefined,
                 });
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -136,37 +141,40 @@ const PaginaTarea = () => {
   return (
     <>
       <Container>
-        <ContentWrapper>
-            <Title>{tarea.nombre}</Title>
-            <Description>
-            {tarea.descripcion}
-            </Description>
+        {loading && <Spinner />}
+        {!loading &&
+          <ContentWrapper>
+              <Title>{tarea.nombre}</Title>
+              <Description>
+              {tarea.descripcion}
+              </Description>
 
-            {!mostrarDatos && (
-            <>
-               <ActionButton htmlFor="subir-archivo">
-                    Subir solución
-                </ActionButton>
-                <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
-            </>
-            )}
+              {!mostrarDatos && (
+              <>
+                <ActionButton htmlFor="subir-archivo">
+                      Subir solución
+                  </ActionButton>
+                  <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
+              </>
+              )}
 
-            <CardWrapper isVisible={mostrarDatos}>
-            <ActionCard>
-                <CardTitle>Confirmar Información</CardTitle>
+              <CardWrapper isVisible={mostrarDatos}>
+              <ActionCard>
+                  <CardTitle>Confirmar Información</CardTitle>
 
-                <InfoField>Nombre del Archivo: {selectedFileName}</InfoField>
-                <InfoField>Fecha límite: {fechaLimite}</InfoField>
-                <InfoField>Fecha subida: {fechaEntrega}</InfoField>
+                  <InfoField>Nombre del Archivo: {selectedFileName}</InfoField>
+                  <InfoField>Fecha límite: {fechaLimite}</InfoField>
+                  <InfoField>Fecha subida: {fechaEntrega}</InfoField>
 
-                <ButtonContainer>
-                <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar entrega</ConfirmButton>
-                <CancelCardButton onClick={handleCancelarEntrega}>Cancelar entrega</CancelCardButton>
-                </ButtonContainer>
-            </ActionCard>
-            </CardWrapper>
+                  <ButtonContainer>
+                  <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar entrega</ConfirmButton>
+                  <CancelCardButton onClick={handleCancelarEntrega}>Cancelar entrega</CancelCardButton>
+                  </ButtonContainer>
+              </ActionCard>
+              </CardWrapper>
 
-        </ContentWrapper>
+          </ContentWrapper>
+        }
       </Container>
     </>
   )

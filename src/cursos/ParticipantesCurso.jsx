@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
+import Spinner from "../general/Spinner";
 
 const ParticipantesCurso = () => {
   const { codigo } = useParams();
@@ -189,9 +190,7 @@ const ParticipantesCurso = () => {
         <SectionTitle>Lista de Participantes</SectionTitle>
         
         {loading ? (
-          <PlaceholderMessage>
-            Cargando participantes...
-          </PlaceholderMessage>
+          <Spinner />
         ) : participantes.length > 0 ? (
           <ParticipantsGrid>
             {participantes.map((participante) => (

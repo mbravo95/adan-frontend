@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Spinner from "../general/Spinner";
 
 
 const EditProfile = () => {
@@ -152,63 +153,66 @@ const EditProfile = () => {
   return (
     <Container>
       <ContentWrapper>
-        <MainContent>
-          <ProfileSection>
-            <ProfileImage>
-              👤
-            </ProfileImage>
-            <ProfileName>{nombreCompleto()}</ProfileName>
-            <ChangePhotoText>Cambiar foto de perfil</ChangePhotoText>
-          </ProfileSection>
-          
-          <FormWrapper>
-            <Title>Editar Perfil</Title>
+        {loading && <Spinner />}
+        {!loading &&
+          <MainContent>
+            <ProfileSection>
+              <ProfileImage>
+                👤
+              </ProfileImage>
+              <ProfileName>{nombreCompleto()}</ProfileName>
+              <ChangePhotoText>Cambiar foto de perfil</ChangePhotoText>
+            </ProfileSection>
+            
+            <FormWrapper>
+              <Title>Editar Perfil</Title>
 
-            <FormGroup>
-              <Label>Nombre</Label>
-              <Input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
-                placeholder={loading ? "Cargando..." : "Ingresa tu nombre"}
-                disabled={loading}
-              />
-            </FormGroup>
+              <FormGroup>
+                <Label>Nombre</Label>
+                <Input
+                  type="text"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleInputChange}
+                  placeholder={loading ? "Cargando..." : "Ingresa tu nombre"}
+                  disabled={loading}
+                />
+              </FormGroup>
 
-            <FormGroup>
-              <Label>Apellido</Label>
-              <Input
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleInputChange}
-                placeholder={loading ? "Cargando..." : "Ingresa tu apellido"}
-                disabled={loading}
-              />
-            </FormGroup>
+              <FormGroup>
+                <Label>Apellido</Label>
+                <Input
+                  type="text"
+                  name="apellido"
+                  value={formData.apellido}
+                  onChange={handleInputChange}
+                  placeholder={loading ? "Cargando..." : "Ingresa tu apellido"}
+                  disabled={loading}
+                />
+              </FormGroup>
 
-            <FormGroup>
-              <Label>Fecha de Nacimiento</Label>
-              <Input
-                type="date"
-                name="fechaNacimiento"
-                value={formData.fechaNacimiento}
-                onChange={handleInputChange}
-                disabled={loading}
-              />
-            </FormGroup>
+              <FormGroup>
+                <Label>Fecha de Nacimiento</Label>
+                <Input
+                  type="date"
+                  name="fechaNacimiento"
+                  value={formData.fechaNacimiento}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </FormGroup>
 
-            <ButtonGroup>
-              <SaveButton onClick={handleSave} disabled={saving || loading}>
-                {saving ? "Guardando..." : "Guardar cambios"}
-              </SaveButton>
-              <CancelButton onClick={handleCancel} disabled={saving}>
-                Cancelar
-              </CancelButton>
-            </ButtonGroup>
-          </FormWrapper>
-        </MainContent>
+              <ButtonGroup>
+                <SaveButton onClick={handleSave} disabled={saving || loading}>
+                  {saving ? "Guardando..." : "Guardar cambios"}
+                </SaveButton>
+                <CancelButton onClick={handleCancel} disabled={saving}>
+                  Cancelar
+                </CancelButton>
+              </ButtonGroup>
+            </FormWrapper>
+          </MainContent>
+        }
       </ContentWrapper>
     </Container>
   )

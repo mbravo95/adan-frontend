@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Spinner from "../general/Spinner";
 
 const Perfil = () => {
   const navigate = useNavigate();
@@ -123,56 +124,59 @@ const Perfil = () => {
 
   return (
     <Container>
-      <ContentWrapper>
-        <MainContent>
-          <ProfileSection>
-            <ProfileImage>
-              👤
-            </ProfileImage>
-            <ProfileName>{nombreCompleto()}</ProfileName>
-            <ProfileRole>{userData.rol}</ProfileRole>
-          </ProfileSection>
+      {loading && <Spinner />}
+      {!loading &&
+        <ContentWrapper>
+          <MainContent>
+            <ProfileSection>
+              <ProfileImage>
+                👤
+              </ProfileImage>
+              <ProfileName>{nombreCompleto()}</ProfileName>
+              <ProfileRole>{userData.rol}</ProfileRole>
+            </ProfileSection>
+            
+            <DataSection>
+              <Title>Perfil del Usuario</Title>
+              <UserCard>
+                <DataRow>
+                  <Label>Nombres:</Label>
+                  <Value>{userData.nombres}</Value>
+                </DataRow>
+                <DataRow>
+                  <Label>Apellidos:</Label>
+                  <Value>{userData.apellidos}</Value>
+                </DataRow>
+                <DataRow>
+                  <Label>Correo:</Label>
+                  <Value>{userData.correo}</Value>
+                </DataRow>
+                <DataRow>
+                  <Label>Cédula:</Label>
+                  <Value>{userData.cedula}</Value>
+                </DataRow>
+                <DataRow>
+                  <Label>Fecha de Nacimiento:</Label>
+                  <Value>{userData.fechaNacimiento}</Value>
+                </DataRow>
+                <DataRow>
+                  <Label>Fecha de Ingreso:</Label>
+                  <Value>{userData.fechaIngreso}</Value>
+                </DataRow>
+              </UserCard>
+            </DataSection>
+          </MainContent>
           
-          <DataSection>
-            <Title>Perfil del Usuario</Title>
-            <UserCard>
-              <DataRow>
-                <Label>Nombres:</Label>
-                <Value>{userData.nombres}</Value>
-              </DataRow>
-              <DataRow>
-                <Label>Apellidos:</Label>
-                <Value>{userData.apellidos}</Value>
-              </DataRow>
-              <DataRow>
-                <Label>Correo:</Label>
-                <Value>{userData.correo}</Value>
-              </DataRow>
-              <DataRow>
-                <Label>Cédula:</Label>
-                <Value>{userData.cedula}</Value>
-              </DataRow>
-              <DataRow>
-                <Label>Fecha de Nacimiento:</Label>
-                <Value>{userData.fechaNacimiento}</Value>
-              </DataRow>
-              <DataRow>
-                <Label>Fecha de Ingreso:</Label>
-                <Value>{userData.fechaIngreso}</Value>
-              </DataRow>
-            </UserCard>
-          </DataSection>
-        </MainContent>
-        
-        <ButtonContainer>
-          <EditButton onClick={irEditarPerfil}>
-            Editar perfil
-          </EditButton>
-          <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
-            Cambiar contraseña
-          </EditButton>
-        </ButtonContainer>
-      </ContentWrapper>
+          <ButtonContainer>
+            <EditButton onClick={irEditarPerfil}>
+              Editar perfil
+            </EditButton>
+            <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
+              Cambiar contraseña
+            </EditButton>
+          </ButtonContainer>
+        </ContentWrapper>
+      }
     </Container>
   )
 }

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Spinner from "../general/Spinner";
 
 const MatricularEstudianteCurso = () => {
   const { codigo } = useParams();
@@ -173,9 +174,7 @@ const MatricularEstudianteCurso = () => {
 
           <UsersSection>
             {loading ? (
-              <LoadingMessage>
-                Cargando
-              </LoadingMessage>
+              <Spinner />
             ) : usuariosFiltrados.length > 0 ? (
               <UsersList>
                 {usuariosFiltrados.map((usuario) => (

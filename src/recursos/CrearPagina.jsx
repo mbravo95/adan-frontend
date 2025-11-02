@@ -6,6 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from 'axios';
+import Spinner from '../general/Spinner';
 
 const CrearPagina = () => {
 
@@ -155,49 +156,53 @@ const CrearPagina = () => {
   return (
     <>
         <GlobalCKEditorStyles />
-        <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
-        <Centrar>
-          <Margen>
-            <Label htmlFor="nombre-input">Titulo</Label>
-          </Margen>
-            <Input 
-                  id="nombre-input"
-                  type="text" 
-                  value={nombre} 
-                  onChange={(e) => setNombre(e.target.value)} 
-                  placeholder="Introduce el titulo de la página"
-            />
-        </Centrar >
-        {loading ? (
-                <p>Cargando contenido del editor...</p> 
-            ) : (
-              <DivEditor>
-                  <CKEditor
-                  editor={ ClassicEditor }
-                  config={ {
-                      licenseKey: 'GPL',
-                      plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent ],
-                      toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
-                      initialData: pagina,
-                  } }
-                  onChange={ ( event, editor ) => {
-                      setPagina(editor.getData());
-                  } }
-                  />
-              </DivEditor>
-        )}
-        <CheckboxGroup>
-          <CheckboxLabel htmlFor="task-visible">
-              <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
-              <CustomCheckbox />
-              Visible
-          </CheckboxLabel>
-        </CheckboxGroup>
-        <ButtonGroup>
-            {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
-            {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
-            <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
-        </ButtonGroup>
+
+        {loading && <Spinner />}
+        
+        { !loading &&
+          <>
+            <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
+            <Centrar>
+              <Margen>
+                <Label htmlFor="nombre-input">Titulo</Label>
+              </Margen>
+                <Input 
+                      id="nombre-input"
+                      type="text" 
+                      value={nombre} 
+                      onChange={(e) => setNombre(e.target.value)} 
+                      placeholder="Introduce el titulo de la página"
+                />
+            </Centrar >
+            
+            <DivEditor>
+                <CKEditor
+                editor={ ClassicEditor }
+                config={ {
+                    licenseKey: 'GPL',
+                    plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent ],
+                    toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
+                    initialData: pagina,
+                } }
+                onChange={ ( event, editor ) => {
+                    setPagina(editor.getData());
+                } }
+                />
+            </DivEditor>
+            <CheckboxGroup>
+              <CheckboxLabel htmlFor="task-visible">
+                  <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
+                  <CustomCheckbox />
+                  Visible
+              </CheckboxLabel>
+            </CheckboxGroup>
+            <ButtonGroup>
+                {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
+                {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
+                <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
+            </ButtonGroup>
+          </>
+        }
     </>
   )
 }

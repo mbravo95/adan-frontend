@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ModalConfirmacion from "../general/ModalConfirmacion";
 import { toast } from "react-toastify";
+import Spinner from "../general/Spinner";
 
 const PaginaCurso = () => {
   const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
@@ -46,7 +47,6 @@ const PaginaCurso = () => {
   });
   const [secciones, setSecciones] = useState([]);
   const [recursosPorSeccion, setRecursosPorSeccion] = useState({});
-  const [loading, setLoading] = useState(true);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -127,9 +127,7 @@ const PaginaCurso = () => {
           nombre: "Error al cargar",
           codigo: "---"
         });
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
     // HAY QUE HACER UN ENDPOINT QUE DE SECCIONES DE UN CURSO POR CODIGO
     const obtenerSecciones = async () => {
@@ -416,9 +414,7 @@ const PaginaCurso = () => {
         
         <SectionsContainer>
           {loadingSecciones ? (
-            <LoadingMessage>
-              Cargando secciones...
-            </LoadingMessage>
+            <Spinner />
           ) : secciones.length > 0 ? (
             secciones.map((seccion) => {
               const collapsed = seccionesColapsadas[seccion.id] ?? true;
