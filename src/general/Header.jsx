@@ -125,11 +125,6 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   }
 
-  const irBusquedaCursos = () => {
-    navigate("/busqueda");
-    setIsMenuOpen(false);
-  }
-
   const handleClickOutside = () => {
     setIsMenuOpen(false);
   }
@@ -157,9 +152,6 @@ const Header = () => {
                 </NavButton>
                 <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
                   Crear Usuario
-                </NavButton> 
-                <NavButton textcolor={textcolor} onClick={irBusquedaCursos}>
-                  Buscar Cursos
                 </NavButton> 
                 <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
                   Buscar Usuarios
