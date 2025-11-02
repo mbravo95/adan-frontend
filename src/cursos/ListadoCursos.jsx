@@ -228,7 +228,6 @@ const ListadoCursos = () => {
         const response = await axios.get(`${urlBase}/cursos`, config);
         setCursos(response.data);
         setCursosFiltrados(response.data); 
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
