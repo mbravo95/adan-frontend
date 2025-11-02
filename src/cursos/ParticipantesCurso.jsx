@@ -2,6 +2,8 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import ModalConfirmacion from "../general/ModalConfirmacion";
 
 const ParticipantesCurso = () => {
   const { codigo } = useParams();
@@ -19,6 +21,8 @@ const ParticipantesCurso = () => {
   );
   const [participantes, setParticipantes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userDesmatricularId, setUserDesmatricularId] = useState(null);
 
   const prepararParticipantes = (estudiantes, profesores) => {
     const estudiantesConRol = estudiantes.map(estudiante => ({
@@ -41,7 +45,6 @@ const ParticipantesCurso = () => {
   useEffect(() => {
     const obtenerDatosCurso = async () => {
       try {
-          // Si no tenemos los datos, los obtenemos de la API
           console.log("Obteniendo datos del curso desde la API...");
           const urlBase = import.meta.env.VITE_BACKEND_URL;
           const token = localStorage.getItem("token");
@@ -103,11 +106,72 @@ const ParticipantesCurso = () => {
     navigate(`/curso/${codigo}`);
   };
 
+  const handleDesmatricular = async () => {
+        if (!userDesmatricularId) return;
+    
+        setLoading(true);
+    
+        try {    
+          const urlBase = import.meta.env.VITE_BACKEND_URL;
+          const token = localStorage.getItem("token");
+          const config = {
+              headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+              },
+          };
+          const response = await axios.post(`${urlBase}/cursos/desmatricularEstudiante`, { idUsuario: userDesmatricularId, idCurso: cursoActual.id }, config);
+          console.log(response);
+          toast.success("Estudiante desmatriculado exitosamente", {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+          });
+          setParticipantes(participantes.filter(part => part.id != userDesmatricularId));
+          handleCancelar();
+        } catch (error) {
+          console.error("Error al desmatricular el estudiante:", error);
+          toast.error("Ocurrió un error al desmatricular el estudiante", {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+          });
+        } finally {
+          setLoading(false);
+        }
+  }
+
+  const handleCancelar = () => {
+    setIsModalOpen(false);
+    setUserDesmatricularId(null);
+  };
+
+   const desmatricular = (idUsuario) => {
+    setUserDesmatricularId(idUsuario);
+    setIsModalOpen(true);
+  };
+
   return (
     <Container>
       <BackButton onClick={volverAlCurso}>
         ← Volver al curso
       </BackButton>
+
+      <ModalConfirmacion
+              isOpen={isModalOpen}
+              message={`¿Estás seguro de que quieres desmatricular este estudiante?`}
+              onConfirm={handleDesmatricular}
+              onCancel={handleCancelar}
+              isLoading={loading}
+            />
       
       <Header>
         <div>
@@ -132,11 +196,20 @@ const ParticipantesCurso = () => {
           <ParticipantsGrid>
             {participantes.map((participante) => (
               <ParticipantCard key={participante.id}>
-                <ParticipantName>{participante.nombres}</ParticipantName>
-                <ParticipantEmail>{participante.correo}</ParticipantEmail>
-                <ParticipantRole role={participante.rol}>
-                  {participante.rol}
-                </ParticipantRole>
+                <ParticipantInfo>
+                  <ParticipantName>{participante.nombres}</ParticipantName>
+                  <ParticipantEmail>{participante.correo}</ParticipantEmail>
+                  <ParticipantRole role={participante.rol}>
+                    {participante.rol}
+                  </ParticipantRole>
+                </ParticipantInfo>
+                {participante.rol === 'ESTUDIANTE' && (
+                  <UnenrollButton 
+                    onClick={() => desmatricular(participante.id)}
+                  >
+                    Desmatricular
+                  </UnenrollButton>
+                )}
               </ParticipantCard>
             ))}
           </ParticipantsGrid>
@@ -230,9 +303,36 @@ const ParticipantCard = styled.div`
   padding: 20px;
   transition: all 0.2s ease;
   
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ParticipantInfo = styled.div`
+  flex-grow: 1; 
+`;
+
+const UnenrollButton = styled.button`
+  background-color: #FF5722;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 15px;
+  
+  &:hover {
+    background-color: #e64a19;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 `;
 
