@@ -2,6 +2,7 @@ import styled, { css, keyframes } from 'styled-components';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import useAuth from "../hooks/useAuth";
 
 
 const ListadoCursos = () => {
@@ -13,6 +14,7 @@ const ListadoCursos = () => {
 
   const rol = localStorage.getItem("tipo");
   const navigate = useNavigate();
+  const { profile } = useAuth();
 
   const toggleFilter = () => {
     setIsButtonActive(false);
@@ -31,15 +33,24 @@ const ListadoCursos = () => {
           },
         };
         const response = await axios.get(`${urlBase}/cursos`, config);
-        setCursos(response.data);
-        setCursosFiltrados(response.data); 
+        const tipo = localStorage.getItem("tipo");
+        if(tipo == "USUARIO"){
+          if(profile.id) {
+            const filtrados = response.data.filter(curso => curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id) || curso.estudiantes.some(cursoEstudiante => cursoEstudiante.id == profile.id));
+            setCursos(filtrados);
+            setCursosFiltrados(filtrados); 
+          }
+        } else {
+          setCursos(response.data);
+          setCursosFiltrados(response.data);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
     cargarCursos();
-  }, []);
+  }, [profile]);
 
 
   const filtrarCursos = async () => {
@@ -86,7 +97,20 @@ const ListadoCursos = () => {
         return `${profesor.nombres} ${profesor.apellidos}`;
     });
     return nombresCompletos.join(', ');
-};
+  };
+
+  const rolEnCurso = (curso) => {
+    const tipo = localStorage.getItem("tipo");
+
+    if(tipo == "USUARIO"){
+      if(curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id))
+        return "PROFESOR";
+      else
+      return "ESTUDIANTE";
+    } else {
+      return "SIN ROL"
+    }
+  }
 
 
   return (
@@ -119,6 +143,7 @@ const ListadoCursos = () => {
                 <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
                 <CourseMeta>{curso.turno}</CourseMeta>
                 <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
+                <CourseMeta>{rolEnCurso(curso)}</CourseMeta>
               </Details>
             </CourseCard>
           ))}

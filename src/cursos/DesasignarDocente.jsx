@@ -179,7 +179,6 @@ const Title = styled.h1`
   color: #333;
   margin-bottom: 10px;
   letter-spacing: 1px;
-  font-family: 'Inter', sans-serif;
   font-weight: 800;
   text-align: center;
 `;

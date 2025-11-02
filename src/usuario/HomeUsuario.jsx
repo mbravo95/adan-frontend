@@ -93,7 +93,6 @@ const Title = styled.h1`
   color: #333;
   margin-bottom: 10px;
   letter-spacing: 1px;
-  font-family: 'Inter', sans-serif;
   font-weight: 800;
   text-align: center;
 `;
@@ -223,7 +222,6 @@ const ActionText = styled.span`
   font-size: 1em;
   font-weight: 600;
   color: #333;
-  font-family: 'Inter', sans-serif;
   
   @media (max-width: 600px) {
     font-size: 0.7em;

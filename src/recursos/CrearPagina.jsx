@@ -217,7 +217,6 @@ const GlobalCKEditorStyles = createGlobalStyle`
 const Title = styled.h1`
   font-size: 1.5em;
   color: black;
-  font-family: 'Roboto', sans-serif;
   text-align: center;
 `;
 
@@ -271,7 +270,6 @@ const Label = styled.label`
   font-weight: 600;
   color: #1e1e1e;
   font-size: 16px;
-  font-family: 'Arial', sans-serif;
   min-width: 80px;
   text-align: right;
 `;

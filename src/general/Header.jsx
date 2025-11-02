@@ -9,7 +9,7 @@ const Header = () => {
   const [userName, setUserName] = useState("Usuario");
   const navigate = useNavigate();
   const location = useLocation();
-  const { setProfile, profile } = useAuth();
+  const { setProfile } = useAuth();
   
   const getHeaderColors = () => {
     const path = location.pathname;

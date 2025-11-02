@@ -7,7 +7,6 @@ import CrearCurso from "./cursos/CrearCurso";
 import HomeUsuario from "./usuario/HomeUsuario";
 import EditProfile from "./usuario/EditProfile";
 import CrearUsuario from "./usuario/CrearUsuario";
-import CursosUsuario from "./cursos/CursosUsuario";
 import PaginaCurso from "./cursos/PaginaCurso";
 import Perfil from "./usuario/Perfil";
 import CrearSeccion from "./seccion/CrearSeccion";
@@ -29,6 +28,7 @@ import AsignarDocente from "./cursos/AsignarDocente";
 import DesasignarDocente from "./cursos/DesasignarDocente";
 import Busqueda from "./usuario/Busqueda";
 import HomeMensajes from "./mensajes/HomeMensajes";
+import GlobalStyles from "./general/GlobalStyles";
 
 function App() {
 
@@ -36,6 +36,7 @@ function App() {
 
   return (
     <>
+      <GlobalStyles />
       <AuthProvider>
         <ToastContainer />
         <BrowserRouter>
@@ -51,8 +52,7 @@ function App() {
             </Route>
             <Route element={<RutaProtegidaLayout/>}>
               <Route path="/home" element={<HomeUsuario />} />
-              <Route path="/busqueda" element={<ListadoCursos />} />
-              <Route path="/cursos" element={<CursosUsuario />} />
+              <Route path="/cursos" element={<ListadoCursos />} />
               <Route path="/mensajes" element={<HomeMensajes />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />

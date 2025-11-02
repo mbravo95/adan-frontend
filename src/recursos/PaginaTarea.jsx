@@ -210,7 +210,6 @@ const Title = styled.h1`
   font-size: 2.5em;
   color: #333;
   letter-spacing: 1px;
-  font-family: 'Inter', sans-serif;
   font-weight: 800;
   margin: 0;
 `;
