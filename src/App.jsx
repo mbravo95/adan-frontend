@@ -23,6 +23,8 @@ import CrearTarea from "./recursos/CrearTarea";
 import CrearForo from "./recursos/CrearForo";
 import HomeCurso from "./cursos/HomeCurso";
 import CrearPagina from "./recursos/CrearPagina";
+import CalificacionEstudianteCurso from "./cursos/CalificacionPerfilEstudiante";
+import CalificarEstudiante from "./cursos/CalificarEstudiante";
 
 function App() {
 
@@ -60,6 +62,8 @@ function App() {
               <Route path="/curso/:codigo/:seccion/crear-pagina" element={<CrearPagina />} />
               <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
+              <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
+              <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

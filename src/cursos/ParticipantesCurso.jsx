@@ -141,9 +141,8 @@ const ParticipantesCurso = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Recibir datos del curso desde PaginaCurso o cargar por defecto
   const cursoDesdePagina = location.state?.cursoActual;
-  
+
   const [cursoActual, setCursoActual] = useState(
     cursoDesdePagina || {
       nombre: "Cargando...",
@@ -154,64 +153,69 @@ const ParticipantesCurso = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const obtenerDatosCurso = async () => {
+    const obtenerDatosCursoYParticipantes = async () => {
       try {
-        // Si ya tenemos los datos del curso desde PaginaCurso, los usamos
-        if (cursoDesdePagina) {
-          console.log("Usando datos del curso desde PaginaCurso:", cursoDesdePagina);
-          setCursoActual(cursoDesdePagina);
-        } else {
-          // Si no tenemos los datos, los obtenemos de la API
-          console.log("Obteniendo datos del curso desde la API...");
-          const urlBase = import.meta.env.VITE_BACKEND_URL;
-          const token = localStorage.getItem("token");
-          
-          if (!token) {
-            console.error("No hay token");
-            return;
-          }
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No hay token");
+          return;
+        }
 
+        let cursoId = null;
+        let cursoInfo = cursoDesdePagina;
+        if (!cursoInfo) {
           const cursoResponse = await axios.get(`${urlBase}/cursos/buscar?texto=${codigo}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
-
           const cursoEncontrado = Array.isArray(cursoResponse.data) ? cursoResponse.data[0] : cursoResponse.data;
-          
-          if (cursoEncontrado) {
-            setCursoActual({
-              id: cursoEncontrado.id,
-              nombre: cursoEncontrado.nombre || "Curso sin nombre",
-              codigo: cursoEncontrado.codigo || "Sin código",
-              ...cursoEncontrado
-            });
-          } else {
-            setCursoActual({
-              id: null,
-              nombre: "Curso no encontrado",
-              codigo: codigo
-            });
-          }
+          cursoInfo = cursoEncontrado;
+        }
+        if (cursoInfo) {
+          setCursoActual({
+            id: cursoInfo.id,
+            nombre: cursoInfo.nombre || "Curso sin nombre",
+            codigo: cursoInfo.codigo || "Sin código",
+            ...cursoInfo
+          });
+          cursoId = cursoInfo.id;
+        } else {
+          setCursoActual({
+            id: null,
+            nombre: "Curso no encontrado",
+            codigo: codigo
+          });
         }
 
-        setParticipantes([
-        ]);
-        
+        if (cursoId) {
+          const participantesResponse = await axios.get(`${urlBase}/cursos/${cursoId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          const estudiantes = participantesResponse.data.estudiantes || [];
+          setParticipantes(estudiantes);
+        } else {
+          setParticipantes([]);
+        }
       } catch (error) {
         console.error("Error al obtener datos:", error);
         setCursoActual({
           nombre: "Error al cargar",
           codigo: codigo
         });
+        setParticipantes([]);
       } finally {
         setLoading(false);
       }
     };
 
     if (codigo) {
-      obtenerDatosCurso();
+      obtenerDatosCursoYParticipantes();
     }
   }, [codigo, cursoDesdePagina]);
 
@@ -222,7 +226,7 @@ const ParticipantesCurso = () => {
   };
 
   const volverAlCurso = () => {
-    navigate(`/curso/${codigo}`);
+  navigate(`/curso/${codigo}`);
   };
 
   return (
@@ -254,11 +258,13 @@ const ParticipantesCurso = () => {
           <ParticipantsGrid>
             {participantes.map((participante) => (
               <ParticipantCard key={participante.id}>
-                <ParticipantName>{participante.nombre}</ParticipantName>
-                <ParticipantEmail>{participante.email}</ParticipantEmail>
-                <ParticipantRole role={participante.rol}>
-                  {participante.rol}
-                </ParticipantRole>
+                <ParticipantName
+                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => navigate(`/curso/${cursoActual.id}/estudiante/${participante.id}/calificacion`)}
+                >
+                  {participante.nombres} {participante.apellidos}
+                </ParticipantName>
+                <ParticipantEmail>{participante.correo}</ParticipantEmail>
               </ParticipantCard>
             ))}
           </ParticipantsGrid>
