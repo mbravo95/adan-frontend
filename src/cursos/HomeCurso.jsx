@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
+import Spinner from "../general/Spinner";
 
 const HomeCurso = () => {
   const rol = localStorage.getItem("tipo");
@@ -84,7 +85,7 @@ const HomeCurso = () => {
   };
 
   if (rol !== "ADMINISTRADOR") {
-    return <Navigate to="/usuario" />;
+    return <Navigate to="/home" />;
   }
 
   const handleAbrirModal = (id) => {
@@ -154,10 +155,10 @@ const HomeCurso = () => {
               />
         
         {loading && (
-          <LoadingMessage>
-            Cargando cursos...
-          </LoadingMessage>
+          <Spinner />
         )}
+
+        
         
         {error && (
           <ErrorMessage>

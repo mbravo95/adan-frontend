@@ -13,6 +13,11 @@ const AsignarDocente = () => {
     const curso = location.state.curso;
 
     useEffect(() => {
+        const rol = localStorage.getItem("tipo");
+        if (rol !== "ADMINISTRADOR") {
+          return <Navigate to="/home" />;
+        }
+      
         const listarUsuarios = async () => {
             try {
                 const urlBase = import.meta.env.VITE_BACKEND_URL;

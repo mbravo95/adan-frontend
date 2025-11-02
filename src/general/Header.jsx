@@ -109,6 +109,10 @@ const Header = () => {
     navigate("/cursos");
   }
 
+  const irAlHome = () => {
+    navigate("/home");
+  }
+
   const irAltaCursos = () => {
     navigate("/crear-curso");
   }
@@ -140,7 +144,7 @@ const Header = () => {
   return (
     <>
       <HeaderContainer bgcolor={bgcolor}>
-        <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irCursos} />
+        <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irAlHome} />
         
         <NavigationSection>
             <NavButton textcolor={textcolor} onClick={irCursos}>

@@ -14,6 +14,8 @@ const CrearCurso = () => {
   const [anio, setAnio] = useState("");
   const [loading, setLoading] = useState(false);
 
+  
+  
   const crear = async () => {
     if (!nombre || !turno || !codigo || !anio) {
       toast.error("Debe completar todos los campos", {
@@ -81,7 +83,7 @@ const CrearCurso = () => {
   };
 
   if (rol !== "ADMINISTRADOR") {
-    return <Navigate to="/usuario" />;
+    return <Navigate to="/home" />;
   }
 
   return (
