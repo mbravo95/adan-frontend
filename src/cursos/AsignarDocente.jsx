@@ -10,16 +10,17 @@ const AsignarDocente = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(false);
     
+    const rol = localStorage.getItem("tipo");
+    if (rol !== "ADMINISTRADOR") {
+      return <Navigate to="/home" />;
+    }
+    
+    
     const navigate = useNavigate();
     const location = useLocation();
     const curso = location.state.curso;
 
     useEffect(() => {
-        const rol = localStorage.getItem("tipo");
-        if (rol !== "ADMINISTRADOR") {
-          return <Navigate to="/home" />;
-        }
-      
         const listarUsuarios = async () => {
             try {
                 setLoading(true);

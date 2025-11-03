@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
 import * as S from './EstilosPaginaCurso';
+import useCursoData from "../hooks/useCursoData";
+import Spinner from "../general/Spinner";
 
 const Secciones = ({ 
     seccion, 
@@ -11,10 +13,13 @@ const Secciones = ({
     cursoCodigo, 
     handleAbrirModal,
     setLoadingSecciones,
-    setRecursosPorSeccion,
+    setRecursosPorSeccion
 }) => {
     
     const navigate = useNavigate();
+
+    const { esProfesor, loadingSecciones } = useCursoData(cursoCodigo);
+    const rol = localStorage.getItem("tipo");
 
     const agregarTarea = () => navigate(`/curso/${cursoCodigo}/${seccion.id}/crear-tarea`);
     const agregarForo = () => navigate(`/curso/${cursoCodigo}/${seccion.id}/crear-foro`);
@@ -79,44 +84,47 @@ const Secciones = ({
                 </S.SectionTitleContainer>
             </S.SectionHeader>
             
-            <S.ButtonGroup style={{ marginBottom: collapsed ? '0' : '10px' }}>
-                <S.ActionButton 
-                    variant="success" 
-                    onClick={(e) => { e.stopPropagation(); agregarTarea(); }}
-                >
-                    Agregar Tarea
-                </S.ActionButton>
-                <S.ActionButton 
-                    variant="info" 
-                    onClick={(e) => { e.stopPropagation(); irSubirMaterial(); }}
-                >
-                    Subir Material
-                </S.ActionButton>
-                <S.ActionButton 
-                    variant="success" 
-                    onClick={(e) => { e.stopPropagation(); agregarForo(); }}
-                >
-                    Agregar Foro
-                </S.ActionButton>
-                <S.ActionButton 
-                    variant="success" 
-                    onClick={(e) => { e.stopPropagation(); agregarPagina(); }}
-                >
-                    Agregar Pagina
-                </S.ActionButton>
-                <S.ActionButton 
-                    variant="warning" 
-                    onClick={(e) => { e.stopPropagation(); modificarSeccion(seccion.id); }}
-                >
-                    Modificar sección
-                </S.ActionButton>
-                <S.ActionButton 
-                    variant="danger" 
-                    onClick={handleEliminarSeccionClick}
-                >
-                    Eliminar sección
-                </S.ActionButton>
-            </S.ButtonGroup>
+            {loadingSecciones && <Spinner />}
+            {((esProfesor || rol == "ADMINISTRADOR") && !loadingSecciones) &&
+                <S.ButtonGroup style={{ marginBottom: collapsed ? '0' : '10px' }}>
+                    <S.ActionButton 
+                        variant="success" 
+                        onClick={(e) => { e.stopPropagation(); agregarTarea(); }}
+                    >
+                        Agregar Tarea
+                    </S.ActionButton>
+                    <S.ActionButton 
+                        variant="info" 
+                        onClick={(e) => { e.stopPropagation(); irSubirMaterial(); }}
+                    >
+                        Subir Material
+                    </S.ActionButton>
+                    <S.ActionButton 
+                        variant="success" 
+                        onClick={(e) => { e.stopPropagation(); agregarForo(); }}
+                    >
+                        Agregar Foro
+                    </S.ActionButton>
+                    <S.ActionButton 
+                        variant="success" 
+                        onClick={(e) => { e.stopPropagation(); agregarPagina(); }}
+                    >
+                        Agregar Pagina
+                    </S.ActionButton>
+                    <S.ActionButton 
+                        variant="warning" 
+                        onClick={(e) => { e.stopPropagation(); modificarSeccion(seccion.id); }}
+                    >
+                        Modificar sección
+                    </S.ActionButton>
+                    <S.ActionButton 
+                        variant="danger" 
+                        onClick={handleEliminarSeccionClick}
+                    >
+                        Eliminar sección
+                    </S.ActionButton>
+                </S.ButtonGroup>
+            }
 
             <S.SectionContent collapsed={collapsed}>
                 <S.SectionInfo>
@@ -143,18 +151,22 @@ const Secciones = ({
                                     ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                         <>
                                             <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
-                                            <button
-                                                style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                                onClick={() => editarPagina(recurso.id)}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                                onClick={(e) => handleEliminarPaginaClick(e, recurso.id)}
-                                            >
-                                                Eliminar
-                                            </button>
+                                            {(esProfesor || rol == "ADMINISTRADOR") &&
+                                                <>
+                                                    <button
+                                                        style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                                        onClick={() => editarPagina(recurso.id)}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                                        onClick={(e) => handleEliminarPaginaClick(e, recurso.id)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </>
+                                            }
                                         </>
                                     ) : recurso.tipoRecurso === 'TAREA' ? (
                                         <S.Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</S.Recurso>

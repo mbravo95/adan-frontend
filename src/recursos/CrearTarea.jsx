@@ -1,8 +1,9 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
+import useCursoData from "../hooks/useCursoData";
 
 const CrearTarea = () => {
 
@@ -24,6 +25,12 @@ const CrearTarea = () => {
       cursoid = params.codigo;
     }
     const navigate = useNavigate();
+
+    const { esProfesor, loadingSecciones  } = useCursoData(cursoid);
+    const rol = localStorage.getItem("tipo");
+    if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+      return <Navigate to="/home" />;
+    }
 
   const crearTarea = async () => {
     if(nombre == "" || descripcion == "" || fechaInicio == "" || fechaFin == 0){

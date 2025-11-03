@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
 import Spinner from "../general/Spinner";
+import useCursoData from "../hooks/useCursoData";
 
 const ParticipantesCurso = () => {
   const { codigo } = useParams();
@@ -24,6 +25,9 @@ const ParticipantesCurso = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userDesmatricularId, setUserDesmatricularId] = useState(null);
+
+  const { esProfesor } = useCursoData(codigo);
+  const rol = localStorage.getItem("tipo");
 
   const prepararParticipantes = (estudiantes, profesores) => {
     const estudiantesConRol = estudiantes.map(estudiante => ({
@@ -181,9 +185,11 @@ const ParticipantesCurso = () => {
             {cursoActual.nombre} - Código: {cursoActual.codigo}
           </CourseInfo>
         </div>
+        { (esProfesor || rol == "ADMINISTRADOR") &&
         <EnrollButton onClick={irMatricularEstudiante}>
           + Matricular Estudiante
         </EnrollButton>
+        }
       </Header>
 
       <ParticipantsSection>
@@ -202,7 +208,7 @@ const ParticipantesCurso = () => {
                     {participante.rol}
                   </ParticipantRole>
                 </ParticipantInfo>
-                {participante.rol === 'ESTUDIANTE' && (
+                {participante.rol === 'ESTUDIANTE' && (esProfesor || rol == "ADMINISTRADOR") && (
                   <UnenrollButton 
                     onClick={() => desmatricular(participante.id)}
                   >

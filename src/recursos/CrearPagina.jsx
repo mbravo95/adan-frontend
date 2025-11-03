@@ -2,11 +2,12 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent } from 'ckeditor5';
 import 'ckeditor5/ckeditor5.css';
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from 'axios';
 import Spinner from '../general/Spinner';
+import useCursoData from "../hooks/useCursoData";
 
 const CrearPagina = () => {
 
@@ -17,6 +18,12 @@ const CrearPagina = () => {
 
     const navigate = useNavigate();
     const { codigo, seccion, idpagina } = useParams();
+
+    const { esProfesor, loadingSecciones  } = useCursoData(codigo);
+    const rol = localStorage.getItem("tipo");
+    if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+      return <Navigate to="/home" />;
+    }
 
     useEffect(() => {
         const fetchPagina = async () => {

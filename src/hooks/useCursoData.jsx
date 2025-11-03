@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import useAuth from "../hooks/useAuth"; 
 
 const initialCursoState = {
     id: null,
@@ -15,6 +16,40 @@ const useCursoData = (codigo) => {
     const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
 
   
+    const { profile } = useAuth();
+    const {nombres, apellidos} = profile;
+    const nombreCompleto = `${nombres} ${apellidos}`;
+    
+    const esProfesor = useMemo(() => {
+        const listaProfesores = cursoActual.profesores;
+
+        console.log(listaProfesores);
+        
+        if (!listaProfesores || loadingSecciones) {
+            return false;
+        }
+        
+        let nombresProfesores;
+
+        if (Array.isArray(listaProfesores)) {
+            nombresProfesores = listaProfesores.map(p => p.trim().toUpperCase());
+        } else if (typeof listaProfesores === 'string') {
+            nombresProfesores = listaProfesores
+                .split(',')
+                .map(p => p.trim().toUpperCase());
+        } else {
+            return false;
+        }
+
+        console.log('Pase los controles');
+
+        const usuarioMayusculas = nombreCompleto.trim().toUpperCase();
+        console.log(`Resultado de la busqueda: ${nombresProfesores.includes(usuarioMayusculas)}`);
+        console.log(`Usuario: ${usuarioMayusculas}`);
+        console.log(`Profesores: ${nombresProfesores}`);
+        return nombresProfesores.includes(usuarioMayusculas);
+    },[cursoActual.profesores, nombreCompleto, loadingSecciones]);
+    
     const obtenerRecursosDeSeccion = async (id) => {
       try {
         const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -125,7 +160,8 @@ const useCursoData = (codigo) => {
         setSecciones,
         setRecursosPorSeccion,
         toggleSeccion,
-        refetchDatos
+        refetchDatos,
+        esProfesor
     };
 };
 

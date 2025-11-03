@@ -1,14 +1,21 @@
 import { useState } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
+import useCursoData from "../hooks/useCursoData";
 
 
 
 const SubirMaterial = () => {
   const { codigo, seccion } = useParams();
   const navigate = useNavigate();
+
+  const { esProfesor, loadingSecciones  } = useCursoData(codigo);
+  const rol = localStorage.getItem("tipo");
+  if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+    return <Navigate to="/home" />;
+  }
   
   const [formData, setFormData] = useState({
     titulo: "",

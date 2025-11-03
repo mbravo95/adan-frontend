@@ -3,7 +3,9 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 import Spinner from "../general/Spinner";
+import useCursoData from "../hooks/useCursoData";
 
 const MatricularEstudianteCurso = () => {
   const { codigo } = useParams();
@@ -24,6 +26,12 @@ const MatricularEstudianteCurso = () => {
   const [filtroXedula, setFiltroCedula] = useState("");
   const [loading, setLoading] = useState(true);
   const [matriculando, setMatriculando] = useState({});
+
+  const { esProfesor, loadingSecciones  } = useCursoData(codigo);
+  const rol = localStorage.getItem("tipo");
+  if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+    return <Navigate to="/home" />;
+  }
 
   useEffect(() => {
     const obtenerDatos = async () => {

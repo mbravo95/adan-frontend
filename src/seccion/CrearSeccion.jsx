@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import useCursoData from "../hooks/useCursoData";
 
 
 const CrearSeccion = () => {
@@ -11,6 +12,12 @@ const CrearSeccion = () => {
   
   const [titulo, setTitulo] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { esProfesor, loadingSecciones } = useCursoData(codigo);
+  const rol = localStorage.getItem("tipo");
+  if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+    return <Navigate to="/home" />;
+  }
 
   const crear = async () => {
     if (!titulo) {

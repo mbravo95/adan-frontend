@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
 import Spinner from "../general/Spinner";
 import useCursoData from "../hooks/useCursoData"; 
 import Secciones from "./Secciones";
-import * as S from "./EstilosPaginaCurso"; 
+import * as S from "./EstilosPaginaCurso";
 
 const PaginaCurso = () => {
     const { codigo } = useParams();
@@ -23,7 +23,11 @@ const PaginaCurso = () => {
         setSecciones, 
         setRecursosPorSeccion,
         refetchDatos,
+        esProfesor
     } = useCursoData(codigo); 
+
+
+    const rol = localStorage.getItem("tipo");
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -146,58 +150,60 @@ const PaginaCurso = () => {
                 onCancel={handleCancelar}
                 isLoading={loadingSecciones}
             />
-            
-            <S.MainContent>
-                <S.CourseInfoHeader>
-                    <S.CourseInfoGrid>
-                        <S.InfoSection>
-                            <S.InfoLabel>Nombre del Curso</S.InfoLabel>
-                            <S.InfoValue>{cursoActual.nombre}</S.InfoValue>
-                        </S.InfoSection>
-                        <S.InfoSection>
-                            <S.InfoLabel>Profesores</S.InfoLabel>
-                            <S.InfoValue>{Array.isArray(cursoActual.profesores) 
-                                          ? cursoActual.profesores.join(', ') 
-                                          : cursoActual.profesores || "Sin profesores"}
-                            </S.InfoValue>
-                        </S.InfoSection>
-                        <S.InfoSection>
-                            <S.InfoLabel>Turno</S.InfoLabel>
-                            <S.InfoValue>{cursoActual.turno || "Sin turno"}</S.InfoValue>
-                        </S.InfoSection>
-                    </S.CourseInfoGrid>
-                </S.CourseInfoHeader>
-                
-                <S.AddSectionButton onClick={irAltaSeccion}>
-                    + Agregar Sección
-                </S.AddSectionButton>
-                
-                <S.SectionsContainer>
-                    {loadingSecciones ? (
-                        <Spinner />
-                    ) : secciones.length > 0 ? (
-                        secciones.map((seccion) => (
-                            <Secciones
-                                key={seccion.id}
-                                seccion={seccion}
-                                recursos={recursosPorSeccion[seccion.id] || []}
-                                collapsed={seccionesColapsadas[seccion.id] ?? true}
-                                toggle={toggleSeccion}
-                                cursoCodigo={codigo}
-                                handleAbrirModal={handleAbrirModal} // Pasa el handler de la modal
-                                setLoadingSecciones={setLoadingSecciones}
-                                setRecursosPorSeccion={setRecursosPorSeccion} // Permite actualizar el estado de recursos
-                            />
-                        ))
-                    ) : (
-                        <S.NoSectionsMessage>
-                            <h3>No hay secciones creadas</h3>
-                            <p>Aún no se han creado secciones para este curso.</p>
-                            <p>Utiliza el botón "Agregar Sección" para crear la primera sección.</p>
-                        </S.NoSectionsMessage>
-                    )}
-                </S.SectionsContainer>
-            </S.MainContent>
+                <S.MainContent>
+                    <S.CourseInfoHeader>
+                        <S.CourseInfoGrid>
+                            <S.InfoSection>
+                                <S.InfoLabel>Nombre del Curso</S.InfoLabel>
+                                <S.InfoValue>{cursoActual.nombre}</S.InfoValue>
+                            </S.InfoSection>
+                            <S.InfoSection>
+                                <S.InfoLabel>Profesores</S.InfoLabel>
+                                <S.InfoValue>{Array.isArray(cursoActual.profesores) 
+                                            ? cursoActual.profesores.join(', ') 
+                                            : cursoActual.profesores || "Sin profesores"}
+                                </S.InfoValue>
+                            </S.InfoSection>
+                            <S.InfoSection>
+                                <S.InfoLabel>Turno</S.InfoLabel>
+                                <S.InfoValue>{cursoActual.turno || "Sin turno"}</S.InfoValue>
+                            </S.InfoSection>
+                        </S.CourseInfoGrid>
+                    </S.CourseInfoHeader>
+                    
+                    {(esProfesor || rol == "ADMINISTRADOR") &&
+                        <S.AddSectionButton onClick={irAltaSeccion}>
+                            + Agregar Sección
+                        </S.AddSectionButton>
+                    }
+                    
+                    {loadingSecciones && <Spinner />}
+                    {!loadingSecciones &&
+                        <S.SectionsContainer>
+                            { secciones.length > 0 ? (
+                                secciones.map((seccion) => (
+                                    <Secciones
+                                        key={seccion.id}
+                                        seccion={seccion}
+                                        recursos={recursosPorSeccion[seccion.id] || []}
+                                        collapsed={seccionesColapsadas[seccion.id] ?? true}
+                                        toggle={toggleSeccion}
+                                        cursoCodigo={codigo}
+                                        handleAbrirModal={handleAbrirModal} // Pasa el handler de la modal
+                                        setLoadingSecciones={setLoadingSecciones}
+                                        setRecursosPorSeccion={setRecursosPorSeccion} // Permite actualizar el estado de recursos
+                                    />
+                                ))
+                            ) : (
+                                <S.NoSectionsMessage>
+                                    <h3>No hay secciones creadas</h3>
+                                    <p>Aún no se han creado secciones para este curso.</p>
+                                    <p>Utiliza el botón "Agregar Sección" para crear la primera sección.</p>
+                                </S.NoSectionsMessage>
+                            )}
+                        </S.SectionsContainer>
+                    }
+                </S.MainContent>
         </S.Container>
     )
 }

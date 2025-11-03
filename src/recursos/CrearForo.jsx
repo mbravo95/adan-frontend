@@ -1,8 +1,9 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
+import useCursoData from "../hooks/useCursoData";
 
 const CrearForo = () => {
 
@@ -11,6 +12,12 @@ const CrearForo = () => {
 
   const { codigo, seccion } = useParams();
   const navigate = useNavigate();
+
+  const { esProfesor, loadingSecciones  } = useCursoData(codigo);
+  const rol = localStorage.getItem("tipo");
+  if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+    return <Navigate to="/home" />;
+  }
 
     const crearForo = async () => {
         if(nombre == ""){
