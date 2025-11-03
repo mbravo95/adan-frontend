@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -23,16 +23,26 @@ const PaginaCurso = () => {
         setSecciones, 
         setRecursosPorSeccion,
         refetchDatos,
-        esProfesor
-    } = useCursoData(codigo); 
-
-
-    const rol = localStorage.getItem("tipo");
+        esProfesor,
+        perteneceAlCursoState
+    } = useCursoData(codigo);
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [idEliminar, setIdEliminar] = useState(null);
     const [tipoEliminar, setTipoEliminar] = useState(null);
+
+
+    const rol = localStorage.getItem("tipo");
+
+    if (loadingSecciones) {
+        return "Cargando...";
+    }
+    
+    console.log(perteneceAlCursoState);
+    if (!perteneceAlCursoState) {
+        return <Navigate to="/home" />; 
+    }
     
 
     const irAltaSeccion = () => navigate(`/curso/${codigo}/alta-seccion`);

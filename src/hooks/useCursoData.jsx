@@ -14,10 +14,11 @@ const useCursoData = (codigo) => {
     const [recursosPorSeccion, setRecursosPorSeccion] = useState({});
     const [loadingSecciones, setLoadingSecciones] = useState(true);
     const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
+    const [perteneceAlCursoState, setPerteneceAlCursoState] = useState(false);
 
   
     const { profile } = useAuth();
-    const {nombres, apellidos} = profile;
+    const {nombres, apellidos, id} = profile;
     const nombreCompleto = `${nombres} ${apellidos}`;
     
     const esProfesor = useMemo(() => {
@@ -105,6 +106,24 @@ const useCursoData = (codigo) => {
                 obtenerRecursosDeSeccion(seccion.id);
             });
 
+            const response = await axios.get(`${urlBase}/cursos`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const cursos = response.data;
+            
+            const idUsuarioLogueado = id;
+
+            const cursoEncontradoArray = cursos.filter(curso => curso.codigo === codigo);
+
+            if (cursoEncontradoArray.length > 0) {
+                const cursoEncontrado = cursoEncontradoArray[0];
+                const esProfesorDelCurso = (cursoEncontrado.profesores || []).some(p => p.id === idUsuarioLogueado);
+                const esEstudianteDelCurso = (cursoEncontrado.estudiantes || []).some(e => e.id === idUsuarioLogueado);
+                setPerteneceAlCursoState(esProfesorDelCurso || esEstudianteDelCurso);
+            } else {
+                setPerteneceAlCursoState(false);
+            }
+
         } catch (error) {
             console.error("Error al obtener datos del curso:", error);
             setCursoActual({ id: null, nombre: "Error al cargar", codigo: "---" });
@@ -154,7 +173,8 @@ const useCursoData = (codigo) => {
         setRecursosPorSeccion,
         toggleSeccion,
         refetchDatos,
-        esProfesor
+        esProfesor,
+        perteneceAlCursoState
     };
 };
 
