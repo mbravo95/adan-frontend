@@ -121,6 +121,10 @@ const Header = () => {
     navigate("/crear-usuario");
   }
 
+  const irAdminCursos = () => {
+    navigate("/admin-cursos");
+  }
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   }
@@ -155,6 +159,9 @@ const Header = () => {
                 </NavButton> 
                 <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
                   Buscar Usuarios
+                </NavButton>
+                <NavButton textcolor={textcolor} onClick={irAdminCursos}>
+                  Administrar Cursos
                 </NavButton> 
               </>
             )}

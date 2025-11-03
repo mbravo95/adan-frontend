@@ -39,7 +39,6 @@ const PaginaCurso = () => {
         return "Cargando...";
     }
     
-    console.log(perteneceAlCursoState);
     if (!perteneceAlCursoState) {
         return <Navigate to="/home" />; 
     }

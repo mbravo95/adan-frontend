@@ -82,9 +82,19 @@ const MatricularEstudianteCurso = () => {
         });
       
         const todosLosUsuarios = usuariosResponse.data || [];
-        
-        setUsuarios(todosLosUsuarios);
-        setUsuariosFiltrados(todosLosUsuarios);
+
+        const cursosTodosResponse = await axios.get(`${urlBase}/cursos`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const cursosTodos = cursosTodosResponse.data;
+        const elCurso = cursosTodos.filter(curso => curso.id == cursoActual.id)[0];
+        const usuariosFiltrados = todosLosUsuarios.filter(usuario => !elCurso.estudiantes.some(estudiante => estudiante.id == usuario.id) && !elCurso.profesores.some(profesor => profesor.id == usuario.id) && usuario.tipoUsuario != "ADMINISTRADOR");
+        setUsuarios(usuariosFiltrados);
+        setUsuariosFiltrados(usuariosFiltrados);
         
       } catch (error) {
         console.error("Error al cargar los datos:", error);
