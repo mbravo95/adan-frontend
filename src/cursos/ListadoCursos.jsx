@@ -75,7 +75,8 @@ const ListadoCursos = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
-      setCursosFiltrados(response.data); 
+      const cursosRetornados = response.data;
+      setCursosFiltrados(cursos.filter(curso => cursosRetornados.some(cursoRet => cursoRet.id == curso.id))); 
     } catch (error) {
       console.log(error);
       setCursosFiltrados([]);

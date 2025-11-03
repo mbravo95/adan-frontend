@@ -33,7 +33,8 @@ const CrearPagina = () => {
             } 
             
             try {
-                const urlBase = import.meta.env.VITE_BACKEND_URL;
+              setLoading(true);  
+              const urlBase = import.meta.env.VITE_BACKEND_URL;
                 const token = localStorage.getItem("token");
                 const config = {
                     headers: {
@@ -164,11 +165,10 @@ const CrearPagina = () => {
     <>
         <GlobalCKEditorStyles />
 
+        <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
         {loading && <Spinner />}
-        
         { !loading &&
           <>
-            <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
             <Centrar>
               <Margen>
                 <Label htmlFor="nombre-input">Titulo</Label>

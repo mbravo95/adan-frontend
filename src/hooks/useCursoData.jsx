@@ -22,8 +22,6 @@ const useCursoData = (codigo) => {
     
     const esProfesor = useMemo(() => {
         const listaProfesores = cursoActual.profesores;
-
-        console.log(listaProfesores);
         
         if (!listaProfesores || loadingSecciones) {
             return false;
@@ -41,12 +39,7 @@ const useCursoData = (codigo) => {
             return false;
         }
 
-        console.log('Pase los controles');
-
         const usuarioMayusculas = nombreCompleto.trim().toUpperCase();
-        console.log(`Resultado de la busqueda: ${nombresProfesores.includes(usuarioMayusculas)}`);
-        console.log(`Usuario: ${usuarioMayusculas}`);
-        console.log(`Profesores: ${nombresProfesores}`);
         return nombresProfesores.includes(usuarioMayusculas);
     },[cursoActual.profesores, nombreCompleto, loadingSecciones]);
     
