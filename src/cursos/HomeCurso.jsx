@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import ModalConfirmacion from "../general/ModalConfirmacion";
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -136,6 +138,86 @@ const AddButton = styled.button`
   }
 `;
 
+const Button = styled.button`
+  flex: 1 1 calc(50% - 5px);
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+`;
+
+const EditButton = styled(Button)`
+  background-color: #007bff;
+  color: white;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+  color: white;
+
+  &:hover {
+    background-color: #c82333;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const AsignarDocenteButton = styled(Button)`
+  background-color: #1d4c4c;
+  color: white;
+  
+  &:hover {
+    background-color: #163a38;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const DesasignarDocenteButton = styled(Button)`
+  background-color: #4c2c1d;
+  color: white;
+  
+  &:hover {
+    background-color: #3a2716;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
+const CourseActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+`;
+
 const HomeCurso = () => {
   const rol = localStorage.getItem("tipo");
   const navigate = useNavigate();
@@ -143,6 +225,8 @@ const HomeCurso = () => {
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const obtenerCursos = async () => {
@@ -185,6 +269,22 @@ const HomeCurso = () => {
     navigate('/cursos/crear');
   };
 
+  const irEditarCurso = (curso) => {
+    console.log("Ir a editar curso", curso);
+  };
+
+  const irAsignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/asignar-profesor', {
+      state: { curso }
+    });
+  };
+
+   const irDesasignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/desasignar-profesor', {
+      state: { curso }
+    });
+  };
+
   const formatearFecha = (fechaString) => {
     if (!fechaString) return "No disponible";
     try {
@@ -199,10 +299,71 @@ const HomeCurso = () => {
     return <Navigate to="/usuario" />;
   }
 
+  const handleAbrirModal = (id) => {
+      setCursoSeleccionado(id);
+      setIsModalOpen(true);
+    };
+  
+    const handleCancelar = () => {
+      setIsModalOpen(false);
+      setCursoSeleccionado(null);
+    };
+  
+    const handleBorrarPagina = async () => {
+      if (!cursoSeleccionado) return;
+  
+      setLoading(true);
+  
+      try {    
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            },
+        };
+        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, config);
+        console.log(response);
+        toast.success("Curso eliminado exitosamente", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+        setCursos(cursos.filter(curso => curso.id !== cursoSeleccionado));
+        handleCancelar();
+      } catch (error) {
+        console.error("Error al eliminar el curso:", error);
+        toast.error("Ocurrió un error al eliminar el curso", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
   return (
     <Container>
       <ContentWrapper>
         <Title>Administración de Cursos</Title>
+
+        <ModalConfirmacion
+                isOpen={isModalOpen}
+                message={`¿Estás seguro de que quieres eliminar este curso?`}
+                onConfirm={handleBorrarPagina}
+                onCancel={handleCancelar}
+                isLoading={loading}
+              />
         
         {loading && (
           <LoadingMessage>
@@ -246,6 +407,20 @@ const HomeCurso = () => {
                         <DetailValue>{formatearFecha(curso.fechaCreacion)}</DetailValue>
                       </DetailRow>
                     </CourseDetails>
+                    <CourseActions>
+                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso)}>
+                        Asignar Profesor
+                      </AsignarDocenteButton>
+                      <DesasignarDocenteButton onClick={() => irDesasignarCursoDocente(curso)}>
+                        Desasignar Profesor
+                      </DesasignarDocenteButton>
+                      <EditButton onClick={() => irEditarCurso(curso)}>
+                        Editar
+                      </EditButton>
+                      <DeleteButton onClick={() => handleAbrirModal(curso.id)}>
+                        Eliminar
+                      </DeleteButton>
+                    </CourseActions>
                   </CourseCard>
                 ))}
               </CoursesGrid>
@@ -267,4 +442,4 @@ const HomeCurso = () => {
   )
 }
 
-export default HomeCurso
+export default HomeCurso;

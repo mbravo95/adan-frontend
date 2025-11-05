@@ -6,6 +6,8 @@ import styled from "styled-components";
 import { saveAs } from "file-saver";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ModalConfirmacion from "../general/ModalConfirmacion";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: white;
@@ -49,11 +51,6 @@ const ParticipantsButton = styled.button`
   
   &:hover {
     background-color: #333;
-                        {recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
-                          <li key={recurso.id} style={{paddingBottom: '8px', marginBottom: '8px', borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none'}}>
-                              <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span> <span style={{color:'#888'}}>({recurso.tipoRecurso})</span>
-                          </li>
-                        ))}
     transform: translateY(0);
   }
 `;
@@ -316,6 +313,15 @@ const NoSectionsMessage = styled.div`
   }
 `;
 
+const Recurso = styled.a`
+  color: #222;
+  &:hover {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+  }
+`;
+
 const PaginaCurso = () => {
   const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
     const token = localStorage.getItem("token");
@@ -359,6 +365,11 @@ const PaginaCurso = () => {
   const [loading, setLoading] = useState(true);
   const [loadingSecciones, setLoadingSecciones] = useState(true);
   const [seccionesColapsadas, setSeccionesColapsadas] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paginaEliminarId, setPaginaEliminarId] = useState(null);
+  const [seccionEliminarId, setSeccionEliminarId] = useState(null);
+  
+
   useEffect(() => {
     if (secciones.length > 0) {
       const colapsadas = {};
@@ -502,6 +513,83 @@ const PaginaCurso = () => {
 
   const agregarPagina = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
+  };
+
+  const handleAbrirModal = (id) => {
+    setPaginaEliminarId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleCancelar = () => {
+    setIsModalOpen(false);
+    setPaginaEliminarId(null);
+    setSeccionEliminarId(null);
+  };
+
+  const handleBorrarPagina = async () => {
+    if (!paginaEliminarId) return;
+
+    setLoadingSecciones(true);
+
+    try {    
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+          headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          },
+      };
+      const response = await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, config);
+      console.log(response);
+      toast.success("Página eliminada exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+      setRecursosPorSeccion(prevRecursos => {
+        const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
+          const recursosEnSeccion = prevRecursos[seccionId] || [];
+          return recursosEnSeccion.some(recurso => recurso.id === paginaEliminarId);
+        });
+
+        if (seccionIdConRecurso) {
+          const arrayActual = prevRecursos[seccionIdConRecurso];
+          const nuevoArrayFiltrado = arrayActual.filter(recurso => {
+            return recurso.id !== paginaEliminarId; 
+          });
+
+          return {
+            ...prevRecursos,
+            [seccionIdConRecurso]: nuevoArrayFiltrado
+          };
+        }
+        return prevRecursos;
+      });
+      handleCancelar();
+    } catch (error) {
+      console.error("Error al eliminar la pagina:", error);
+      toast.error("Ocurrió un error al eliminar la pagina", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+    } finally {
+      setLoadingSecciones(false);
+    }
+  }
+
+
+  const editarPagina = (recursoId) => {
+    navigate(`/curso/${codigo}/pagina/${recursoId}/editar`);
   }
 
 
@@ -509,6 +597,8 @@ const PaginaCurso = () => {
   };
 
   const eliminarSeccion = (seccionId) => {
+    setSeccionEliminarId(seccionId);
+    setIsModalOpen(true);
   };
   
   const toggleSeccion = (seccionId) => {
@@ -520,6 +610,57 @@ const PaginaCurso = () => {
   
   const irSubirMaterial = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
+  };
+
+  const verTarea = (recursoId) => {
+    navigate(`/curso/${codigo}/tarea/${recursoId}`);
+  }
+
+  const verForo = (recursoId) => {
+    navigate(`/curso/${codigo}/foro/${recursoId}`);
+  }
+
+  const handleBorrarSeccion = async () => {
+    if (!seccionEliminarId) return;
+
+    setLoadingSecciones(true);
+
+    try {    
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+          headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          },
+      };
+      const response = await axios.delete(`${urlBase}/secciones/eliminar/${codigo}/${seccionEliminarId}`, config);
+      console.log(response);
+      toast.success("Sección eliminada exitosamente", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+      setSecciones(secciones.filter(seccion => seccion.id !== seccionEliminarId));
+      handleCancelar();
+    } catch (error) {
+      console.error("Error al eliminar la sección:", error);
+      toast.error("Ocurrió un error al eliminar la sección", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+      });
+    } finally {
+      setLoadingSecciones(false);
+    }
   };
 
   return (
@@ -556,6 +697,14 @@ const PaginaCurso = () => {
           </IndexList>
         </IndexSection>
       </Sidebar>
+
+      <ModalConfirmacion
+        isOpen={isModalOpen}
+        message={seccionEliminarId ? `¿Estás seguro de que quieres eliminar esta sección?` : `¿Estás seguro de que quieres eliminar este recurso?`}
+        onConfirm={seccionEliminarId ? handleBorrarSeccion : handleBorrarPagina}
+        onCancel={handleCancelar}
+        isLoading={loadingSecciones}
+      />
       
       <MainContent>
         <CourseInfoHeader>
@@ -646,7 +795,7 @@ const PaginaCurso = () => {
                         modificarSeccion(seccion.id);
                       }}
                     >
-                      Modificar
+                      Modificar sección
                     </ActionButton>
                     <ActionButton 
                       variant="danger" 
@@ -655,7 +804,7 @@ const PaginaCurso = () => {
                         eliminarSeccion(seccion.id);
                       }}
                     >
-                      Eliminar
+                      Eliminar sección
                     </ActionButton>
                   </ButtonGroup>
                   <SectionContent collapsed={collapsed}>
@@ -701,8 +850,32 @@ const PaginaCurso = () => {
                                   <span role="img" aria-label="foro">💬</span>
                                   {recurso.nombre === null ? '(null)' : recurso.nombre}
                                 </span>
+                              ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
+                                <>
+                                  <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                  <button
+                                    style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => editarPagina(recurso.id)}
+                                  >
+                                    Editar
+                                  </button>
+                                  <button
+                                    style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => handleAbrirModal(recurso.id)}
+                                  >
+                                    Eliminar
+                                  </button>
+                                </>
+                              ) : recurso.tipoRecurso === 'TAREA' ? (
+                                <>
+                                  <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                </>
+                              ): recurso.tipoRecurso === 'FORO' ? (
+                                <>
+                                  <Recurso onClick={() => verForo(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                </>
                               ) : (
-                                <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                <span style={{color:'#222'}}>Recurso sin tipo</span>
                               )}
                             </li>
                           ))

@@ -84,7 +84,6 @@ const EditButton = styled.button`
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  margin-top: 20px;
   
   &:hover {
     background-color: #f8f8f8;
@@ -140,6 +139,14 @@ const Value = styled.span`
   color: #333;
   font-size: 16px;
   font-weight: 500;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  justify-content: center;
+  width: 100%;
 `;
 
 const Perfil = () => {
@@ -303,9 +310,14 @@ const Perfil = () => {
           </DataSection>
         </MainContent>
         
-        <EditButton onClick={irEditarPerfil}>
-          Editar perfil
-        </EditButton>
+        <ButtonContainer>
+          <EditButton onClick={irEditarPerfil}>
+            Editar perfil
+          </EditButton>
+          <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
+            Cambiar contraseña
+          </EditButton>
+        </ButtonContainer>
       </ContentWrapper>
     </Container>
   )
