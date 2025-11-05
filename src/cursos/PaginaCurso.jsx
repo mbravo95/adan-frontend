@@ -500,16 +500,6 @@ const PaginaCurso = () => {
       state: { cursoActual }
     });
   };
-  const agregarTarea = (seccionId) => {
-    navigate(`/curso/${codigo}/${seccionId}/crear-tarea`, {
-      state: { cursoActual }
-    });
-  }
-  const agregarForo = (seccionId) => {
-    navigate(`/curso/${codigo}/${seccionId}/crear-foro`, {
-      state: { cursoActual }
-    });
-  }
 
   const agregarPagina = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
@@ -612,13 +602,102 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
+  const agregarTarea = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-tarea`, {
+      state: { cursoActual }
+    });
+  }
+
   const verTarea = (recursoId) => {
     navigate(`/curso/${codigo}/tarea/${recursoId}`);
+  }
+
+
+  const editarForo = (recursoId, seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/foro/${recursoId}/editar`);
+  };
+
+  const eliminarTarea = async (recursoId) => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`${urlBase}/recursos/tarea/${recursoId}`, config);
+      toast.success("Tarea eliminada exitosamente", {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => window.location.reload(), 1600);
+    } catch (error) {
+      toast.error("Ocurrió un error al eliminar la tarea", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const agregarForo = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-foro`, {
+      state: { cursoActual }
+    });
   }
 
   const verForo = (recursoId) => {
     navigate(`/curso/${codigo}/foro/${recursoId}`);
   }
+
+  const eliminarForo = async (recursoId) => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`${urlBase}/recursos/foro/${recursoId}`, config);
+      toast.success("Foro eliminado exitosamente", {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => window.location.reload(), 1600);
+    } catch (error) {
+      toast.error("Ocurrió un error al eliminar el foro", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
+  const esProfeCurso = () => {
+   //implementar checkeo de profe curso, despues hay que ponerlo en cada tipo de recurso para saber si mostrar los botones o no
+  };
 
   const handleBorrarSeccion = async () => {
     if (!seccionEliminarId) return;
@@ -825,7 +904,7 @@ const PaginaCurso = () => {
                               }}
                               onClick={
                                 recurso.tipoRecurso === 'FORO'
-                                  ? () => navigate(`/curso/${codigo}/${seccion.id}/${recurso.id}`)
+                                  ? () => navigate(`/curso/${codigo}/foro/${recurso.id}`)
                                   : undefined
                               }
                             >
@@ -846,10 +925,29 @@ const PaginaCurso = () => {
                                   </button>
                                 </>
                               ) : recurso.tipoRecurso === 'FORO' ? (
-                                <span style={{color:'#222', fontWeight:'bold'}}>
-                                  <span role="img" aria-label="foro">💬</span>
-                                  {recurso.nombre === null ? '(null)' : recurso.nombre}
-                                </span>
+                                <>
+                                  <Recurso>{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                  <span
+                                    title="Modificar foro"
+                                    style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      editarForo(recurso.id, seccion.id);
+                                    }}
+                                  >
+                                    ✏️
+                                  </span>
+                                  <span
+                                    title="Eliminar foro"
+                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      eliminarForo(recurso.id);
+                                    }}
+                                  >
+                                    ❌
+                                  </span>
+                                </>
                               ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                 <>
                                   <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
@@ -869,10 +967,31 @@ const PaginaCurso = () => {
                               ) : recurso.tipoRecurso === 'TAREA' ? (
                                 <>
                                   <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                  <span
+                                    title="Modificar tarea"
+                                    style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      editarTarea(recurso.id);
+                                    }}
+                                  >
+                                    ✏️
+                                  </span>
+                                  <span
+                                    title="Eliminar tarea"
+                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      eliminarTarea(recurso.id);
+                                    }}
+                                  >
+                                    ❌
+                                  </span>
                                 </>
                               ): recurso.tipoRecurso === 'FORO' ? (
                                 <>
                                   <Recurso onClick={() => verForo(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                  
                                 </>
                               ) : (
                                 <span style={{color:'#222'}}>Recurso sin tipo</span>

@@ -77,6 +77,8 @@ const Foro = () => {
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
 	const [hilos, setHilos] = useState([]);
+	const recursoid = useParams().foroId;
+	const [nombreForo, setNombreForo] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
@@ -91,8 +93,9 @@ const Foro = () => {
 						Authorization: `Bearer ${token}`,
 					},
 				};
-				const response = await axios.get(`${urlBase}/recursos/foros?seccion=${seccion}`, config);
-				setHilos(response.data || []);
+				const response = await axios.get(`${urlBase}/recursos/${recursoid}`, config);
+				setNombreForo(response.data.nombre || "Foro");
+				setHilos(response.data.hilos || []);
 			} catch (err) {
 				setError("Error al cargar los hilos del foro.");
 			} finally {
@@ -109,7 +112,7 @@ const Foro = () => {
 	return (
 		<Container>
 			<Card>
-				<Title>Foro</Title>
+				<Title>{nombreForo}</Title>
 				<NewThreadButton onClick={handleCrearNuevoHilo}>Crear nuevo hilo</NewThreadButton>
 				{loading ? (
 					<div style={{ textAlign: 'center', color: '#666', fontSize: '16px', margin: '30px 0' }}>Cargando hilos...</div>
@@ -122,7 +125,7 @@ const Foro = () => {
 						) : (
 							hilos.map((hilo) => (
 								<ThreadCard key={hilo.id}>
-									<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }}>{hilo.nombre}</strong>
+									<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }}>{hilo.id}</strong>
 								</ThreadCard>
 							))
 						)}

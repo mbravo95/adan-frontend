@@ -210,7 +210,7 @@ const CursosUsuario = () => {
         const userIdFromProfile = perfilResponse.data.id;
         setUserId(userIdFromProfile);
 
-        const cursosResponse = await axios.get(`${urlBase}/usuarios/${userIdFromProfile}/cursos`, {
+        const cursosResponse = await axios.get(`${urlBase}/usuarios/${userIdFromProfile}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

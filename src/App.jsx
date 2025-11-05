@@ -32,6 +32,8 @@ import Busqueda from "./usuario/Busqueda";
 import CalificacionEstudianteCurso from "./cursos/CalificacionPerfilEstudiante";
 import CalificarEstudiante from "./cursos/CalificarEstudiante";
 import Foro from "./recursos/Foro";
+import EditarTarea from "./recursos/editarTarea";
+import EditarForo from "./recursos/EditarForo";
 
 function App() {
 
@@ -76,10 +78,11 @@ function App() {
               <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
               <Route path="/curso/:codigo/tarea/:tareaId" element={<PaginaTarea />} />
-              <Route path="/curso/:codigo/foro/:foroId" element={<PaginaForo />} />
+              <Route path="/curso/:codigo/foro/:foroId" element={<Foro />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
-              <Route path="/curso/:codigo/:seccion/:foroId" element={<Foro />} />
+              <Route path="/curso/:codigo/:seccion/:recursoId/editar" element={<EditarTarea />} />
+              <Route path="/curso/:codigo/:seccion/foro/:recursoId/editar" element={<EditarForo />} />
 
             </Route>
             <Route path="*" element={<NotFound />} />
