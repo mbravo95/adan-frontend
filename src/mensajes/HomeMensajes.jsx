@@ -4,12 +4,15 @@ import axios from "axios";
 import styled from "styled-components";
 import ListaConversaciones from "./ListaConversaciones";
 import Conversacion from "./Conversacion";
+import ModalNuevaConversacion from "./ModalNuevaConversacion";
 
 const HomeMensajes = () => {
 
   const [interlocutores, setInterlocutores] = useState([]);
   const [conversacionSeleccionada, setConversacionSeleccionada] = useState(null);
   const [conversaciones, setConversaciones] = useState([]);
+  const [nuevaConversacionModal, setNuevaConversacionModal] = useState(false);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
   useEffect(() => {
     const cargarConversaciones = async () => {
@@ -52,31 +55,52 @@ const HomeMensajes = () => {
         setConversacionSeleccionada(convId);
     };
 
+  const handleModal = () => {
+    setNuevaConversacionModal(!nuevaConversacionModal);
+  }
+
+
+  const handleNuevaConversacion = (id) => {
+    console.log('Iniciando una nueva conversacion ', id);
+    setUsuarioSeleccionado(id);
+  }
+
 
   return (
-        <MensajesLayout>
-            <PanelIzquierdo>
-                <BotonNuevaConversacion>
-                    + Nueva conversación
-                </BotonNuevaConversacion>
-                <ListaConversaciones
-                    conversaciones={conversaciones}
-                    onSelect={handleSeleccionarConversacion}
-                    selectedId={conversacionSeleccionada}
-                />
-            </PanelIzquierdo>
+        
+        <>
+          {nuevaConversacionModal && (
+                  <ModalNuevaConversacion
+                      onClose={handleModal}
+                      onUsuarioSeleccionado={handleNuevaConversacion} 
+                  />
+          )}
 
-            <PanelDerecho>
-                {conversacionSeleccionada ? (
-                    <Conversacion
-                        conversacionId={conversacionSeleccionada}
-                        idUsuarioActual={100}
-                    />
-                ) : (
-                    <MensajeInicial>Selecciona una conversación</MensajeInicial>
-                )}
-            </PanelDerecho>
-        </MensajesLayout>
+
+          <MensajesLayout>
+              <PanelIzquierdo>
+                  <BotonNuevaConversacion onClick={handleModal}>
+                      + Nueva conversación
+                  </BotonNuevaConversacion>
+                  <ListaConversaciones
+                      conversaciones={conversaciones}
+                      onSelect={handleSeleccionarConversacion}
+                      selectedId={conversacionSeleccionada}
+                  />
+              </PanelIzquierdo>
+
+              <PanelDerecho>
+                  {conversacionSeleccionada ? (
+                      <Conversacion
+                          conversacionId={conversacionSeleccionada}
+                          idUsuarioActual={100}
+                      />
+                  ) : (
+                      <MensajeInicial>Selecciona una conversación</MensajeInicial>
+                  )}
+              </PanelDerecho>
+          </MensajesLayout>
+        </>
   )
 }
 
