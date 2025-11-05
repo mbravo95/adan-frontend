@@ -112,7 +112,7 @@ const HomeCurso = () => {
             Authorization: `Bearer ${token}`,
             },
         };
-        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, config);
+        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, null, config);
         console.log(response);
         toast.success("Curso eliminado exitosamente", {
             position: "top-center",
@@ -138,6 +138,7 @@ const HomeCurso = () => {
         });
       } finally {
         setLoading(false);
+        setIsModalOpen(false);
       }
     }
 
