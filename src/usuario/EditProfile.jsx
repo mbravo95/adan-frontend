@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -217,8 +217,12 @@ const EditProfile = () => {
     apellido: "",
     fechaNacimiento: ""
   });
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [loadingFoto, setLoadingFoto] = useState(false);
+  const [errorFoto, setErrorFoto] = useState("");
+  const fileInputRef = useRef();
 
   useEffect(() => {
     const cargarDatosUsuario = async () => {
@@ -277,6 +281,9 @@ const EditProfile = () => {
           apellido: data.apellidos || "",
           fechaNacimiento: fechaFormateada
         });
+        if (data.fotoPerfil) {
+          setProfileImageUrl(data.fotoPerfil);
+        }
         
       } catch (error) {
         console.error("Error al cargar datos del usuario:", error);
@@ -344,6 +351,40 @@ const EditProfile = () => {
     navigate('/usuario');
   };
 
+  const handleFotoClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFotoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLoadingFoto(true);
+    setErrorFoto("");
+    try {
+      console.log("Intentando subir foto", file);
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("foto", file);
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(`${urlBase}/usuarios/perfil/foto`, formData, config);
+      // Si el backend responde con la URL de la nueva foto
+      if (response.data && response.data.url) {
+        setProfileImageUrl(response.data.url);
+      }
+    } catch (err) {
+      setErrorFoto("Error al subir la foto");
+      console.error("Error al subir la foto", err);
+    } finally {
+      setLoadingFoto(false);
+    }
+  };
+
   // Obtener nombre completo para mostrar
   const nombreCompleto = () => {
     if (formData.nombre && formData.apellido) {
@@ -359,11 +400,40 @@ const EditProfile = () => {
       <ContentWrapper>
         <MainContent>
           <ProfileSection>
-            <ProfileImage>
-              👤
+            <ProfileImage onClick={handleFotoClick} title="Haz click para cambiar foto">
+              {loadingFoto ? (
+                <span style={{ fontSize: "2rem" }}>Cargando...</span>
+              ) : profileImageUrl ? (
+                (() => {
+                  const baseUrl = import.meta.env.VITE_BACKEND_URL.replace(/\/api$/, '').replace(/\/api\/$/, '');
+                  const finalUrl = profileImageUrl.startsWith('http')
+                    ? profileImageUrl
+                    : `${baseUrl}${profileImageUrl}`;
+                  console.log('URL de imagen de perfil:', finalUrl);
+                  return (
+                    <img
+                      src={finalUrl}
+                      alt="Foto de perfil"
+                      style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+                    />
+                  );
+                })()
+              ) : (
+                <span role="img" aria-label="profile" style={{ fontSize: "5rem" }}>
+                  👤
+                </span>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFotoChange}
+              />
             </ProfileImage>
             <ProfileName>{nombreCompleto()}</ProfileName>
-            <ChangePhotoText>Cambiar foto de perfil</ChangePhotoText>
+            <ChangePhotoText onClick={handleFotoClick}>Cambiar foto de perfil</ChangePhotoText>
+            {errorFoto && <p style={{ color: 'red', marginTop: 8 }}>{errorFoto}</p>}
           </ProfileSection>
           
           <FormWrapper>

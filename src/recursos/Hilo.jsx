@@ -26,19 +26,29 @@ const MessageList = styled.div`
 	margin-top: 18px;
 `;
 
-const MessageItem = styled.div`
-	padding: 24px;
-	background: #fff;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-	margin-bottom: 18px;
-	box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+const Meta = styled.div`
+  font-size: 0.95rem;
+  color: #888;
+  margin-bottom: 6px;
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
 `;
 
-const Meta = styled.div`
-	font-size: 0.95rem;
-	color: #888;
-	margin-bottom: 6px;
+const MessageItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+`;
+
+const ContenidoMensaje = styled.div`
+  flex: 1;
 `;
 
 const BotonPublicar = styled.button`
@@ -60,6 +70,28 @@ const BotonPublicar = styled.button`
 
 const CuerpoMensaje = styled.div`
 	font-size: 1.25rem;
+`;
+
+const FotoPerfil = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 16px;
+`;
+
+const InfoAutor = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+`;
+
+const SeparadorAutor = styled.div`
+  width: 1px;
+  background: #e2e8f0;
+  align-self: stretch;
+  margin: 0 24px;
 `;
 
 const Hilo = () => {
@@ -117,8 +149,15 @@ const Hilo = () => {
 	function renderMensaje(msg) {
 		return [
 			<MessageItem key={msg.id}>
-				<Meta>{msg.autorNombres} {msg.autorApellidos} — {formatFecha(msg.fechaMensaje)}</Meta>
-				<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
+				<InfoAutor>
+					<FotoPerfil src={msg.fotoPerfil || '/default-profile.png'} alt="Foto de perfil" />
+					<span style={{ fontWeight: 600, marginTop: 6 }}>{msg.autorNombres} {msg.autorApellidos}</span>
+				</InfoAutor>
+				<SeparadorAutor />
+				<ContenidoMensaje>
+					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
+					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
+				</ContenidoMensaje>
 			</MessageItem>,
 			Array.isArray(msg.respuestas) && msg.respuestas.length > 0 &&
 				msg.respuestas.map((resp) => renderMensaje(resp))
