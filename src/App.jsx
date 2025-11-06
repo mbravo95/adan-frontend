@@ -34,6 +34,9 @@ import CalificarEstudiante from "./cursos/CalificarEstudiante";
 import Foro from "./recursos/Foro";
 import EditarTarea from "./recursos/editarTarea";
 import EditarForo from "./recursos/EditarForo";
+import Hilo from "./recursos/Hilo";
+import CrearHiloForo from "./recursos/CrearHiloForo";
+import PublicarMensajeHiloForo from "./recursos/PublicarMensajeHiloForo";
 
 function App() {
 
@@ -83,6 +86,9 @@ function App() {
               <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
               <Route path="/curso/:codigo/:seccion/:recursoId/editar" element={<EditarTarea />} />
               <Route path="/curso/:codigo/:seccion/foro/:recursoId/editar" element={<EditarForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId" element={<Hilo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/crear-hilo" element={<CrearHiloForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/publicar-mensaje" element={<PublicarMensajeHiloForo />} />
 
             </Route>
             <Route path="*" element={<NotFound />} />

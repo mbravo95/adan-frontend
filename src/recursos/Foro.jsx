@@ -93,7 +93,7 @@ const Foro = () => {
 						Authorization: `Bearer ${token}`,
 					},
 				};
-				const response = await axios.get(`${urlBase}/recursos/${recursoid}`, config);
+				const response = await axios.get(`${urlBase}/recursos/foro/${recursoid}`, config);
 				setNombreForo(response.data.nombre || "Foro");
 				setHilos(response.data.hilos || []);
 			} catch (err) {
@@ -106,8 +106,12 @@ const Foro = () => {
 	}, [seccion]);
 
 	const handleCrearNuevoHilo = () => {
-		navigate(`/curso/${codigo}/seccion/${seccion}/crear-foro`);
+		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoid}/crear-hilo`);
 	};
+
+	const irAHilo = (hiloId) => {
+		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoid}/hilo/${hiloId}`);
+	}
 
 	return (
 		<Container>
@@ -123,11 +127,11 @@ const Foro = () => {
 						{hilos.length === 0 ? (
 							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay hilos en este foro.</div>
 						) : (
-							hilos.map((hilo) => (
-								<ThreadCard key={hilo.id}>
-									<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }}>{hilo.id}</strong>
-								</ThreadCard>
-							))
+											hilos.map((hilo) => (
+												<ThreadCard key={hilo.id} onClick={() => irAHilo(hilo.id)} style={{ cursor: 'pointer' }}>
+													<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }}>{hilo.titulo}</strong>
+												</ThreadCard>
+											))
 						)}
 					</ThreadsList>
 				)}
