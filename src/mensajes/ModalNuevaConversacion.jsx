@@ -54,7 +54,7 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
 
   return (
     <ModalOverlay onClick={onClose}>
-        <ModalContent onClick={e => e.stopPropagation()}> {/* Evita que el clic en el modal lo cierre */}
+        <ModalContent onClick={e => e.stopPropagation()}>
             <HeaderModal>
                 <h2>Iniciar Nueva Conversación</h2>
                 <CloseButton onClick={onClose}>&times;</CloseButton>
@@ -73,7 +73,6 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
                 
                 {searchResults.map(user => (
                     <UserItem key={user.id} onClick={() => handleSelectUser(user)}>
-                        {/* Muestra el nombre completo del usuario */}
                         {user.nombres} {user.apellidos} ({user.correo})
                     </UserItem>
                 ))}

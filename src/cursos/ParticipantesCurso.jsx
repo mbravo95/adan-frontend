@@ -25,6 +25,7 @@ const ParticipantesCurso = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userDesmatricularId, setUserDesmatricularId] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
 
   const { esProfesor } = useCursoData(codigo);
   const rol = localStorage.getItem("tipo");
@@ -46,6 +47,7 @@ const ParticipantesCurso = () => {
 
     return participantes;
   }
+
 
   useEffect(() => {
     const obtenerDatosCurso = async () => {
@@ -164,6 +166,33 @@ const ParticipantesCurso = () => {
     setIsModalOpen(true);
   };
 
+  const handleFiltrar = async () => {
+    setLoading(true);
+    try {
+      const lowerCaseSearch = busqueda.toLowerCase();
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.get(`${urlBase}/cursos/${cursoActual.id}/participantes/buscar?texto=${lowerCaseSearch}`, config);
+      setParticipantes(response.data);
+    } catch (error) {
+      console.error("Error al filtrar participantes:", error);
+      setParticipantes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setBusqueda('');
+    setParticipantes(prepararParticipantes(cursoActual.estudiantes, cursoActual.profesores));
+  };
+
   return (
     <Container>
       <BackButton onClick={volverAlCurso}>
@@ -194,6 +223,26 @@ const ParticipantesCurso = () => {
 
       <ParticipantsSection>
         <SectionTitle>Lista de Participantes</SectionTitle>
+
+        <FilterContainer>
+          <SearchBar 
+            type="text"
+            placeholder="Filtrar por nombre, correo o rol..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleFiltrar(); // Permite filtrar con Enter
+                }
+              }}
+          />
+          <FilterButton onClick={handleFiltrar}>
+            🔍 Filtrar
+          </FilterButton>
+          <ResetButton onClick={handleReset}>
+            Restablecer
+          </ResetButton>
+        </FilterContainer>
         
         {loading ? (
           <Spinner />
@@ -220,7 +269,11 @@ const ParticipantesCurso = () => {
           </ParticipantsGrid>
         ) : (
           <PlaceholderMessage>
-            <h3>No hay participantes</h3>
+            {busqueda ? (
+              <h3>No hay participantes que coincidan con "{busqueda}"</h3>
+            ) : (
+              <h3>No hay participantes</h3>
+            )}
           </PlaceholderMessage>
         )}
       </ParticipantsSection>
@@ -388,5 +441,61 @@ const BackButton = styled.button`
   
   &:hover {
     background-color: #d0d0d0;
+  }
+`;
+
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 25px;
+`;
+
+const SearchBar = styled.input`
+  flex-grow: 1;
+  max-width: 400px; 
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: #3b5998;
+    outline: none;
+  }
+`;
+
+
+const FilterButton = styled.button`
+  background-color: #3b5998;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: #2b4480;
+  }
+`;
+
+const ResetButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: #c0c0c0;
   }
 `;
