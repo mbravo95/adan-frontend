@@ -8,15 +8,15 @@ const ListaConversaciones = ({ conversaciones, onSelect, selectedId }) => {
         {conversaciones.map((conv) => (
             <ItemConversacion
                 key={conv.id}
-                selected={conv.id === selectedId} // Pasa la prop para el estilo condicional
+                selected={conv.id === selectedId}
                 onClick={() => onSelect(conv.id)}
             >
                 <AvatarLista />
                 <InfoConversacion>
                     <ParticipanteNombre>{conv.participanteNombre}</ParticipanteNombre>
-                    <UltimoMensaje>{conv.ultimoMensaje}</UltimoMensaje>
+                    <UltimoMensaje>{conv.ultimoMensaje ? conv.ultimoMensaje : ""}</UltimoMensaje>
                 </InfoConversacion>
-                <TiempoTranscurrido>{conv.tiempoTranscurrido}</TiempoTranscurrido>
+                <TiempoTranscurrido>{conv.tiempoTranscurrido ? conv.tiempoTranscurrido : ""}</TiempoTranscurrido>
             </ItemConversacion>
         ))}
     </div>
@@ -55,7 +55,6 @@ export const AvatarLista = styled.div`
     border-radius: 50%;
     background-color: #bdbdbd;
     margin-right: 10px;
-    /* Puedes agregar aquí el ícono o imagen */
 `;
 
 export const InfoConversacion = styled.div`

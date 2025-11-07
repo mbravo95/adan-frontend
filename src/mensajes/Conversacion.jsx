@@ -1,56 +1,118 @@
 import { useEffect, useState } from 'react';
 import styled, {css} from "styled-components";
+import axios from "axios";
+import Spinner from '../general/Spinner';
 
-const Conversacion = ({ conversacionId, idUsuarioActual}) => {
+const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat, onHandleCerrarConversacion }) => {
 
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
-    
+    const [participanteAvatar, setParticipanteAvatar] = useState(null);
+    const [cargando, setCargando] = useState(false);
+    const [mensajeNuevo, setMensajeNuevo] = useState('');
+
     useEffect(() => {
-        // Datos simulados
-        // Usuario es 100
-        setMensajes([
-            { id: 1, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-            { id: 2, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-            { id: 3, emisorId: 100, contenido: "Ejemplo de mensaje" }, // Usuario actual
-            { id: 4, emisorId: 100, contenido: "Ejemplo de mensaje" }, // Usuario actual
-            { id: 5, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-        ]);
-        
+        const fetchConversacion = async () => {
+            try {
+                setCargando(true);
+                const urlBase = import.meta.env.VITE_BACKEND_URL;
+                const token = localStorage.getItem("token");
+                const config = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
+                const response1 = await axios.get(`${urlBase}/usuarios/${conversacionId}`, config);
+                const destinatario = response1.data;
+                setParticipanteNombre(`${destinatario.nombres || ''} ${destinatario.apellidos || ''}`.trim());
+                setParticipanteAvatar(destinatario.fotoPerfil || null);
+                const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
+                setMensajes(response2.data);
+            } catch (error) {
+                console.error("Error al obtener la conversación: ", error);
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        fetchConversacion();
     }, [conversacionId, idUsuarioActual]);
+
+
+    const handleEnviarMensaje = async () => {
+        
+        
+        if (mensajeNuevo.trim() === '') return;
+
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const payload = {
+                idDestinatario: conversacionId,
+                cuerpoMensaje: mensajeNuevo.trim(),
+            };
+            const response = await axios.post(`${urlBase}/mensajes-privados`, payload, config);
+            setMensajes([...mensajes, response.data]);
+            setMensajeNuevo('');
+            if(esNuevaConversacion){
+                onHandleNuevoChat();
+            }
+        } catch (error) {
+            console.error("Error al enviar el mensaje: ", error);
+        }
+    }
 
 
   return (
     <>
         <HeaderChat>
-            <BackButton>←</BackButton>
+            <BackButton onClick={onHandleCerrarConversacion}>←</BackButton>
             <TitleChat>{participanteNombre}</TitleChat>
             <ProfileIcon />
         </HeaderChat>
         
-        <MensajesScrollable>
-            {mensajes.map((msg) => {
-                const esMensajePropio = msg.emisorId === idUsuarioActual;
-
-                return (
-                    <MensajeBubble 
-                        key={msg.id} 
-                        propio={esMensajePropio} // Prop para alineación y estilos
-                    >
-                        <ContenidoMensaje propio={esMensajePropio}>
-                            {msg.contenido}
-                        </ContenidoMensaje>
-                        {/* Opcionalmente puedes mostrar el avatar en ambos lados o solo en el lado ajeno */}
-                        <AvatarChat propio={esMensajePropio} /> 
-                    </MensajeBubble>
-                );
-            })}
-        </MensajesScrollable>
+        {cargando && <Spinner />}
+        {!cargando &&
+            <MensajesScrollable>
+                {mensajes.map((msg) => {
+                    const esMensajePropio = idUsuarioActual === msg.idRemitente;
+                    return (
+                        <MensajeBubble 
+                            key={msg.id} 
+                            $propio={esMensajePropio}
+                        >
+                            <ContenidoMensaje propio={esMensajePropio}>
+                                {msg.cuerpoMensaje}
+                            </ContenidoMensaje>
+                            <AvatarChat propio={esMensajePropio} /> 
+                        </MensajeBubble>
+                    );
+                })}
+            </MensajesScrollable>
+        }
         
-        <InputArea>
-            <InputMensaje placeholder="Mensaje..." />
-            <BotonEnviar>{/* Ícono de flecha o enviar */}</BotonEnviar>
-        </InputArea>
+        {!cargando &&
+            <InputArea>
+                <InputMensaje placeholder="Mensaje..." value={mensajeNuevo} 
+                    onChange={(e) => setMensajeNuevo(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleEnviarMensaje();
+                        }
+                    }} 
+                />
+                <BotonEnviar onClick={handleEnviarMensaje}>
+                    Enviar
+                </BotonEnviar>
+            </InputArea>
+        }
     </>
   )
 }
@@ -104,7 +166,7 @@ const MensajeBubble = styled.div`
     align-items: flex-end;
 
     ${props =>
-        props.propio
+        props.$propio
             ? css`
                   align-self: flex-end;
                   flex-direction: row-reverse;
