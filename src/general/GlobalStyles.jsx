@@ -13,6 +13,11 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-image: url('/arbolFondo.png');
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: 320px auto;
+    background-attachment: fixed;
   }
 
   * {

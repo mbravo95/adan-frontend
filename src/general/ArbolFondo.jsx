@@ -7,7 +7,7 @@ const ArbolImg = styled.img`
   bottom: 0;
   width: 320px;
   height: auto;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
   opacity: 0.7;
 `;
