@@ -81,7 +81,7 @@ function App() {
               <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
               <Route path="/curso/:codigo/tarea/:tareaId" element={<PaginaTarea />} />
-              <Route path="/curso/:codigo/foro/:foroId" element={<Foro />} />
+              <Route path="/curso/:codigo/foro/:recursoId" element={<Foro />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
               <Route path="/curso/:codigo/:seccion/:recursoId/editar" element={<EditarTarea />} />

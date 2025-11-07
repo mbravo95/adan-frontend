@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useAuth from "../hooks/useAuth";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -108,15 +109,16 @@ const CancelButton = styled(Button)`
 `;
 
 const CrearHiloForo = () => {
-  const { codigo, seccion, foroId } = useParams();
+  const { codigo, seccion, foroId, recursoId } = useParams();
+  const { profile } = useAuth();
   const navigate = useNavigate();
   const [titulo, setTitulo] = useState("");
   const [cuerpo, setCuerpo] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleCrearHilo = async () => {
-    if (!titulo || !cuerpo) {
-      toast.error("Debes completar ambos campos.");
+    if (!titulo) {
+      toast.error("Debes completar el título.");
       return;
     }
     setLoading(true);
@@ -129,12 +131,36 @@ const CrearHiloForo = () => {
           Authorization: `Bearer ${token}`,
         },
       };
-      await axios.post(`${urlBase}/recursos/foros/${foroId}/hilos`, {
+      const payload = {
+        idForo: recursoId,
         titulo,
-        cuerpo,
-      }, config);
+      };
+      console.log('Payload enviado a la API:', payload);
+      const hiloResponse = await axios.post(`${urlBase}/recursos/foro/hilo`, payload, config);
       toast.success("Hilo creado correctamente");
-      navigate(-1);
+      console.log('Respuesta de creación de hilo:', hiloResponse.data);
+  const hiloId = hiloResponse.data.idHilo;
+      console.log('Valor de hiloId:', hiloId);
+      // Publicar el primer mensaje automáticamente
+      try {
+        let urlBaseMsg = import.meta.env.VITE_BACKEND_URL;
+        if (urlBaseMsg.endsWith("/")) urlBaseMsg = urlBaseMsg.slice(0, -1);
+        const apiUrl = `${urlBaseMsg}/recursos/foro/publicarMensaje`;
+  const correoAutor = profile?.correo || "";
+        const msgPayload = {
+          idForo: Number(recursoId),
+          idHilo: Number(hiloId),
+          correoAutor,
+          cuerpo,
+        };
+        console.log('POST', apiUrl, msgPayload, config);
+        await axios.post(apiUrl, msgPayload, config);
+        setCuerpo("");
+        toast.success("Mensaje publicado correctamente");
+        navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}`);
+      } catch (err) {
+        toast.error("Error al publicar el mensaje.");
+      }
     } catch (err) {
       toast.error("Error al crear el hilo");
     } finally {
@@ -177,5 +203,5 @@ const CrearHiloForo = () => {
     </Container>
   );
 };
-
 export default CrearHiloForo;
+

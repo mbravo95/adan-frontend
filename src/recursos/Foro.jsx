@@ -77,7 +77,7 @@ const Foro = () => {
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
 	const [hilos, setHilos] = useState([]);
-	const recursoid = useParams().foroId;
+	const recursoid = useParams().recursoId;
 	const [nombreForo, setNombreForo] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");

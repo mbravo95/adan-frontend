@@ -1,5 +1,43 @@
+  // Elimina una página temática
+  const handleBorrarPagina = async () => {
+    if (!paginaEliminarId) return;
+    setLoadingSecciones(true);
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, config);
+      toast.success("Página eliminada exitosamente", {
+        position: "top-center", autoClose: 3000,
+      });
+      setRecursosPorSeccion(prevRecursos => {
+        const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
+          return (prevRecursos[seccionId] || []).some(recurso => recurso.id === paginaEliminarId);
+        });
+        if (seccionIdConRecurso) {
+          return {
+            ...prevRecursos,
+            [seccionIdConRecurso]: prevRecursos[seccionIdConRecurso].filter(recurso => recurso.id !== paginaEliminarId)
+          };
+        }
+        return prevRecursos;
+      });
+      handleCancelar();
+    } catch (error) {
+      toast.error("Ocurrió un error al eliminar la página", {
+        position: "top-center", autoClose: 3000,
+      });
+    } finally {
+      setLoadingSecciones(false);
+    }
+  };
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
@@ -7,6 +45,38 @@ import Spinner from "../general/Spinner";
 import useCursoData from "../hooks/useCursoData"; 
 import Secciones from "./Secciones";
 import * as S from "./EstilosPaginaCurso";
+import { Sidebar } from "./EstilosPaginaCurso";
+import { CourseTitle } from "./EstilosPaginaCurso";
+import { ParticipantsButton } from "./EstilosPaginaCurso";
+import {
+  IndexSection,
+  IndexTitle,
+  IndexList,
+  IndexItem,
+  MainContent,
+  CourseInfoHeader,
+  CourseInfoGrid,
+  InfoSection,
+  InfoLabel,
+  InfoValue,
+  AddSectionButton,
+  UploadMaterialButton,
+  SectionsContainer,
+  SectionPlaceholder,
+  SectionHeader,
+  SectionTitleContainer,
+  CollapseIcon,
+  SectionContent,
+  SectionTitle,
+  ButtonGroup,
+  ActionButton,
+  SectionSubtitle,
+  SectionDescription,
+  SectionInfo,
+  LoadingMessage,
+  NoSectionsMessage,
+  Recurso
+} from "./EstilosPaginaCurso";
 
 const PaginaCurso = () => {
   const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
@@ -35,7 +105,7 @@ const PaginaCurso = () => {
       }
       saveAs(blob, filename);
     } catch (err) {
-      alert("No se pudo descargar el material");
+      toast.error("Error al descargar el archivo");
     }
   };
   const { codigo } = useParams();
@@ -426,7 +496,7 @@ const PaginaCurso = () => {
   };
 
   return (
-    <Container>
+  <S.Container>
       <Sidebar>
         <CourseTitle>
           {cursoActual.nombre}
@@ -700,7 +770,7 @@ const PaginaCurso = () => {
         </SectionsContainer>
 
       </MainContent>
-    </Container>
+  </S.Container>
   )
 }
 
