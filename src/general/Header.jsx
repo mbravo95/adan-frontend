@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import { esUsuarioRegular, esProfesorCurso, puedeAdministrarCursos } from '../utils/permisoCursos';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -138,8 +139,8 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
-  const esUsuarioRegular = localStorage.getItem("tipo") !== "ADMINISTRADOR";
-  
+  // ...existing code...
+
   return (
     <>
       <HeaderContainer bgcolor={bgcolor}>
@@ -149,7 +150,7 @@ const Header = () => {
             <NavButton textcolor={textcolor} onClick={irCursos}>
               Cursos
             </NavButton>
-            {esUsuarioRegular ? null : (
+            {esUsuarioRegular() ? null : (
               <>
                 <NavButton textcolor={textcolor} onClick={irAltaCursos}>
                   Crear Curso
@@ -198,6 +199,7 @@ const Header = () => {
         />
       )}
     </>
+
   )
 }
 

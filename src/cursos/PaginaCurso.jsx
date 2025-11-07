@@ -1,4 +1,4 @@
-  // Elimina una página temática
+
   const handleBorrarPagina = async () => {
     if (!paginaEliminarId) return;
     setLoadingSecciones(true);
@@ -36,7 +36,7 @@
       setLoadingSecciones(false);
     }
   };
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate, useLocation } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -48,6 +48,7 @@ import * as S from "./EstilosPaginaCurso";
 import { Sidebar } from "./EstilosPaginaCurso";
 import { CourseTitle } from "./EstilosPaginaCurso";
 import { ParticipantsButton } from "./EstilosPaginaCurso";
+import { esUsuarioRegular, esProfesorCurso, puedeAdministrarCursos } from '../utils/permisoCursos';
 import {
   IndexSection,
   IndexTitle,
@@ -79,6 +80,8 @@ import {
 } from "./EstilosPaginaCurso";
 
 const PaginaCurso = () => {
+  const location = useLocation();
+  console.log('[PERMISO] puedeAdministrarCursos:', puedeAdministrarCursos(location.pathname), 'pathname:', location.pathname);
   const handleDescargarMaterial = async (codigo, seccionId, recurso) => {
     const token = localStorage.getItem("token");
     const url = `${import.meta.env.VITE_BACKEND_URL}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales/${recurso.id}/descargar`;
@@ -605,9 +608,11 @@ const PaginaCurso = () => {
           </CourseInfoGrid>
         </CourseInfoHeader>
         
-        <AddSectionButton onClick={() => irAltaSeccion()}>
-          + Agregar Sección
-        </AddSectionButton>
+        {puedeAdministrarCursos(location.pathname) && (
+          <AddSectionButton onClick={() => irAltaSeccion()}>
+            + Agregar Sección
+          </AddSectionButton>
+        )}
         
         <SectionsContainer>
           {loadingSecciones ? (
@@ -630,62 +635,64 @@ const PaginaCurso = () => {
                       <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
                     </SectionTitleContainer>
                   </SectionHeader>
-                  <ButtonGroup style={{ marginBottom: '10px' }}>
-                    <ActionButton 
-                      variant="success" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        agregarTarea(seccion.id);
-                      }}
-                    >
-                      Agregar Tarea
-                    </ActionButton>
-                    <ActionButton 
-                      variant="info" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        irSubirMaterial(seccion.id);
-                      }}
-                    >
-                      Subir Material
-                    </ActionButton>
-                    <ActionButton 
-                      variant="success" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        agregarForo(seccion.id);
-                      }}
-                    >
-                      Agregar Foro
-                    </ActionButton>
-                    <ActionButton 
-                      variant="success" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        agregarPagina(seccion.id);
-                      }}
-                    >
-                      Agregar Pagina
-                    </ActionButton>
-                    <ActionButton 
-                      variant="warning" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        modificarSeccion(seccion.id);
-                      }}
-                    >
-                      Modificar sección
-                    </ActionButton>
-                    <ActionButton 
-                      variant="danger" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        eliminarSeccion(seccion.id);
-                      }}
-                    >
-                      Eliminar sección
-                    </ActionButton>
-                  </ButtonGroup>
+                  {puedeAdministrarCursos(location.pathname) && (
+                    <ButtonGroup style={{ marginBottom: '10px' }}>
+                      <ActionButton 
+                        variant="success" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          agregarTarea(seccion.id);
+                        }}
+                      >
+                        Agregar Tarea
+                      </ActionButton>
+                      <ActionButton 
+                        variant="info" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          irSubirMaterial(seccion.id);
+                        }}
+                      >
+                        Subir Material
+                      </ActionButton>
+                      <ActionButton 
+                        variant="success" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          agregarForo(seccion.id);
+                        }}
+                      >
+                        Agregar Foro
+                      </ActionButton>
+                      <ActionButton 
+                        variant="success" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          agregarPagina(seccion.id);
+                        }}
+                      >
+                        Agregar Pagina
+                      </ActionButton>
+                      <ActionButton 
+                        variant="warning" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          modificarSeccion(seccion.id);
+                        }}
+                      >
+                        Modificar sección
+                      </ActionButton>
+                      <ActionButton 
+                        variant="danger" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          eliminarSeccion(seccion.id);
+                        }}
+                      >
+                        Eliminar sección
+                      </ActionButton>
+                    </ButtonGroup>
+                  )}
                   <SectionContent collapsed={collapsed}>
                     <SectionInfo>
                       <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
@@ -723,89 +730,105 @@ const PaginaCurso = () => {
                                   >
                                     Descargar
                                   </button>
-                                  <span
-                                    title="Eliminar material"
-                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      eliminarMaterial(recurso.id, seccion.id);
-                                    }}
-                                  >
-                                    ❌
-                                  </span>
+                                  {puedeAdministrarCursos(location.pathname) && (
+                                    <span
+                                      title="Eliminar material"
+                                      style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        eliminarMaterial(recurso.id, seccion.id);
+                                      }}
+                                    >
+                                      ❌
+                                    </span>
+                                  )}
                                 </>
                               ) : recurso.tipoRecurso === 'FORO' ? (
                                 <>
                                   <Recurso>{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
-                                  <span
-                                    title="Modificar foro"
-                                    style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      editarForo(recurso.id, seccion.id);
-                                    }}
-                                  >
-                                    ✏️
-                                  </span>
-                                  <span
-                                    title="Eliminar foro"
-                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      eliminarForo(recurso.id);
-                                    }}
-                                  >
-                                    ❌
-                                  </span>
+                                  {puedeAdministrarCursos(location.pathname) && (
+                                    <>
+                                      <span
+                                        title="Modificar foro"
+                                        style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          editarForo(recurso.id, seccion.id);
+                                        }}
+                                      >
+                                        ✏️
+                                      </span>
+                                      <span
+                                        title="Eliminar foro"
+                                        style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          eliminarForo(recurso.id);
+                                        }}
+                                      >
+                                        ❌
+                                      </span>
+                                    </>
+                                  )}
                                 </>
                               ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                 <>
                                   <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
-                                  <button
-                                    style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={() => editarPagina(recurso.id)}
-                                  >
-                                    Editar
-                                  </button>
-                                  <button
-                                    style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={() => handleAbrirModal(recurso.id)}
-                                  >
-                                    Eliminar
-                                  </button>
+                                  {puedeAdministrarCursos(location.pathname) && (
+                                    <>
+                                      <button
+                                        style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                        onClick={() => editarPagina(recurso.id)}
+                                      >
+                                        Editar
+                                      </button>
+                                      <button
+                                        style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                        onClick={() => handleAbrirModal(recurso.id)}
+                                      >
+                                        Eliminar
+                                      </button>
+                                    </>
+                                  )}
                                 </>
                               ) : recurso.tipoRecurso === 'TAREA' ? (
                                 <>
                                   <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
-                                  <button
-                                    style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      verEntregasTarea(recurso.id, seccion.id);
-                                    }}
-                                  >
-                                    Ver entregas
-                                  </button>
-                                  <span
-                                    title="Modificar tarea"
-                                    style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      editarTarea(recurso.id);
-                                    }}
-                                  >
-                                    ✏️
-                                  </span>
-                                  <span
-                                    title="Eliminar tarea"
-                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      eliminarTarea(recurso.id);
-                                    }}
-                                  >
-                                    ❌
-                                  </span>
+                                  {puedeAdministrarCursos(location.pathname) && (
+                                    <button
+                                      style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        verEntregasTarea(recurso.id, seccion.id);
+                                      }}
+                                    >
+                                      Ver entregas
+                                    </button>
+                                  )}
+                                  {puedeAdministrarCursos(location.pathname) && (
+                                    <>
+                                      <span
+                                        title="Modificar tarea"
+                                        style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          editarTarea(recurso.id);
+                                        }}
+                                      >
+                                        ✏️
+                                      </span>
+                                      <span
+                                        title="Eliminar tarea"
+                                        style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          eliminarTarea(recurso.id);
+                                        }}
+                                      >
+                                        ❌
+                                      </span>
+                                    </>
+                                  )}
                                 </>
                               ): recurso.tipoRecurso === 'FORO' ? (
                                 <>
