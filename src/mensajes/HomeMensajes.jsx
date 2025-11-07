@@ -31,10 +31,6 @@ const HomeMensajes = () => {
           const response = await axios.get(`${urlBase}/mensajes-privados/conversaciones/interlocutores`, config);
           const interlocutoresResponse = response.data;
 
-          const interlocutor = interlocutoresResponse[0]; // Selecciona el primer interlocutor como ejemplo
-          const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${interlocutor}`, config);
-          console.log(response2);
-
           const promesasDatosUsuario = interlocutoresResponse.map(interlocutorId => {
                 return axios.get(`${urlBase}/usuarios/${interlocutorId}`, config);
             });
@@ -50,12 +46,6 @@ const HomeMensajes = () => {
               tiempoTranscurrido: ""
             };
         });
-
-          /*
-          // Forzado de envio de mensaje
-          const response3 = await axios.post(`${urlBase}/mensajes-privados`, {idDestinatario: 8, cuerpoMensaje: "Prueba mensaje"}, config);
-          console.log(response3);
-          */
          setConversaciones(obtenerConversaciones);
         } catch (error) {
           console.error("Error al obtener las conversaciones: ", error);

@@ -5,12 +5,10 @@ import Spinner from '../general/Spinner';
 
 const Conversacion = ({ conversacionId, idUsuarioActual}) => {
 
-    console.log("ConversacionId: ", conversacionId);
-    console.log("IdUsuarioActual: ", idUsuarioActual);
-
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
     const [cargando, setCargando] = useState(false);
+    const [mensajeNuevo, setMensajeNuevo] = useState('');
 
     useEffect(() => {
         const fetchConversacion = async () => {
@@ -37,6 +35,33 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
     }, [conversacionId, idUsuarioActual]);
 
 
+    const handleEnviarMensaje = async () => {
+        
+        
+        if (mensajeNuevo.trim() === '') return;
+
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const payload = {
+                idDestinatario: conversacionId,
+                cuerpoMensaje: mensajeNuevo.trim(),
+            };
+            const response = await axios.post(`${urlBase}/mensajes-privados`, payload, config);
+            setMensajes([...mensajes, response.data]);
+            setMensajeNuevo('');
+        } catch (error) {
+            console.error("Error al enviar el mensaje: ", error);
+        }
+    }
+
+
   return (
     <>
         <HeaderChat>
@@ -49,7 +74,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
         {!cargando &&
             <MensajesScrollable>
                 {mensajes.map((msg) => {
-                    const esMensajePropio = msg.esPropio;
+                    const esMensajePropio = idUsuarioActual === msg.idRemitente;
                     return (
                         <MensajeBubble 
                             key={msg.id} 
@@ -67,8 +92,8 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
         
         {!cargando &&
             <InputArea>
-                <InputMensaje placeholder="Mensaje..." />
-                <BotonEnviar>Enviar</BotonEnviar>
+                <InputMensaje placeholder="Mensaje..." value={mensajeNuevo} onChange={(e) => setMensajeNuevo(e.target.value)} />
+                <BotonEnviar onClick={handleEnviarMensaje}>Enviar</BotonEnviar>
             </InputArea>
         }
     </>
