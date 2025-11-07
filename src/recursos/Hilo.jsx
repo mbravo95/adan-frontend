@@ -111,7 +111,7 @@ const Hilo = () => {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${token}`,
-					},
+					}
 				};
 				const response = await axios.get(`${urlBase}/recursos/foro/${recursoId}`, config);
 				const hilos = response.data.hilos || [];
@@ -146,6 +146,35 @@ const Hilo = () => {
 		});
 	}
 
+	function eliminarMensaje(idMensaje) {
+		const urlBase = import.meta.env.VITE_BACKEND_URL;
+		const token = localStorage.getItem("token");
+		const config = {
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			data: {
+				idForo: Number(recursoId),
+				idHilo: Number(hiloId),
+				idMensaje: Number(idMensaje)
+			}
+		};
+		console.log('[ELIMINAR MENSAJE] body:', config.data);
+		axios.delete(`${urlBase}/recursos/foro/hilo/mensaje`, config)
+			.then(() => {
+				setMensajes(prev => prev.filter(m => m.id !== idMensaje));
+				toast.success("Mensaje eliminado exitosamente");
+			})
+			.catch(() => {
+				toast.error("Error al eliminar el mensaje");
+			});
+	}
+
+	function irAEditarMensaje(idMensaje) {
+		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}/editar-mensaje/${idMensaje}`);
+	}
+
 	function renderMensaje(msg) {
 		return [
 			<MessageItem key={msg.id}>
@@ -158,6 +187,26 @@ const Hilo = () => {
 					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
 					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
 				</ContenidoMensaje>
+				<span
+					title="Editar mensaje"
+					style={{ position: 'absolute', right: 40, top: 12, color: '#ffd000', fontSize: '18px', cursor: 'pointer' }}
+					onClick={e => {
+						e.stopPropagation();
+						irAEditarMensaje(msg.id);
+					}}
+				>
+					✏️
+				</span>
+				<span
+					title="Eliminar mensaje"
+					style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+					onClick={e => {
+						e.stopPropagation();
+						eliminarMensaje(msg.id);
+					}}
+				>
+					❌
+				</span>
 			</MessageItem>,
 			Array.isArray(msg.respuestas) && msg.respuestas.length > 0 &&
 				msg.respuestas.map((resp) => renderMensaje(resp))

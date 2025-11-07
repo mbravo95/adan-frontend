@@ -219,10 +219,11 @@ const EditarForo = () => {
         Authorization: `Bearer ${token}`,
         },
       };
-      // va put en vez de post, falta implementarlo
-      const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: Number(seccion)}, config);
-      console.log(response);
-      toast.success("Foro agregado exitosamente", {
+    const body = {id: Number(foroId), nombre, visible};
+    console.log('[EDITAR FORO] body enviado:', body);
+    const response = await axios.put(`${urlBase}/recursos/foro`, body, config);
+    console.log('[EDITAR FORO] response:', response);
+      toast.success("Foro modificado exitosamente", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,

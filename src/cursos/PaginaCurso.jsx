@@ -403,9 +403,12 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/seccion/${seccionId}/tarea/${recursoId}/editar`);
   }
 
+  const verEntregasTarea = (recursoId, seccionId) => {
+    navigate(`/curso/${codigo}/tarea/${recursoId}/entregas`);
+  }
 
   const editarForo = (recursoId, seccionId) => {
-    navigate(`/curso/${codigo}/${seccionId}/foro/${recursoId}/editar`);
+    navigate(`/curso/${codigo}/seccion/${seccionId}/foro/${recursoId}/editar`);
   };
 
   const eliminarTarea = async (recursoId, seccionId) => {
@@ -774,6 +777,24 @@ const PaginaCurso = () => {
                               ) : recurso.tipoRecurso === 'TAREA' ? (
                                 <>
                                   <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                  <button
+                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      handleDescargarMaterial(codigo, seccion.id, recurso);
+                                    }}
+                                  >
+                                    Descargar
+                                  </button>
+                                  <button
+                                    style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      verEntregasTarea(recurso.id, seccion.id);
+                                    }}
+                                  >
+                                    Ver entregas
+                                  </button>
                                   <span
                                     title="Modificar tarea"
                                     style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}

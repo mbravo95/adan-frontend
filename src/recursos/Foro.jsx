@@ -73,6 +73,7 @@ const NewThreadButton = styled.button`
 	}
 `;
 
+
 const Foro = () => {
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
@@ -112,6 +113,28 @@ const Foro = () => {
 	const irAHilo = (hiloId) => {
 		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoid}/hilo/${hiloId}`);
 	}
+	const eliminarHilo = async (hiloId) => {
+		try {
+			const urlBase = import.meta.env.VITE_BACKEND_URL;
+			const token = localStorage.getItem("token");
+			const config = {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				data: {
+					idForo: Number(recursoid),
+					idHilo: Number(hiloId)
+				}
+			};
+			console.log('[ELIMINAR HILO] body:', config.data);
+			await axios.delete(`${urlBase}/recursos/foro/hilo`, config);
+			setHilos(prev => prev.filter(h => h.id !== hiloId));
+			toast.success("Hilo eliminado exitosamente");
+		} catch (err) {
+			toast.error("Error al eliminar el hilo");
+		}
+	};
 
 	return (
 		<Container>
@@ -127,11 +150,21 @@ const Foro = () => {
 						{hilos.length === 0 ? (
 							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay hilos en este foro.</div>
 						) : (
-											hilos.map((hilo) => (
-												<ThreadCard key={hilo.id} onClick={() => irAHilo(hilo.id)} style={{ cursor: 'pointer' }}>
-													<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }}>{hilo.titulo}</strong>
-												</ThreadCard>
-											))
+							hilos.map((hilo) => (
+								<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
+									<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
+									<span
+										title="Eliminar hilo"
+										style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+										onClick={e => {
+											e.stopPropagation();
+											eliminarHilo(hilo.id);
+										}}
+									>
+										❌
+									</span>
+								</ThreadCard>
+							))
 						)}
 					</ThreadsList>
 				)}
