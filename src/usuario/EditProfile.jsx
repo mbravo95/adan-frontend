@@ -329,6 +329,20 @@ const EditProfile = () => {
       const response = await axios.post(`${urlBase}/usuarios/perfil/foto`, formData, config);
       if (response.data && response.data.url) {
         setProfileImageUrl(response.data.url);
+        let fullPath = response.data.url;
+        if (!fullPath.startsWith('http')) {
+          let backendBase = import.meta.env.VITE_BACKEND_URL;
+          backendBase = backendBase.replace(/\/api$/, '');
+          fullPath = `${backendBase}${fullPath.startsWith('/') ? '' : '/'}${fullPath}`;
+        }
+        await axios.put(`${urlBase}/usuarios/perfil`, {
+          fotoPerfil: fullPath
+        }, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
       }
     } catch (err) {
       setErrorFoto("Error al subir la foto");
