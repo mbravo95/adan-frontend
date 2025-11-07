@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { puedeAdministrarCursos } from '../utils/permisoCursos';
 import styled from "styled-components";
 import axios from "axios";
 
@@ -97,6 +99,7 @@ const SeparadorAutor = styled.div`
 const Hilo = () => {
 	const { recursoId, hiloId, codigo, seccion } = useParams();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [titulo, setTitulo] = useState("");
 	const [mensajes, setMensajes] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -187,26 +190,30 @@ const Hilo = () => {
 					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
 					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
 				</ContenidoMensaje>
-				<span
-					title="Editar mensaje"
-					style={{ position: 'absolute', right: 40, top: 12, color: '#ffd000', fontSize: '18px', cursor: 'pointer' }}
-					onClick={e => {
-						e.stopPropagation();
-						irAEditarMensaje(msg.id);
-					}}
-				>
-					✏️
-				</span>
-				<span
-					title="Eliminar mensaje"
-					style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
-					onClick={e => {
-						e.stopPropagation();
-						eliminarMensaje(msg.id);
-					}}
-				>
-					❌
-				</span>
+					{puedeAdministrarCursos(location.pathname) && (
+						<span
+							title="Editar mensaje"
+							style={{ position: 'absolute', right: 40, top: 12, color: '#ffd000', fontSize: '18px', cursor: 'pointer' }}
+							onClick={e => {
+								e.stopPropagation();
+								irAEditarMensaje(msg.id);
+							}}
+						>
+							✏️
+						</span>
+					)}
+					{puedeAdministrarCursos(location.pathname) && (
+						<span
+							title="Eliminar mensaje"
+							style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+							onClick={e => {
+								e.stopPropagation();
+								eliminarMensaje(msg.id);
+							}}
+						>
+							❌
+						</span>
+					)}
 			</MessageItem>,
 			Array.isArray(msg.respuestas) && msg.respuestas.length > 0 &&
 				msg.respuestas.map((resp) => renderMensaje(resp))

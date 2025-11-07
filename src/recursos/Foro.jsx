@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { puedeAdministrarCursos } from '../utils/permisoCursos';
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -77,6 +79,7 @@ const NewThreadButton = styled.button`
 const Foro = () => {
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [hilos, setHilos] = useState([]);
 	const recursoid = useParams().recursoId;
 	const [nombreForo, setNombreForo] = useState("");
@@ -150,21 +153,23 @@ const Foro = () => {
 						{hilos.length === 0 ? (
 							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay hilos en este foro.</div>
 						) : (
-							hilos.map((hilo) => (
-								<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
-									<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
-									<span
-										title="Eliminar hilo"
-										style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
-										onClick={e => {
-											e.stopPropagation();
-											eliminarHilo(hilo.id);
-										}}
-									>
-										❌
-									</span>
-								</ThreadCard>
-							))
+											hilos.map((hilo) => (
+												<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
+													<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
+													{puedeAdministrarCursos(location.pathname) && (
+														<span
+															title="Eliminar hilo"
+															style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+															onClick={e => {
+																e.stopPropagation();
+																eliminarHilo(hilo.id);
+															}}
+														>
+															❌
+														</span>
+													)}
+												</ThreadCard>
+											))
 						)}
 					</ThreadsList>
 				)}
