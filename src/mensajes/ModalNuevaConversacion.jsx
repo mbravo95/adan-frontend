@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Spinner from '../general/Spinner';
 
-const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
+const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado, perfil, interlocutores }) => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [usuarios, setUsuarios] = useState([]);
 
-    /*
-    // Para buscar usuarios
+    
     useEffect(() => {
-        if (searchTerm.length < 3) {
-            setSearchResults([]);
-            return;
-        }
-
+        
         const fetchUsers = async () => {
             setLoading(true);
             try {
@@ -26,8 +23,39 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
                     params: { search: searchTerm } 
                 };
                 
-                const response = await axios.get(`${urlBase}/usuarios/buscar`, config); 
-                setSearchResults(response.data); 
+                const response1 = await axios.get(`${urlBase}/usuarios/${perfil.id}`, config);
+                const datosUsuario = response1.data;
+                const cursosProfesor = datosUsuario.cursosComoProfesor;
+                const cursosEstudiante = datosUsuario.cursosComoEstudiante;
+
+                const promesasDatosCursoProfesor= cursosProfesor.map(curso => {
+                    return axios.get(`${urlBase}/cursos/${curso.id}`, config);
+                });
+
+                const promesasDatosCursoEstudiante= cursosEstudiante.map(curso => {
+                    return axios.get(`${urlBase}/cursos/${curso.id}`, config);
+                });
+
+                const respuestasProfesores = await Promise.all(promesasDatosCursoProfesor);
+                const respuestasEstudiantes = await Promise.all(promesasDatosCursoEstudiante);
+
+                const estudiantesDeCursosProfesor = respuestasProfesores.flatMap(res => res.data.estudiantes);
+                const profesoresDeCursosEstudiante = respuestasEstudiantes.flatMap(res => res.data.profesores);
+
+                const usuariosCombinados = [...estudiantesDeCursosProfesor, ...profesoresDeCursosEstudiante];
+
+                const idsVistos = new Set();
+                const usuariosSinDuplicar = usuariosCombinados.filter(usuario => {
+                    if (idsVistos.has(usuario.id)) {
+                        return false;
+                    }
+                    if(interlocutores.includes(usuario.id)) return false;
+                    if(usuario.id === perfil.id) return false;
+                    idsVistos.add(usuario.id);
+                    return true;
+                });
+                setUsuarios(usuariosSinDuplicar);
+                setSearchResults(usuariosSinDuplicar);
             } catch (error) {
                 console.error("Error al buscar usuarios:", error);
             } finally {
@@ -35,20 +63,28 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
             }
         };
 
-        // Metodo para que no le peguen muchas veces a la api si se hiciera por el inputchange
-        const debounceTimer = setTimeout(() => {
-            fetchUsers();
-        }, 300);
-
-        return () => clearTimeout(debounceTimer);
+        fetchUsers();
     }, [searchTerm]);
 
-    */
 
-    // Llama a la función del padre y cierra el modal
     const handleSelectUser = (user) => {
         onUsuarioSeleccionado(user); 
         onClose();
+    };
+
+    const buscarUsuarios = (term) => {
+        console.log(term);
+        console.log(usuarios);
+        setSearchTerm(term);
+        if(searchResults.length > 0){
+            const resultadosFiltrados = usuarios.filter(user => 
+                `${user.nombres} ${user.apellidos} ${user.correo}`.toLowerCase().includes(term.toLowerCase())
+                || user.correo.toLowerCase().includes(term.toLowerCase())
+            );
+            setSearchResults(resultadosFiltrados);
+        } else {
+            setSearchResults(usuarios);
+        }
     };
 
 
@@ -64,12 +100,12 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado }) => {
                 type="text"
                 placeholder="Escribe nombre, apellido o correo..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => buscarUsuarios(e.target.value)}
             />
 
             <UserListContainer>
-                {loading && <div>Cargando...</div>}
-                {!loading && searchResults.length === 0 && searchTerm.length >= 3 && <div>No se encontraron usuarios.</div>}
+                {loading && <Spinner />}
+                {!loading && searchResults.length === 0 && searchTerm.length > 0 && <div>No se encontraron usuarios.</div>}
                 
                 {searchResults.map(user => (
                     <UserItem key={user.id} onClick={() => handleSelectUser(user)}>

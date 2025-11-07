@@ -13,11 +13,10 @@ const HomeMensajes = () => {
   const [nuevaConversacionModal, setNuevaConversacionModal] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const [interlocutores, setInterlocutores] = useState([]);
+  const [nuevoChat, setNuevoChat] = useState(false);
 
-  const { profile } = useAuth();
-
-  useEffect(() => {
-    const cargarConversaciones = async () => {
+  const cargarConversaciones = async () => {
       try {
           setCargando(true);
           const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -30,6 +29,7 @@ const HomeMensajes = () => {
           };
           const response = await axios.get(`${urlBase}/mensajes-privados/conversaciones/interlocutores`, config);
           const interlocutoresResponse = response.data;
+          setInterlocutores(interlocutoresResponse);
 
           const promesasDatosUsuario = interlocutoresResponse.map(interlocutorId => {
                 return axios.get(`${urlBase}/usuarios/${interlocutorId}`, config);
@@ -63,6 +63,9 @@ const HomeMensajes = () => {
         }
     };
 
+  const { profile } = useAuth();
+
+  useEffect(() => {
     cargarConversaciones();
   },[]);
 
@@ -75,8 +78,14 @@ const HomeMensajes = () => {
   }
 
 
-  const handleNuevaConversacion = (id) => {
-    setUsuarioSeleccionado(id);
+  const handleNuevaConversacion = (user) => {
+    setUsuarioSeleccionado(user.id);
+    setNuevoChat(true);
+  }
+
+  const handleNuevoChat = () => {
+    cargarConversaciones();
+    setNuevoChat(false);
   }
 
 
@@ -87,7 +96,9 @@ const HomeMensajes = () => {
                 {nuevaConversacionModal && (
                         <ModalNuevaConversacion
                             onClose={handleModal}
-                            onUsuarioSeleccionado={handleNuevaConversacion} 
+                            onUsuarioSeleccionado={handleNuevaConversacion}
+                            perfil={profile}
+                            interlocutores={interlocutores}
                         />
                 )}
 
@@ -112,6 +123,8 @@ const HomeMensajes = () => {
                             <Conversacion
                                 conversacionId={usuarioSeleccionado}
                                 idUsuarioActual={profile.id}
+                                esNuevaConversacion={nuevoChat}
+                                onHandleNuevoChat={handleNuevoChat}
                             />
                         ) : (
                             <MensajeInicial>Selecciona una conversación</MensajeInicial>

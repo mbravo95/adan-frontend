@@ -3,7 +3,7 @@ import styled, {css} from "styled-components";
 import axios from "axios";
 import Spinner from '../general/Spinner';
 
-const Conversacion = ({ conversacionId, idUsuarioActual}) => {
+const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat }) => {
 
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
@@ -24,7 +24,6 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
                     },
                 };
                 const response1 = await axios.get(`${urlBase}/usuarios/${conversacionId}`, config);
-                console.log(response1);
                 const destinatario = response1.data;
                 setParticipanteNombre(`${destinatario.nombres || ''} ${destinatario.apellidos || ''}`.trim());
                 setParticipanteAvatar(destinatario.fotoPerfil || null);
@@ -62,6 +61,9 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
             const response = await axios.post(`${urlBase}/mensajes-privados`, payload, config);
             setMensajes([...mensajes, response.data]);
             setMensajeNuevo('');
+            if(esNuevaConversacion){
+                onHandleNuevoChat();
+            }
         } catch (error) {
             console.error("Error al enviar el mensaje: ", error);
         }
@@ -84,7 +86,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
                     return (
                         <MensajeBubble 
                             key={msg.id} 
-                            propio={esMensajePropio}
+                            $propio={esMensajePropio}
                         >
                             <ContenidoMensaje propio={esMensajePropio}>
                                 {msg.cuerpoMensaje}
@@ -164,7 +166,7 @@ const MensajeBubble = styled.div`
     align-items: flex-end;
 
     ${props =>
-        props.propio
+        props.$propio
             ? css`
                   align-self: flex-end;
                   flex-direction: row-reverse;
