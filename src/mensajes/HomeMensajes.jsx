@@ -43,7 +43,8 @@ const HomeMensajes = () => {
               id: datosUsuario.id,
               participanteNombre: `${datosUsuario.nombres || ''} ${datosUsuario.apellidos || ''}`.trim(),
               ultimoMensaje: "",
-              tiempoTranscurrido: ""
+              tiempoTranscurrido: "",
+              fotoPerfil: datosUsuario.fotoPerfil || "/header/avatar.png"
             };
         });
          setConversaciones(obtenerConversaciones);
@@ -126,6 +127,7 @@ const HomeMensajes = () => {
                                 esNuevaConversacion={nuevoChat}
                                 onHandleNuevoChat={handleNuevoChat}
                                 onHandleCerrarConversacion={() => setUsuarioSeleccionado(null)}
+                                perfil={profile}
                             />
                         ) : (
                             <MensajeInicial>Selecciona una conversación</MensajeInicial>

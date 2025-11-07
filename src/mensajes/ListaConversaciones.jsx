@@ -11,7 +11,7 @@ const ListaConversaciones = ({ conversaciones, onSelect, selectedId }) => {
                 selected={conv.id === selectedId}
                 onClick={() => onSelect(conv.id)}
             >
-                <AvatarLista />
+                <AvatarLista fotourl={conv.fotoPerfil} />
                 <InfoConversacion>
                     <ParticipanteNombre>{conv.participanteNombre}</ParticipanteNombre>
                     <UltimoMensaje>{conv.ultimoMensaje ? conv.ultimoMensaje : ""}</UltimoMensaje>
@@ -44,7 +44,7 @@ export const ItemConversacion = styled.div`
         css`
             background-color: #e0f7fa;
             border-left: 5px solid #00bcd4;
-            padding-left: 5px; /* Ajuste para compensar el borde */
+            padding-left: 5px;
         `
     }
 `;
@@ -53,8 +53,17 @@ export const AvatarLista = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #bdbdbd;
+    
+    background-color: #bdbdbd; 
     margin-right: 10px;
+    
+    
+    background-size: cover;
+    background-position: center;
+    
+    background-image: url(${props => props.fotourl});
+
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 export const InfoConversacion = styled.div`
