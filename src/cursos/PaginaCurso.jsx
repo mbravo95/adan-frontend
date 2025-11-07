@@ -778,15 +778,6 @@ const PaginaCurso = () => {
                                 <>
                                   <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
                                   <button
-                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      handleDescargarMaterial(codigo, seccion.id, recurso);
-                                    }}
-                                  >
-                                    Descargar
-                                  </button>
-                                  <button
                                     style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
                                     onClick={e => {
                                       e.stopPropagation();
