@@ -84,7 +84,7 @@ function App() {
               <Route path="/curso/:codigo/foro/:recursoId" element={<Foro />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
               <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
-              <Route path="/curso/:codigo/:seccion/:recursoId/editar" element={<EditarTarea />} />
+              <Route path="/curso/:codigo/seccion/:seccion/tarea/:recursoId/editar" element={<EditarTarea />} />
               <Route path="/curso/:codigo/:seccion/foro/:recursoId/editar" element={<EditarForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId" element={<Hilo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/crear-hilo" element={<CrearHiloForo />} />

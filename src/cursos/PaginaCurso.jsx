@@ -399,6 +399,10 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/tarea/${recursoId}`);
   }
 
+  const editarTarea = (recursoId, seccionId) => {
+    navigate(`/curso/${codigo}/seccion/${seccionId}/tarea/${recursoId}/editar`);
+  }
+
 
   const editarForo = (recursoId, seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/foro/${recursoId}/editar`);
