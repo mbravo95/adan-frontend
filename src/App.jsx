@@ -30,7 +30,7 @@ import Busqueda from "./usuario/Busqueda";
 import CalificacionEstudianteCurso from "./cursos/CalificacionPerfilEstudiante";
 import CalificarEstudiante from "./cursos/CalificarEstudiante";
 import Foro from "./recursos/Foro";
-import EditarTarea from "./recursos/editarTarea";
+import EditarTarea from "./recursos/EditarTarea";
 import EditarForo from "./recursos/EditarForo";
 import Hilo from "./recursos/Hilo";
 import CrearHiloForo from "./recursos/CrearHiloForo";
