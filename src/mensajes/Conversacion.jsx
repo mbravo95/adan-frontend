@@ -1,22 +1,39 @@
 import { useEffect, useState } from 'react';
 import styled, {css} from "styled-components";
+import axios from "axios";
+import Spinner from '../general/Spinner';
 
 const Conversacion = ({ conversacionId, idUsuarioActual}) => {
 
+    console.log("ConversacionId: ", conversacionId);
+    console.log("IdUsuarioActual: ", idUsuarioActual);
+
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
-    
+    const [cargando, setCargando] = useState(false);
+
     useEffect(() => {
-        // Datos simulados
-        // Usuario es 100
-        setMensajes([
-            { id: 1, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-            { id: 2, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-            { id: 3, emisorId: 100, contenido: "Ejemplo de mensaje" }, // Usuario actual
-            { id: 4, emisorId: 100, contenido: "Ejemplo de mensaje" }, // Usuario actual
-            { id: 5, emisorId: 99, contenido: "Ejemplo de mensaje" }, // Otro usuario
-        ]);
-        
+        const fetchConversacion = async () => {
+            try {
+                setCargando(true);
+                const urlBase = import.meta.env.VITE_BACKEND_URL;
+                const token = localStorage.getItem("token");
+                const config = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
+                const response = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
+                setMensajes(response.data);
+            } catch (error) {
+                console.error("Error al obtener la conversación: ", error);
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        fetchConversacion();
     }, [conversacionId, idUsuarioActual]);
 
 
@@ -28,29 +45,32 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
             <ProfileIcon />
         </HeaderChat>
         
-        <MensajesScrollable>
-            {mensajes.map((msg) => {
-                const esMensajePropio = msg.emisorId === idUsuarioActual;
-
-                return (
-                    <MensajeBubble 
-                        key={msg.id} 
-                        propio={esMensajePropio} // Prop para alineación y estilos
-                    >
-                        <ContenidoMensaje propio={esMensajePropio}>
-                            {msg.contenido}
-                        </ContenidoMensaje>
-                        {/* Opcionalmente puedes mostrar el avatar en ambos lados o solo en el lado ajeno */}
-                        <AvatarChat propio={esMensajePropio} /> 
-                    </MensajeBubble>
-                );
-            })}
-        </MensajesScrollable>
+        {cargando && <Spinner />}
+        {!cargando &&
+            <MensajesScrollable>
+                {mensajes.map((msg) => {
+                    const esMensajePropio = msg.esPropio;
+                    return (
+                        <MensajeBubble 
+                            key={msg.id} 
+                            propio={esMensajePropio}
+                        >
+                            <ContenidoMensaje propio={esMensajePropio}>
+                                {msg.cuerpoMensaje}
+                            </ContenidoMensaje>
+                            <AvatarChat propio={esMensajePropio} /> 
+                        </MensajeBubble>
+                    );
+                })}
+            </MensajesScrollable>
+        }
         
-        <InputArea>
-            <InputMensaje placeholder="Mensaje..." />
-            <BotonEnviar>{/* Ícono de flecha o enviar */}</BotonEnviar>
-        </InputArea>
+        {!cargando &&
+            <InputArea>
+                <InputMensaje placeholder="Mensaje..." />
+                <BotonEnviar>Enviar</BotonEnviar>
+            </InputArea>
+        }
     </>
   )
 }

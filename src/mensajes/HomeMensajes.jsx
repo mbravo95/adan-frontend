@@ -5,18 +5,21 @@ import styled from "styled-components";
 import ListaConversaciones from "./ListaConversaciones";
 import Conversacion from "./Conversacion";
 import ModalNuevaConversacion from "./ModalNuevaConversacion";
+import Spinner from '../general/Spinner';
+import useAuth from "../hooks/useAuth";
 
 const HomeMensajes = () => {
-
-  const [interlocutores, setInterlocutores] = useState([]);
-  const [conversacionSeleccionada, setConversacionSeleccionada] = useState(null);
   const [conversaciones, setConversaciones] = useState([]);
   const [nuevaConversacionModal, setNuevaConversacionModal] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+  const [cargando, setCargando] = useState(false);
+
+  const { profile } = useAuth();
 
   useEffect(() => {
     const cargarConversaciones = async () => {
       try {
+          setCargando(true);
           const urlBase = import.meta.env.VITE_BACKEND_URL;
           const token = localStorage.getItem("token");
           const config = {
@@ -26,14 +29,34 @@ const HomeMensajes = () => {
             },
           };
           const response = await axios.get(`${urlBase}/mensajes-privados/conversaciones/interlocutores`, config);
-          setInterlocutores(response.data);
+          const interlocutoresResponse = response.data;
+
+          const interlocutor = interlocutoresResponse[0]; // Selecciona el primer interlocutor como ejemplo
+          const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${interlocutor}`, config);
+          console.log(response2);
+
+          const promesasDatosUsuario = interlocutoresResponse.map(interlocutorId => {
+                return axios.get(`${urlBase}/usuarios/${interlocutorId}`, config);
+            });
+
+          const respuestasUsuarios = await Promise.all(promesasDatosUsuario);
+          
+          const obtenerConversaciones = respuestasUsuarios.map((response, index) => {
+            const datosUsuario = response.data;
+            return {
+              id: datosUsuario.id,
+              participanteNombre: `${datosUsuario.nombres || ''} ${datosUsuario.apellidos || ''}`.trim(),
+              ultimoMensaje: "",
+              tiempoTranscurrido: ""
+            };
+        });
+
           /*
           // Forzado de envio de mensaje
           const response3 = await axios.post(`${urlBase}/mensajes-privados`, {idDestinatario: 8, cuerpoMensaje: "Prueba mensaje"}, config);
           console.log(response3);
           */
-         const conversas = [{id: 1, participanteNombre: "Jorge", ultimoMensaje: "10/11/2022", tiempoTranscurrido: "Hace tres años"}]
-         setConversaciones(conversas);
+         setConversaciones(obtenerConversaciones);
         } catch (error) {
           console.error("Error al obtener las conversaciones: ", error);
           toast.error("Error al obtener las conversaciones", {
@@ -45,6 +68,8 @@ const HomeMensajes = () => {
                     draggable: true,
                     progress: undefined,
                 });
+        } finally {
+          setCargando(false);
         }
     };
 
@@ -52,7 +77,7 @@ const HomeMensajes = () => {
   },[]);
 
   const handleSeleccionarConversacion = (convId) => {
-        setConversacionSeleccionada(convId);
+        setUsuarioSeleccionado(convId);
     };
 
   const handleModal = () => {
@@ -61,46 +86,49 @@ const HomeMensajes = () => {
 
 
   const handleNuevaConversacion = (id) => {
-    console.log('Iniciando una nueva conversacion ', id);
     setUsuarioSeleccionado(id);
   }
 
 
   return (
         
-        <>
-          {nuevaConversacionModal && (
-                  <ModalNuevaConversacion
-                      onClose={handleModal}
-                      onUsuarioSeleccionado={handleNuevaConversacion} 
-                  />
-          )}
+
+            <>
+                {nuevaConversacionModal && (
+                        <ModalNuevaConversacion
+                            onClose={handleModal}
+                            onUsuarioSeleccionado={handleNuevaConversacion} 
+                        />
+                )}
 
 
-          <MensajesLayout>
-              <PanelIzquierdo>
-                  <BotonNuevaConversacion onClick={handleModal}>
-                      + Nueva conversación
-                  </BotonNuevaConversacion>
-                  <ListaConversaciones
-                      conversaciones={conversaciones}
-                      onSelect={handleSeleccionarConversacion}
-                      selectedId={conversacionSeleccionada}
-                  />
-              </PanelIzquierdo>
+                <MensajesLayout>
+                    <PanelIzquierdo>
+                        <BotonNuevaConversacion onClick={handleModal}>
+                            + Nueva conversación
+                        </BotonNuevaConversacion>
+                        {cargando &&  <Spinner />}
+                        {!cargando &&
+                            <ListaConversaciones
+                                conversaciones={conversaciones}
+                                onSelect={handleSeleccionarConversacion}
+                                selectedId={usuarioSeleccionado}
+                            />
+                        }
+                    </PanelIzquierdo>
 
-              <PanelDerecho>
-                  {conversacionSeleccionada ? (
-                      <Conversacion
-                          conversacionId={conversacionSeleccionada}
-                          idUsuarioActual={100}
-                      />
-                  ) : (
-                      <MensajeInicial>Selecciona una conversación</MensajeInicial>
-                  )}
-              </PanelDerecho>
-          </MensajesLayout>
-        </>
+                    <PanelDerecho>
+                        {usuarioSeleccionado ? (
+                            <Conversacion
+                                conversacionId={usuarioSeleccionado}
+                                idUsuarioActual={profile.id}
+                            />
+                        ) : (
+                            <MensajeInicial>Selecciona una conversación</MensajeInicial>
+                        )}
+                    </PanelDerecho>
+                </MensajesLayout>
+            </>
   )
 }
 
@@ -117,8 +145,8 @@ const MensajesLayout = styled.div`
 `;
 
 const PanelIzquierdo = styled.div`
-    width: 300px;
-    min-width: 280px;
+    width: 350px;
+    min-width: 300px;
     background-color: #fff;
     border-right: 1px solid #ddd;
     padding: 15px;
