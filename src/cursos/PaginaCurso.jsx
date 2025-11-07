@@ -355,6 +355,40 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/subir-material`);
   };
 
+  const eliminarMaterial = async (recursoId, seccionId) => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`${urlBase}/recursos/cursos/${codigo}/secciones/${seccionId}/materiales/${recursoId}`, config);
+      toast.success("Material eliminado exitosamente", {
+        position: "top-center",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => window.location.reload(), 1600);
+    } catch (error) {
+      toast.error("Ocurrió un error al eliminar el material", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
   const agregarTarea = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-tarea`, {
       state: { cursoActual }
@@ -370,7 +404,7 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/${seccionId}/foro/${recursoId}/editar`);
   };
 
-  const eliminarTarea = async (recursoId) => {
+  const eliminarTarea = async (recursoId, seccionId) => {
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
@@ -379,8 +413,14 @@ const PaginaCurso = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        data: {
+          codigoCurso: codigo,
+          idSeccion: seccionId
+        }
       };
-      await axios.delete(`${urlBase}/recursos/tarea/${recursoId}`, config);
+      const url = `${urlBase}/recursos/tarea/${recursoId}`;
+      console.log("[ELIMINAR TAREA] recursoId:", recursoId, "url:", url, "body:", config.data);
+      await axios.delete(url, config);
       toast.success("Tarea eliminada exitosamente", {
         position: "top-center",
         autoClose: 1500,
@@ -402,7 +442,7 @@ const PaginaCurso = () => {
         progress: undefined,
       });
     }
-  }
+  };
 
   const agregarForo = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-foro`, {
@@ -676,6 +716,16 @@ const PaginaCurso = () => {
                                   >
                                     Descargar
                                   </button>
+                                  <span
+                                    title="Eliminar material"
+                                    style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      eliminarMaterial(recurso.id, seccion.id);
+                                    }}
+                                  >
+                                    ❌
+                                  </span>
                                 </>
                               ) : recurso.tipoRecurso === 'FORO' ? (
                                 <>
