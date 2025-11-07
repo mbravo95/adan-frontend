@@ -111,8 +111,8 @@ const LogoColumn = styled(ColumnBase)`
   flex: 1;
   max-width: 400px;
   align-items: center;
-  justify-content: center;
-  padding: 40px;
+  justify-content: flex-start;
+  padding: 40px 40px 0 40px;
 `;
 
 
@@ -190,8 +190,9 @@ const ForgotPasswordLink = styled.a`
 `;
 
 const LogoImage = styled.img`
-  max-width: 180px;
+  max-width: 340px;
   width: 100%;
   height: auto;
   object-fit: contain;
+  margin-top: -160px;
 `;
