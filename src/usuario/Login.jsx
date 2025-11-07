@@ -83,11 +83,8 @@ export default Login;
 
 
 const FullScreenContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
+  min-height: 100vh;
   width: 100vw;
-  height: 100vh;
   background-color: #9DCBD7;
   display: flex;
   justify-content: center;
@@ -193,7 +190,8 @@ const ForgotPasswordLink = styled.a`
 `;
 
 const LogoImage = styled.img`
-  width: 300px;
-  height: 300px;
+  max-width: 180px;
+  width: 100%;
+  height: auto;
   object-fit: contain;
 `;
