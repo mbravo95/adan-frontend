@@ -3,7 +3,7 @@ import styled, {css} from "styled-components";
 import axios from "axios";
 import Spinner from '../general/Spinner';
 
-const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat }) => {
+const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat, onHandleCerrarConversacion }) => {
 
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
@@ -73,7 +73,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
   return (
     <>
         <HeaderChat>
-            <BackButton>←</BackButton>
+            <BackButton onClick={onHandleCerrarConversacion}>←</BackButton>
             <TitleChat>{participanteNombre}</TitleChat>
             <ProfileIcon />
         </HeaderChat>

@@ -64,7 +64,7 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado, perfil, interl
         };
 
         fetchUsers();
-    }, [searchTerm]);
+    }, []);
 
 
     const handleSelectUser = (user) => {
@@ -73,14 +73,9 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado, perfil, interl
     };
 
     const buscarUsuarios = (term) => {
-        console.log(term);
-        console.log(usuarios);
         setSearchTerm(term);
-        if(searchResults.length > 0){
-            const resultadosFiltrados = usuarios.filter(user => 
-                `${user.nombres} ${user.apellidos} ${user.correo}`.toLowerCase().includes(term.toLowerCase())
-                || user.correo.toLowerCase().includes(term.toLowerCase())
-            );
+        if (term.length > 0) {
+            const resultadosFiltrados = usuarios.filter(user => `${user.nombres} ${user.apellidos} ${user.correo}`.toLowerCase().includes(term.toLowerCase()));
             setSearchResults(resultadosFiltrados);
         } else {
             setSearchResults(usuarios);
@@ -106,7 +101,7 @@ const ModalNuevaConversacion = ({ onClose, onUsuarioSeleccionado, perfil, interl
             <UserListContainer>
                 {loading && <Spinner />}
                 {!loading && searchResults.length === 0 && searchTerm.length > 0 && <div>No se encontraron usuarios.</div>}
-                
+
                 {searchResults.map(user => (
                     <UserItem key={user.id} onClick={() => handleSelectUser(user)}>
                         {user.nombres} {user.apellidos} ({user.correo})

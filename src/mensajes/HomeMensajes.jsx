@@ -125,6 +125,7 @@ const HomeMensajes = () => {
                                 idUsuarioActual={profile.id}
                                 esNuevaConversacion={nuevoChat}
                                 onHandleNuevoChat={handleNuevoChat}
+                                onHandleCerrarConversacion={() => setUsuarioSeleccionado(null)}
                             />
                         ) : (
                             <MensajeInicial>Selecciona una conversación</MensajeInicial>
