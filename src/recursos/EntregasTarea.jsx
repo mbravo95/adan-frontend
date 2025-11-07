@@ -4,12 +4,15 @@ import axios from "axios";
 import styled from "styled-components";
 import Spinner from "../general/Spinner";
 import useAuth from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const EntregasTarea = () => {
   const { tareaId } = useParams();
   const [entregas, setEntregas] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [calificandoId, setCalificandoId] = useState(null);
+  const [calificacion, setCalificacion] = useState("");
 
   useEffect(() => {
     const fetchEntregas = async () => {
@@ -59,6 +62,30 @@ const EntregasTarea = () => {
     }
   };
 
+  const handleEnviarCalificacion = async (entrega) => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const body = {
+        idEntregable: entrega.id,
+        idTarea: tareaId,
+        calificacion: calificacion
+      };
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.put(`${urlBase}/entregables/calificar`, body, config);
+      toast.success("Calificación enviada correctamente");
+      setCalificandoId(null);
+      setCalificacion("");
+    } catch (error) {
+      toast.error("Error al enviar la calificación");
+    }
+  };
+
   return (
     <PageContainer>
       <Title>Entregas de la tarea</Title>
@@ -73,7 +100,8 @@ const EntregasTarea = () => {
               <EntregaInfo>
                 <strong>Alumno:</strong> {entrega.nombres} {entrega.apellidos}<br />
                 <strong>Fecha de entrega:</strong> {entrega.fechaEntrega ? new Date(entrega.fechaEntrega).toLocaleString('es-ES') : "-"}<br />
-                <strong>Archivo:</strong> {entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : "-"}
+                <strong>Archivo:</strong> {entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : "-"}<br />
+                <strong>Calificación:</strong> {entrega.calificacion ? entrega.calificacion : "Sin calificar"}
               </EntregaInfo>
               <div style={{display:'flex', alignItems:'center'}}>
                 <DownloadButton
@@ -94,11 +122,37 @@ const EntregasTarea = () => {
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
-                  onClick={() => navigate(`/tarea/${tareaId}/entrega/${entrega.id}/calificar`)}
+                  onClick={() => setCalificandoId(entrega.id)}
                 >
                   Calificar entrega
                 </button>
               </div>
+              {calificandoId === entrega.id && (
+                <div style={{marginTop:'10px', display:'flex', alignItems:'center', gap:'10px'}}>
+                  <input
+                    type="text"
+                    value={calificacion}
+                    onChange={e => setCalificacion(e.target.value)}
+                    placeholder="Ingresa la calificación"
+                    style={{padding:'8px', borderRadius:'4px', border:'1px solid #ccc'}}
+                  />
+                  <button
+                    style={{background:'#007bff', color:'#fff', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
+                    onClick={() => handleEnviarCalificacion(entrega)}
+                  >
+                    Enviar
+                  </button>
+                  <button
+                    style={{background:'#ccc', color:'#333', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
+                    onClick={() => {
+                      setCalificandoId(null);
+                      setCalificacion("");
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </EntregaItem>
           ))}
         </EntregaList>
@@ -110,7 +164,7 @@ const EntregasTarea = () => {
 export default EntregasTarea;
 
 const PageContainer = styled.div`
-  max-width: 700px;
+  max-width: 1200px;
   margin: 40px auto;
   background: #f8f8f8;
   border-radius: 12px;
