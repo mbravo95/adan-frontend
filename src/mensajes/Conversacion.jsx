@@ -7,6 +7,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
 
     const [mensajes, setMensajes] = useState([]);
     const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
+    const [participanteAvatar, setParticipanteAvatar] = useState(null);
     const [cargando, setCargando] = useState(false);
     const [mensajeNuevo, setMensajeNuevo] = useState('');
 
@@ -22,8 +23,13 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
                         Authorization: `Bearer ${token}`,
                     },
                 };
-                const response = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
-                setMensajes(response.data);
+                const response1 = await axios.get(`${urlBase}/usuarios/${conversacionId}`, config);
+                console.log(response1);
+                const destinatario = response1.data;
+                setParticipanteNombre(`${destinatario.nombres || ''} ${destinatario.apellidos || ''}`.trim());
+                setParticipanteAvatar(destinatario.fotoPerfil || null);
+                const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
+                setMensajes(response2.data);
             } catch (error) {
                 console.error("Error al obtener la conversación: ", error);
             } finally {
@@ -92,8 +98,17 @@ const Conversacion = ({ conversacionId, idUsuarioActual}) => {
         
         {!cargando &&
             <InputArea>
-                <InputMensaje placeholder="Mensaje..." value={mensajeNuevo} onChange={(e) => setMensajeNuevo(e.target.value)} />
-                <BotonEnviar onClick={handleEnviarMensaje}>Enviar</BotonEnviar>
+                <InputMensaje placeholder="Mensaje..." value={mensajeNuevo} 
+                    onChange={(e) => setMensajeNuevo(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleEnviarMensaje();
+                        }
+                    }} 
+                />
+                <BotonEnviar onClick={handleEnviarMensaje}>
+                    Enviar
+                </BotonEnviar>
             </InputArea>
         }
     </>
