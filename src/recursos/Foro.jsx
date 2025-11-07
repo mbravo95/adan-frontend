@@ -7,27 +7,31 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Container = styled.div`
-	background-color: white;
-	width: 100vw;
-	min-height: calc(100vh - 60px);
-	margin-top: 60px;
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	box-sizing: border-box;
+		background-color: white;
+		width: 100vw;
+		min-height: calc(100vh - 60px);
+		margin-top: 60px;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		box-sizing: border-box;
+		max-width: 1400px;
+		margin-left: auto;
+		margin-right: auto;
 `;
 
 const Card = styled.div`
-	background: #f8f9fa;
-	border-radius: 12px;
-	box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-	padding: 32px 40px;
-	margin-top: 40px;
-	min-width: 400px;
-	max-width: 600px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+		background: #f8f9fa;
+		border-radius: 12px;
+		box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+		padding: 32px 40px;
+		margin-top: 40px;
+		min-width: 400px;
+		max-width: 1000px;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 `;
 
 const Title = styled.h1`
@@ -77,6 +81,18 @@ const NewThreadButton = styled.button`
 
 
 const Foro = () => {
+	// Cuenta mensajes y respuestas anidadas
+	function contarMensajesRecursivo(mensajes) {
+		if (!Array.isArray(mensajes)) return 0;
+		let total = 0;
+		for (const msg of mensajes) {
+			total += 1;
+			if (Array.isArray(msg.respuestas)) {
+				total += contarMensajesRecursivo(msg.respuestas);
+			}
+		}
+		return total;
+	}
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -154,21 +170,33 @@ const Foro = () => {
 							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay hilos en este foro.</div>
 						) : (
 											hilos.map((hilo) => (
-												<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
-													<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
-													{puedeAdministrarCursos(location.pathname) && (
-														<span
-															title="Eliminar hilo"
-															style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
-															onClick={e => {
-																e.stopPropagation();
-																eliminarHilo(hilo.id);
-															}}
-														>
-															❌
-														</span>
-													)}
-												</ThreadCard>
+																<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
+																	<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
+																						{hilo.mensajes && hilo.mensajes.length > 0 && (
+																							<span style={{ color: '#888', fontSize: '0.95em', marginBottom: '6px', display: 'block' }}>
+																								{(() => {
+																									const d = new Date(hilo.mensajes[0].fechaMensaje);
+																									const fecha = isNaN(d) ? '' : d.toLocaleString('es-ES', {
+																										day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+																									});
+																									const cantidad = contarMensajesRecursivo(hilo.mensajes);
+																									return `${fecha} · ${cantidad} mensaje${cantidad === 1 ? '' : 's'}`;
+																								})()}
+																							</span>
+																						)}
+																	{puedeAdministrarCursos(location.pathname) && (
+																		<span
+																			title="Eliminar hilo"
+																			style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+																			onClick={e => {
+																				e.stopPropagation();
+																				eliminarHilo(hilo.id);
+																			}}
+																		>
+																			❌
+																		</span>
+																	)}
+																</ThreadCard>
 											))
 						)}
 					</ThreadsList>

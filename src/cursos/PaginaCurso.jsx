@@ -636,62 +636,78 @@ const PaginaCurso = () => {
                     </SectionTitleContainer>
                   </SectionHeader>
                   {puedeAdministrarCursos(location.pathname) && (
-                    <ButtonGroup style={{ marginBottom: '10px' }}>
-                      <ActionButton 
-                        variant="success" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          agregarTarea(seccion.id);
-                        }}
-                      >
-                        Agregar Tarea
-                      </ActionButton>
-                      <ActionButton 
-                        variant="info" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          irSubirMaterial(seccion.id);
-                        }}
-                      >
-                        Subir Material
-                      </ActionButton>
-                      <ActionButton 
-                        variant="success" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          agregarForo(seccion.id);
-                        }}
-                      >
-                        Agregar Foro
-                      </ActionButton>
-                      <ActionButton 
-                        variant="success" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          agregarPagina(seccion.id);
-                        }}
-                      >
-                        Agregar Pagina
-                      </ActionButton>
-                      <ActionButton 
-                        variant="warning" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          modificarSeccion(seccion.id);
-                        }}
-                      >
-                        Modificar sección
-                      </ActionButton>
-                      <ActionButton 
-                        variant="danger" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          eliminarSeccion(seccion.id);
-                        }}
-                      >
-                        Eliminar sección
-                      </ActionButton>
-                    </ButtonGroup>
+                    seccion.titulo && seccion.titulo.trim().toLowerCase() === 'cartelera de novedades'
+                      ? (
+                        <ButtonGroup style={{ marginBottom: '10px' }}>
+                          <ActionButton 
+                            variant="success" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              agregarPagina(seccion.id);
+                            }}
+                          >
+                            Agregar Pagina
+                          </ActionButton>
+                        </ButtonGroup>
+                      )
+                      : (
+                        <ButtonGroup style={{ marginBottom: '10px' }}>
+                          <ActionButton 
+                            variant="success" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              agregarTarea(seccion.id);
+                            }}
+                          >
+                            Agregar Tarea
+                          </ActionButton>
+                          <ActionButton 
+                            variant="info" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              irSubirMaterial(seccion.id);
+                            }}
+                          >
+                            Subir Material
+                          </ActionButton>
+                          <ActionButton 
+                            variant="success" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              agregarForo(seccion.id);
+                            }}
+                          >
+                            Agregar Foro
+                          </ActionButton>
+                          <ActionButton 
+                            variant="success" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              agregarPagina(seccion.id);
+                            }}
+                          >
+                            Agregar Pagina
+                          </ActionButton>
+                          <ActionButton 
+                            variant="warning" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              modificarSeccion(seccion.id);
+                            }}
+                          >
+                            Modificar sección
+                          </ActionButton>
+                          <ActionButton 
+                            variant="danger" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              eliminarSeccion(seccion.id);
+                            }}
+                          >
+                            Eliminar sección
+                          </ActionButton>
+                        </ButtonGroup>
+                      )
                   )}
                   <SectionContent collapsed={collapsed}>
                     <SectionInfo>

@@ -98,8 +98,10 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
+      <ArbolFondo />
     </>
-  )
+  );
 }
 
+import ArbolFondo from './general/ArbolFondo';
 export default App
