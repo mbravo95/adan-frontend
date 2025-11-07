@@ -7,7 +7,6 @@ import CrearCurso from "./cursos/CrearCurso";
 import HomeUsuario from "./usuario/HomeUsuario";
 import EditProfile from "./usuario/EditProfile";
 import CrearUsuario from "./usuario/CrearUsuario";
-import CursosUsuario from "./cursos/CursosUsuario";
 import PaginaCurso from "./cursos/PaginaCurso";
 import Perfil from "./usuario/Perfil";
 import CrearSeccion from "./seccion/CrearSeccion";
@@ -18,7 +17,6 @@ import { AuthProvider } from "./context/AuthProvider";
 import OlvidoPassword from "./usuario/OlvidoPassword";
 import ListadoCursos from "./cursos/ListadoCursos";
 import NotFound from "./general/NotFound";
-import VerCurso from "./cursos/VerCurso";
 import CrearTarea from "./recursos/CrearTarea";
 import CrearForo from "./recursos/CrearForo";
 import HomeCurso from "./cursos/HomeCurso";
@@ -37,6 +35,8 @@ import EditarForo from "./recursos/EditarForo";
 import Hilo from "./recursos/Hilo";
 import CrearHiloForo from "./recursos/CrearHiloForo";
 import PublicarMensajeHiloForo from "./recursos/PublicarMensajeHiloForo";
+import HomeMensajes from "./mensajes/HomeMensajes";
+import GlobalStyles from "./general/GlobalStyles";
 
 function App() {
 
@@ -44,6 +44,7 @@ function App() {
 
   return (
     <>
+      <GlobalStyles />
       <AuthProvider>
         <ToastContainer />
         <BrowserRouter>
@@ -59,8 +60,8 @@ function App() {
             </Route>
             <Route element={<RutaProtegidaLayout/>}>
               <Route path="/home" element={<HomeUsuario />} />
-              <Route path="/busqueda" element={<ListadoCursos />} />
-              <Route path="/cursos" element={<CursosUsuario />} />
+              <Route path="/cursos" element={<ListadoCursos />} />
+              <Route path="/mensajes" element={<HomeMensajes />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />
               <Route path="/admin-cursos/desasignar-profesor" element={<DesasignarDocente />} />
@@ -71,7 +72,6 @@ function App() {
               <Route path="/crear-usuario" element={<CrearUsuario />} />
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/curso/:codigo" element={<PaginaCurso />} />
-              <Route path="/curso/:id" element={<VerCurso />} />
               <Route path="/curso/:codigo/alta-seccion" element={<CrearSeccion />} />
               <Route path="/curso/:codigo/participantes" element={<ParticipantesCurso />} />
               <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />

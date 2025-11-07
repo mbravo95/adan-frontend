@@ -2,6 +2,225 @@ import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Spinner from "../general/Spinner";
+
+
+const EditProfile = () => {
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState({
+    nombre: "",
+    apellido: "",
+    fechaNacimiento: ""
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const cargarDatosUsuario = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get(`${urlBase}/usuarios/perfil`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = response.data;
+        
+        // Formatear fecha para input date
+        const formatearFechaParaInput = (fechaString) => {
+          if (!fechaString) return "";
+          try {
+            // Si ya está en formato YYYY-MM-DD, devolverlo tal como está
+            if (fechaString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              return fechaString;
+            }
+            
+            // Intentar parsear diferentes formatos
+            const fecha = new Date(fechaString);
+            
+            // Verificar que la fecha sea válida
+            if (isNaN(fecha.getTime())) {
+              return "";
+            }
+            
+            // Formatear como YYYY-MM-DD
+            const año = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            
+            return `${año}-${mes}-${dia}`;
+          } catch (error) {
+            return "";
+          }
+        };
+
+        const fechaFormateada = formatearFechaParaInput(data.fechaNacimiento);
+        console.log("Fecha original:", data.fechaNacimiento);
+        console.log("Fecha formateada:", fechaFormateada);
+
+        setFormData({
+          nombre: data.nombres || "",
+          apellido: data.apellidos || "",
+          fechaNacimiento: fechaFormateada
+        });
+        
+      } catch (error) {
+        console.error("Error al cargar datos del usuario:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarDatosUsuario();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        console.error("No hay token disponible");
+        alert("No hay sesión activa. Por favor, inicia sesión nuevamente.");
+        return;
+      }
+
+      // Preparar datos para enviar
+      const datosParaEnviar = {
+        nombres: formData.nombre,
+        apellidos: formData.apellido,
+        fechaNacimiento: formData.fechaNacimiento,
+        fotoPerfil: null // Por ahora null, se implementará después
+      };
+
+      console.log("Enviando datos:", datosParaEnviar);
+
+      const response = await axios.put(`${urlBase}/usuarios/perfil`, datosParaEnviar, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log("Perfil actualizado exitosamente:", response.data);
+      
+      // Redirigir al perfil después de guardar
+      navigate('/usuario');
+      
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      // Aquí podrías agregar una notificación de error al usuario
+      alert("Error al guardar los cambios. Por favor, inténtalo de nuevo.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/usuario');
+  };
+
+  // Obtener nombre completo para mostrar
+  const nombreCompleto = () => {
+    if (formData.nombre && formData.apellido) {
+      return `${formData.nombre} ${formData.apellido}`.trim();
+    }
+    
+    // Fallback al correo si no hay datos cargados aún
+    return localStorage.getItem("mail")?.split('@')[0] || "Usuario";
+  };
+
+  return (
+    <Container>
+      <ContentWrapper>
+        {loading && <Spinner />}
+        {!loading &&
+          <MainContent>
+            <ProfileSection>
+              <ProfileImage>
+                👤
+              </ProfileImage>
+              <ProfileName>{nombreCompleto()}</ProfileName>
+              <ChangePhotoText>Cambiar foto de perfil</ChangePhotoText>
+            </ProfileSection>
+            
+            <FormWrapper>
+              <Title>Editar Perfil</Title>
+
+              <FormGroup>
+                <Label>Nombre</Label>
+                <Input
+                  type="text"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleInputChange}
+                  placeholder={loading ? "Cargando..." : "Ingresa tu nombre"}
+                  disabled={loading}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Apellido</Label>
+                <Input
+                  type="text"
+                  name="apellido"
+                  value={formData.apellido}
+                  onChange={handleInputChange}
+                  placeholder={loading ? "Cargando..." : "Ingresa tu apellido"}
+                  disabled={loading}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Fecha de Nacimiento</Label>
+                <Input
+                  type="date"
+                  name="fechaNacimiento"
+                  value={formData.fechaNacimiento}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </FormGroup>
+
+              <ButtonGroup>
+                <SaveButton onClick={handleSave} disabled={saving || loading}>
+                  {saving ? "Guardando..." : "Guardar cambios"}
+                </SaveButton>
+                <CancelButton onClick={handleCancel} disabled={saving}>
+                  Cancelar
+                </CancelButton>
+              </ButtonGroup>
+            </FormWrapper>
+          </MainContent>
+        }
+      </ContentWrapper>
+    </Container>
+  )
+}
+
+export default EditProfile;
+
+
 
 const Container = styled.div`
   background-color: #9DCBD7;

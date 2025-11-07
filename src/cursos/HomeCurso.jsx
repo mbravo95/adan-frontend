@@ -5,6 +5,236 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ModalConfirmacion from "../general/ModalConfirmacion";
+import Spinner from "../general/Spinner";
+
+const HomeCurso = () => {
+  const rol = localStorage.getItem("tipo");
+  const navigate = useNavigate();
+  
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const obtenerCursos = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          setError("No hay sesión activa");
+          setLoading(false);
+          return;
+        }
+
+        console.log("Obteniendo cursos desde:", `${urlBase}/cursos`);
+
+        const response = await axios.get(`${urlBase}/cursos`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log("Cursos obtenidos:", response.data);
+        setCursos(response.data || []);
+        
+      } catch (error) {
+        console.error("Error al obtener cursos:", error);
+        setError("Error al cargar los cursos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (rol === "ADMINISTRADOR") {
+      obtenerCursos();
+    }
+  }, [rol]);
+
+  const irCrearCurso = () => {
+    navigate('/cursos/crear');
+  };
+
+  const irEditarCurso = (curso) => {
+    console.log("Ir a editar curso", curso);
+  };
+
+  const irAsignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/asignar-profesor', {
+      state: { curso }
+    });
+  };
+
+   const irDesasignarCursoDocente = (curso) => {
+    navigate('/admin-cursos/desasignar-profesor', {
+      state: { curso }
+    });
+  };
+
+  const formatearFecha = (fechaString) => {
+    if (!fechaString) return "No disponible";
+    try {
+      const fecha = new Date(fechaString);
+      return fecha.toLocaleDateString('es-ES');
+    } catch (error) {
+      return fechaString;
+    }
+  };
+
+  if (rol !== "ADMINISTRADOR") {
+    return <Navigate to="/home" />;
+  }
+
+  const handleAbrirModal = (id) => {
+      setCursoSeleccionado(id);
+      setIsModalOpen(true);
+    };
+  
+    const handleCancelar = () => {
+      setIsModalOpen(false);
+      setCursoSeleccionado(null);
+    };
+  
+    const handleBorrarPagina = async () => {
+      if (!cursoSeleccionado) return;
+  
+      setLoading(true);
+  
+      try {    
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            },
+        };
+        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, null, config);
+        console.log(response);
+        toast.success("Curso eliminado exitosamente", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+        setCursos(cursos.filter(curso => curso.id !== cursoSeleccionado));
+        handleCancelar();
+      } catch (error) {
+        console.error("Error al eliminar el curso:", error);
+        toast.error("Ocurrió un error al eliminar el curso", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+      } finally {
+        setLoading(false);
+        setIsModalOpen(false);
+      }
+    }
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <Title>Administración de Cursos</Title>
+
+        <ModalConfirmacion
+                isOpen={isModalOpen}
+                message={`¿Estás seguro de que quieres eliminar este curso?`}
+                onConfirm={handleBorrarPagina}
+                onCancel={handleCancelar}
+                isLoading={loading}
+              />
+        
+        {loading && (
+          <Spinner />
+        )}
+
+        
+        
+        {error && (
+          <ErrorMessage>
+            {error}
+          </ErrorMessage>
+        )}
+        
+        {!loading && !error && (
+          <>
+            {cursos.length > 0 ? (
+              <CoursesGrid>
+                {cursos.map((curso) => (
+                  <CourseCard key={curso.id}>
+                    <CourseTitle>{curso.nombre || "Curso sin nombre"}</CourseTitle>
+                    <CourseDescription>
+                      {curso.descripcion || "Sin descripción disponible"}
+                    </CourseDescription>
+                    <CourseDetails>
+                      <DetailRow>
+                        <DetailLabel>Duración:</DetailLabel>
+                        <DetailValue>{curso.duracion || "No especificada"}</DetailValue>
+                      </DetailRow>
+                      <DetailRow>
+                        <DetailLabel>Modalidad:</DetailLabel>
+                        <DetailValue>{curso.modalidad || "No especificada"}</DetailValue>
+                      </DetailRow>
+                      <DetailRow>
+                        <DetailLabel>Precio:</DetailLabel>
+                        <DetailValue>
+                          {curso.precio ? `$${curso.precio}` : "No especificado"}
+                        </DetailValue>
+                      </DetailRow>
+                      <DetailRow>
+                        <DetailLabel>Fecha de creación:</DetailLabel>
+                        <DetailValue>{formatearFecha(curso.fechaCreacion)}</DetailValue>
+                      </DetailRow>
+                    </CourseDetails>
+                    <CourseActions>
+                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso)}>
+                        Asignar Profesor
+                      </AsignarDocenteButton>
+                      <DesasignarDocenteButton onClick={() => irDesasignarCursoDocente(curso)}>
+                        Desasignar Profesor
+                      </DesasignarDocenteButton>
+                      <EditButton onClick={() => irEditarCurso(curso)}>
+                        Editar
+                      </EditButton>
+                      <DeleteButton onClick={() => handleAbrirModal(curso.id)}>
+                        Eliminar
+                      </DeleteButton>
+                    </CourseActions>
+                  </CourseCard>
+                ))}
+              </CoursesGrid>
+            ) : (
+              <ErrorMessage>
+                No hay cursos disponibles
+              </ErrorMessage>
+            )}
+            
+            <AddButton onClick={irCrearCurso}>
+              Crear nuevo curso
+            </AddButton>
+          </>
+        )}
+        
+        <Outlet />
+      </ContentWrapper>
+    </Container>
+  )
+}
+
+export default HomeCurso;
+
+
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -217,229 +447,3 @@ const CourseActions = styled.div`
   margin-top: 20px;
   width: 100%;
 `;
-
-const HomeCurso = () => {
-  const rol = localStorage.getItem("tipo");
-  const navigate = useNavigate();
-  
-  const [cursos, setCursos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    const obtenerCursos = async () => {
-      try {
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
-          setError("No hay sesión activa");
-          setLoading(false);
-          return;
-        }
-
-        console.log("Obteniendo cursos desde:", `${urlBase}/cursos`);
-
-        const response = await axios.get(`${urlBase}/cursos`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log("Cursos obtenidos:", response.data);
-        setCursos(response.data || []);
-        
-      } catch (error) {
-        console.error("Error al obtener cursos:", error);
-        setError("Error al cargar los cursos");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (rol === "ADMINISTRADOR") {
-      obtenerCursos();
-    }
-  }, [rol]);
-
-  const irCrearCurso = () => {
-    navigate('/cursos/crear');
-  };
-
-  const irEditarCurso = (curso) => {
-    console.log("Ir a editar curso", curso);
-  };
-
-  const irAsignarCursoDocente = (curso) => {
-    navigate('/admin-cursos/asignar-profesor', {
-      state: { curso }
-    });
-  };
-
-   const irDesasignarCursoDocente = (curso) => {
-    navigate('/admin-cursos/desasignar-profesor', {
-      state: { curso }
-    });
-  };
-
-  const formatearFecha = (fechaString) => {
-    if (!fechaString) return "No disponible";
-    try {
-      const fecha = new Date(fechaString);
-      return fecha.toLocaleDateString('es-ES');
-    } catch (error) {
-      return fechaString;
-    }
-  };
-
-  if (rol !== "ADMINISTRADOR") {
-    return <Navigate to="/usuario" />;
-  }
-
-  const handleAbrirModal = (id) => {
-      setCursoSeleccionado(id);
-      setIsModalOpen(true);
-    };
-  
-    const handleCancelar = () => {
-      setIsModalOpen(false);
-      setCursoSeleccionado(null);
-    };
-  
-    const handleBorrarPagina = async () => {
-      if (!cursoSeleccionado) return;
-  
-      setLoading(true);
-  
-      try {    
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        const config = {
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-        };
-        const response = await axios.put(`${urlBase}/cursos/eliminar/${cursoSeleccionado}`, config);
-        console.log(response);
-        toast.success("Curso eliminado exitosamente", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
-        setCursos(cursos.filter(curso => curso.id !== cursoSeleccionado));
-        handleCancelar();
-      } catch (error) {
-        console.error("Error al eliminar el curso:", error);
-        toast.error("Ocurrió un error al eliminar el curso", {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-  return (
-    <Container>
-      <ContentWrapper>
-        <Title>Administración de Cursos</Title>
-
-        <ModalConfirmacion
-                isOpen={isModalOpen}
-                message={`¿Estás seguro de que quieres eliminar este curso?`}
-                onConfirm={handleBorrarPagina}
-                onCancel={handleCancelar}
-                isLoading={loading}
-              />
-        
-        {loading && (
-          <LoadingMessage>
-            Cargando cursos...
-          </LoadingMessage>
-        )}
-        
-        {error && (
-          <ErrorMessage>
-            {error}
-          </ErrorMessage>
-        )}
-        
-        {!loading && !error && (
-          <>
-            {cursos.length > 0 ? (
-              <CoursesGrid>
-                {cursos.map((curso) => (
-                  <CourseCard key={curso.id}>
-                    <CourseTitle>{curso.nombre || "Curso sin nombre"}</CourseTitle>
-                    <CourseDescription>
-                      {curso.descripcion || "Sin descripción disponible"}
-                    </CourseDescription>
-                    <CourseDetails>
-                      <DetailRow>
-                        <DetailLabel>Duración:</DetailLabel>
-                        <DetailValue>{curso.duracion || "No especificada"}</DetailValue>
-                      </DetailRow>
-                      <DetailRow>
-                        <DetailLabel>Modalidad:</DetailLabel>
-                        <DetailValue>{curso.modalidad || "No especificada"}</DetailValue>
-                      </DetailRow>
-                      <DetailRow>
-                        <DetailLabel>Precio:</DetailLabel>
-                        <DetailValue>
-                          {curso.precio ? `$${curso.precio}` : "No especificado"}
-                        </DetailValue>
-                      </DetailRow>
-                      <DetailRow>
-                        <DetailLabel>Fecha de creación:</DetailLabel>
-                        <DetailValue>{formatearFecha(curso.fechaCreacion)}</DetailValue>
-                      </DetailRow>
-                    </CourseDetails>
-                    <CourseActions>
-                      <AsignarDocenteButton onClick={() => irAsignarCursoDocente(curso)}>
-                        Asignar Profesor
-                      </AsignarDocenteButton>
-                      <DesasignarDocenteButton onClick={() => irDesasignarCursoDocente(curso)}>
-                        Desasignar Profesor
-                      </DesasignarDocenteButton>
-                      <EditButton onClick={() => irEditarCurso(curso)}>
-                        Editar
-                      </EditButton>
-                      <DeleteButton onClick={() => handleAbrirModal(curso.id)}>
-                        Eliminar
-                      </DeleteButton>
-                    </CourseActions>
-                  </CourseCard>
-                ))}
-              </CoursesGrid>
-            ) : (
-              <ErrorMessage>
-                No hay cursos disponibles
-              </ErrorMessage>
-            )}
-            
-            <AddButton onClick={irCrearCurso}>
-              Crear nuevo curso
-            </AddButton>
-          </>
-        )}
-        
-        <Outlet />
-      </ContentWrapper>
-    </Container>
-  )
-}
-
-export default HomeCurso;

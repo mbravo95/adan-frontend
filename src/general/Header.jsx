@@ -4,6 +4,205 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("Usuario");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setProfile } = useAuth();
+  
+  const getHeaderColors = () => {
+    const path = location.pathname;
+    
+    if (path.startsWith('/curso/')) {
+      return {
+        bgcolor: '#9DCBD7',
+        textcolor: 'black'
+      };
+    } else {
+      return {
+        bgcolor: 'white',
+        textcolor: 'black'
+      };
+    }
+  };
+
+  const { bgcolor, textcolor } = getHeaderColors();
+  
+  useEffect(() => {
+    const obtenerNombreUsuario = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          const mail = localStorage.getItem("mail");
+          setUserName(mail ? mail.split('@')[0] : "Usuario");
+          return;
+        }
+
+        const response = await axios.get(`${urlBase}/usuarios/perfil`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = response.data;
+        const nombres = data.nombres || "";
+        const apellidos = data.apellidos || "";
+        
+        if (nombres && apellidos) {
+          setUserName(`${nombres} ${apellidos}`.trim());
+        } else if (nombres) {
+          setUserName(nombres);
+        } else {
+          const mail = localStorage.getItem("mail");
+          setUserName(mail ? mail.split('@')[0] : "Usuario");
+        }
+        
+      } catch (error) {
+        console.error("Error al obtener datos del usuario:", error);
+        const mail = localStorage.getItem("mail");
+        setUserName(mail ? mail.split('@')[0] : "Usuario");
+      }
+    };
+
+    obtenerNombreUsuario();
+  }, []);
+
+  useEffect(() => {
+    const recargarPerfil = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/usuarios/perfil`, config);
+        setProfile(response.data);
+      } catch (error) {
+        console.log(error);
+        cerrarSesion();
+      }
+    }
+    recargarPerfil();
+  }, []);
+  
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("mail");
+    localStorage.removeItem("tipo");
+    setProfile({});
+    navigate("/login");
+  }
+
+  const irPerfil = () => {
+    navigate("/usuario");
+    setIsMenuOpen(false);
+  }
+
+  const irCursos = () => {
+    navigate("/cursos");
+  }
+
+  const irAlHome = () => {
+    navigate("/home");
+  }
+
+  const irAltaCursos = () => {
+    navigate("/crear-curso");
+  }
+
+  const irAltaUsuario = () => {
+    navigate("/crear-usuario");
+  }
+
+  const irAdminCursos = () => {
+    navigate("/admin-cursos");
+  }
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  }
+
+  const handleClickOutside = () => {
+    setIsMenuOpen(false);
+  }
+
+  const irBusquedaUsuarios = () => {
+    navigate("/buscar-usuarios");
+    setIsMenuOpen(false);
+  }
+
+  const esUsuarioRegular = localStorage.getItem("tipo") !== "ADMINISTRADOR";
+  
+  return (
+    <>
+      <HeaderContainer bgcolor={bgcolor}>
+        <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irAlHome} />
+        
+        <NavigationSection>
+            <NavButton textcolor={textcolor} onClick={irCursos}>
+              Cursos
+            </NavButton>
+            {esUsuarioRegular ? null : (
+              <>
+                <NavButton textcolor={textcolor} onClick={irAltaCursos}>
+                  Crear Curso
+                </NavButton>
+                <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
+                  Crear Usuario
+                </NavButton> 
+                <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
+                  Buscar Usuarios
+                </NavButton>
+                <NavButton textcolor={textcolor} onClick={irAdminCursos}>
+                  Administrar Cursos
+                </NavButton> 
+              </>
+            )}
+        </NavigationSection>
+        
+        <UserMenuContainer>
+          <UserContainer textcolor={textcolor} onClick={toggleMenu}>
+            <UserName textcolor={textcolor}>{userName}</UserName>
+            <UserIcon>
+              👤
+            </UserIcon>
+          </UserContainer>
+          <DropdownMenu $isopen={isMenuOpen}>
+            <MenuItem onClick={irPerfil}>
+              Perfil
+            </MenuItem>
+            <MenuItem onClick={cerrarSesion}>
+              Cerrar sesión
+            </MenuItem>
+          </DropdownMenu>
+        </UserMenuContainer>
+      </HeaderContainer>
+      {isMenuOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 999
+          }}
+          onClick={handleClickOutside}
+        />
+      )}
+    </>
+  )
+}
+
+export default Header;
+
 const HeaderContainer = styled.header`
   background-color: ${props => props.bgcolor || 'white'};
   width: 100%;
@@ -117,199 +316,3 @@ const MenuItem = styled.div`
     background-color: #f5f5f5;
   }
 `;
-
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userName, setUserName] = useState("Usuario");
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setProfile, profile } = useAuth();
-  
-  const getHeaderColors = () => {
-    const path = location.pathname;
-    
-    if (path.startsWith('/curso/')) {
-      return {
-        bgcolor: '#9DCBD7',
-        textcolor: 'black'
-      };
-    } else {
-      return {
-        bgcolor: 'white',
-        textcolor: 'black'
-      };
-    }
-  };
-
-  const { bgcolor, textcolor } = getHeaderColors();
-  
-  useEffect(() => {
-    const obtenerNombreUsuario = async () => {
-      try {
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
-          const mail = localStorage.getItem("mail");
-          setUserName(mail ? mail.split('@')[0] : "Usuario");
-          return;
-        }
-
-        const response = await axios.get(`${urlBase}/usuarios/perfil`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        const data = response.data;
-        const nombres = data.nombres || "";
-        const apellidos = data.apellidos || "";
-        
-        if (nombres && apellidos) {
-          setUserName(`${nombres} ${apellidos}`.trim());
-        } else if (nombres) {
-          setUserName(nombres);
-        } else {
-          const mail = localStorage.getItem("mail");
-          setUserName(mail ? mail.split('@')[0] : "Usuario");
-        }
-        
-      } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
-        const mail = localStorage.getItem("mail");
-        setUserName(mail ? mail.split('@')[0] : "Usuario");
-      }
-    };
-
-    obtenerNombreUsuario();
-  }, []);
-
-  useEffect(() => {
-    const recargarPerfil = async () => {
-      try {
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await axios.get(`${urlBase}/usuarios/perfil`, config);
-        setProfile(response.data);
-      } catch (error) {
-        console.log(error);
-        cerrarSesion();
-      }
-    }
-    recargarPerfil();
-  }, []);
-  
-  const cerrarSesion = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("mail");
-    localStorage.removeItem("tipo");
-    setProfile({});
-    navigate("/login");
-  }
-
-  const irPerfil = () => {
-    navigate("/usuario");
-    setIsMenuOpen(false);
-  }
-
-  const irCursos = () => {
-    navigate("/cursos");
-  }
-
-  const irAltaCursos = () => {
-    navigate("/crear-curso");
-  }
-
-  const irAltaUsuario = () => {
-    navigate("/crear-usuario");
-  }
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  }
-
-  const irBusquedaCursos = () => {
-    navigate("/busqueda");
-    setIsMenuOpen(false);
-  }
-
-  const handleClickOutside = () => {
-    setIsMenuOpen(false);
-  }
-
-  const irBusquedaUsuarios = () => {
-    navigate("/buscar-usuarios");
-    setIsMenuOpen(false);
-  }
-
-  const esUsuarioRegular = localStorage.getItem("tipo") !== "ADMINISTRADOR";
-  
-  return (
-    <>
-      <HeaderContainer bgcolor={bgcolor}>
-        <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irCursos} />
-        
-        <NavigationSection>
-            <NavButton textcolor={textcolor} onClick={irCursos}>
-              Cursos
-            </NavButton>
-            {esUsuarioRegular ? null : (
-              <>
-                <NavButton textcolor={textcolor} onClick={irAltaCursos}>
-                  Crear Curso
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
-                  Crear Usuario
-                </NavButton> 
-                <NavButton textcolor={textcolor} onClick={irBusquedaCursos}>
-                  Buscar Cursos
-                </NavButton> 
-                <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
-                  Buscar Usuarios
-                </NavButton> 
-              </>
-            )}
-        </NavigationSection>
-        
-        <UserMenuContainer>
-          <UserContainer textcolor={textcolor} onClick={toggleMenu}>
-            <UserName textcolor={textcolor}>{userName}</UserName>
-            <UserIcon>
-              👤
-            </UserIcon>
-          </UserContainer>
-          <DropdownMenu $isopen={isMenuOpen}>
-            <MenuItem onClick={irPerfil}>
-              Perfil
-            </MenuItem>
-            <MenuItem onClick={cerrarSesion}>
-              Cerrar sesión
-            </MenuItem>
-          </DropdownMenu>
-        </UserMenuContainer>
-      </HeaderContainer>
-      {isMenuOpen && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: 999
-          }}
-          onClick={handleClickOutside}
-        />
-      )}
-    </>
-  )
-}
-
-export default Header

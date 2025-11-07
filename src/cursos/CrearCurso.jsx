@@ -4,6 +4,162 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
+const CrearCurso = () => {
+  const rol = localStorage.getItem("tipo");
+  const navigate = useNavigate();
+
+  const [nombre, setNombre] = useState("");
+  const [turno, setTurno] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [anio, setAnio] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  
+  
+  const crear = async () => {
+    if (!nombre || !turno || !codigo || !anio) {
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      const response = await axios.post(`${urlBase}/cursos/alta`, {
+        nombre, 
+        turno, 
+        codigo, 
+        anio: Number(anio)
+      }, config);
+      
+      console.log(response);
+      toast.success("Curso creado exitosamente", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      
+      navigate('/admin-cursos');
+      
+    } catch (error) {
+      console.log(error);
+      const message = error.response?.data || "Error al crear el curso";
+      toast.error(message, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelar = () => {
+    navigate('/admin-cursos');
+  };
+
+  if (rol !== "ADMINISTRADOR") {
+    return <Navigate to="/home" />;
+  }
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Crear Nuevo Curso</Title>
+
+          <FormGroup>
+            <Label>Nombre del Curso</Label>
+            <Input
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              placeholder="Ingrese el nombre del curso"
+              disabled={loading}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Turno</Label>
+            <Select
+              value={turno}
+              onChange={(e) => setTurno(e.target.value)}
+              disabled={loading}
+            >
+              <option value="">Seleccione un turno</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Vespertino">Vespertino</option>
+              <option value="Nocturno">Nocturno</option>
+            </Select>
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Código del Curso</Label>
+            <Input
+              type="text"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+              placeholder="Ingrese el código del curso"
+              disabled={loading}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Año</Label>
+            <Input
+              type="number"
+              value={anio}
+              onChange={(e) => setAnio(e.target.value)}
+              placeholder="Ingrese el año"
+              min="2020"
+              max="2030"
+              disabled={loading}
+            />
+          </FormGroup>
+
+          <ButtonGroup>
+            <CreateButton onClick={crear} disabled={loading}>
+              {loading ? "Creando..." : "Crear Curso"}
+            </CreateButton>
+            <CancelButton onClick={cancelar} disabled={loading}>
+              Cancelar
+            </CancelButton>
+          </ButtonGroup>
+        </FormWrapper>
+      </ContentWrapper>
+      <Outlet />
+    </Container>
+  );
+};
+
+export default CrearCurso;
+
+
+
 const Container = styled.div`
   background-color: #9DCBD7;
   width: 100vw;
@@ -132,155 +288,3 @@ const CancelButton = styled(Button)`
     border-color: #bbb;
   }
 `;
-
-const CrearCurso = () => {
-  const rol = localStorage.getItem("tipo");
-  const navigate = useNavigate();
-
-  const [nombre, setNombre] = useState("");
-  const [turno, setTurno] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [anio, setAnio] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const crear = async () => {
-    if (!nombre || !turno || !codigo || !anio) {
-      toast.error("Debe completar todos los campos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      
-      const response = await axios.post(`${urlBase}/cursos/alta`, {
-        nombre, 
-        turno, 
-        codigo, 
-        anio: Number(anio)
-      }, config);
-      
-      console.log(response);
-      toast.success("Curso creado exitosamente", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      
-      navigate('/admin-cursos');
-      
-    } catch (error) {
-      console.log(error);
-      const message = error.response?.data || "Error al crear el curso";
-      toast.error(message, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const cancelar = () => {
-    navigate('/admin-cursos');
-  };
-
-  if (rol !== "ADMINISTRADOR") {
-    return <Navigate to="/usuario" />;
-  }
-
-  return (
-    <Container>
-      <ContentWrapper>
-        <FormWrapper>
-          <Title>Crear Nuevo Curso</Title>
-
-          <FormGroup>
-            <Label>Nombre del Curso</Label>
-            <Input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              placeholder="Ingrese el nombre del curso"
-              disabled={loading}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Turno</Label>
-            <Select
-              value={turno}
-              onChange={(e) => setTurno(e.target.value)}
-              disabled={loading}
-            >
-              <option value="">Seleccione un turno</option>
-              <option value="Matutino">Matutino</option>
-              <option value="Vespertino">Vespertino</option>
-              <option value="Nocturno">Nocturno</option>
-            </Select>
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Código del Curso</Label>
-            <Input
-              type="text"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-              placeholder="Ingrese el código del curso"
-              disabled={loading}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Año</Label>
-            <Input
-              type="number"
-              value={anio}
-              onChange={(e) => setAnio(e.target.value)}
-              placeholder="Ingrese el año"
-              min="2020"
-              max="2030"
-              disabled={loading}
-            />
-          </FormGroup>
-
-          <ButtonGroup>
-            <CreateButton onClick={crear} disabled={loading}>
-              {loading ? "Creando..." : "Crear Curso"}
-            </CreateButton>
-            <CancelButton onClick={cancelar} disabled={loading}>
-              Cancelar
-            </CancelButton>
-          </ButtonGroup>
-        </FormWrapper>
-      </ContentWrapper>
-      <Outlet />
-    </Container>
-  );
-};
-
-export default CrearCurso;

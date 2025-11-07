@@ -2,6 +2,176 @@ import styled, { css, keyframes } from 'styled-components';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import useAuth from "../hooks/useAuth";
+import Spinner from '../general/Spinner';
+
+
+const ListadoCursos = () => {
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isButtonActive, setIsButtonActive] = useState(false);
+  const [cursos, setCursos] = useState([]);
+  const [cursosFiltrados, setCursosFiltrados] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const rol = localStorage.getItem("tipo");
+  const navigate = useNavigate();
+  const { profile } = useAuth();
+
+  const toggleFilter = () => {
+    setIsButtonActive(false);
+    setIsFilterVisible(prev => !prev);
+  };
+
+  useEffect(() => {
+    const cargarCursos = async () => {
+      try {
+        setLoading(true);
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/cursos`, config);
+        const tipo = localStorage.getItem("tipo");
+        if(tipo == "USUARIO"){
+          if(profile.id) {
+            const filtrados = response.data.filter(curso => curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id) || curso.estudiantes.some(cursoEstudiante => cursoEstudiante.id == profile.id));
+            setCursos(filtrados);
+            setCursosFiltrados(filtrados); 
+          }
+        } else {
+          setCursos(response.data);
+          setCursosFiltrados(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarCursos();
+  }, [profile]);
+
+
+  const filtrarCursos = async () => {
+    if(busqueda == ""){
+      setCursosFiltrados(cursos);
+      return;
+    }
+    const texto = busqueda.toLowerCase();
+    const urlBase = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      setLoading(true);
+      const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
+      const cursosRetornados = response.data;
+      setCursosFiltrados(cursos.filter(curso => cursosRetornados.some(cursoRet => cursoRet.id == curso.id))); 
+    } catch (error) {
+      console.log(error);
+      setCursosFiltrados([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const resetearBusqueda = () => {
+    setBusqueda("");
+    setCursosFiltrados(cursos);
+  }
+
+  const mostrarMisCursos = () => {
+    setBusqueda("");
+    setCursosFiltrados(cursos);
+    setIsFilterVisible(false);
+    setIsButtonActive(true);
+  }
+
+  const irAlCurso = (codigo) =>{
+    navigate(`/curso/${codigo}`);
+  }
+
+  const formatearListaProfesores = (profesores) => {
+    const nombresCompletos = profesores.map(profesor => {
+        return `${profesor.nombres} ${profesor.apellidos}`;
+    });
+    return nombresCompletos.join(', ');
+  };
+
+  const rolEnCurso = (curso) => {
+    const tipo = localStorage.getItem("tipo");
+
+    if(tipo == "USUARIO"){
+      if(curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id))
+        return "PROFESOR";
+      else
+      return "ESTUDIANTE";
+    } else {
+      return "SIN ROL"
+    }
+  }
+
+
+  return (
+    <>
+      <PageContainer>
+      <ContentWrapper>
+        <PrimaryControls>
+          { rol != "ADMINISTRADOR" &&
+            <PrimaryButton onClick={() => mostrarMisCursos()} $isactive={isButtonActive}>Mis cursos</PrimaryButton>
+          }
+          <PrimarySearchButton onClick={toggleFilter} $isactive={isFilterVisible}>
+            <SearchIcon src={isFilterVisible ? "/search/lupa_white.png" : "/search/lupa_black.png"} alt="Buscar" />
+            Buscar curso
+          </PrimarySearchButton>
+        </PrimaryControls>
+        <FilterWrapper $isvisible={isFilterVisible}>
+          <SecondaryControls>
+            <FilterInputWrapper>
+              <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
+              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} value={busqueda} />
+            </FilterInputWrapper>
+            <SearchButton onClick={() => filtrarCursos()}>Buscar</SearchButton>
+            <ResetButton onClick={() => resetearBusqueda()}>Restablecer resultados</ResetButton>
+          </SecondaryControls>
+        </FilterWrapper>
+        {loading && <Spinner />}
+        {!loading && 
+          <CourseList>
+            {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
+              <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
+                <Details>
+                  <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
+                  <CourseMeta>{curso.turno}</CourseMeta>
+                  <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
+                  <CourseMeta>{rolEnCurso(curso)}</CourseMeta>
+                </Details>
+              </CourseCard>
+            ))}
+            { cursosFiltrados.length == 0 && 
+                <NoResultsMessage>
+                  No se encontraron cursos que coincidan con la búsqueda
+                </NoResultsMessage>
+            }
+          </CourseList>
+        }
+      </ContentWrapper>
+    </PageContainer>
+    </>
+  )
+}
+
+export default ListadoCursos;
 
 
 const LightBlueBackground = '#a7d9ed';
@@ -197,136 +367,3 @@ const NoResultsMessage = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
   margin-top: 20px;
 `;
-
-
-const ListadoCursos = () => {
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [isButtonActive, setIsButtonActive] = useState(false);
-  const [cursos, setCursos] = useState([]);
-  const [cursosFiltrados, setCursosFiltrados] = useState([]);
-  const [busqueda, setBusqueda] = useState("");
-
-  const rol = localStorage.getItem("tipo");
-  const navigate = useNavigate();
-
-  const toggleFilter = () => {
-    setIsButtonActive(false);
-    setIsFilterVisible(prev => !prev);
-  };
-
-  useEffect(() => {
-    const cargarCursos = async () => {
-      try {
-        const urlBase = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await axios.get(`${urlBase}/cursos`, config);
-        setCursos(response.data);
-        setCursosFiltrados(response.data); 
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    cargarCursos();
-  }, []);
-
-
-  const filtrarCursos = async () => {
-    if(busqueda == ""){
-      setCursosFiltrados(cursos);
-      return;
-    }
-    const texto = busqueda.toLowerCase();
-    const urlBase = import.meta.env.VITE_BACKEND_URL;
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    try {
-      const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
-      setCursosFiltrados(response.data); 
-    } catch (error) {
-      console.log(error);
-      setCursosFiltrados([]);
-    }
-  }
-
-  const resetearBusqueda = () => {
-    setBusqueda("");
-    setCursosFiltrados(cursos);
-  }
-
-  const mostrarMisCursos = () => {
-    setBusqueda("");
-    setCursosFiltrados(cursos);
-    setIsFilterVisible(false);
-    setIsButtonActive(true);
-  }
-
-  const irAlCurso = (codigo) =>{
-    navigate(`/curso/${codigo}`);
-  }
-
-  const formatearListaProfesores = (profesores) => {
-    const nombresCompletos = profesores.map(profesor => {
-        return `${profesor.nombres} ${profesor.apellidos}`;
-    });
-    return nombresCompletos.join(', ');
-};
-
-
-  return (
-    <>
-      <PageContainer>
-      <ContentWrapper>
-        <PrimaryControls>
-          { rol != "ADMINISTRADOR" &&
-            <PrimaryButton onClick={() => mostrarMisCursos()} $isactive={isButtonActive}>Mis cursos</PrimaryButton>
-          }
-          <PrimarySearchButton onClick={toggleFilter} $isactive={isFilterVisible}>
-            <SearchIcon src={isFilterVisible ? "/search/lupa_white.png" : "/search/lupa_black.png"} alt="Buscar" />
-            Buscar curso
-          </PrimarySearchButton>
-        </PrimaryControls>
-        <FilterWrapper $isvisible={isFilterVisible}>
-          <SecondaryControls>
-            <FilterInputWrapper>
-              <SearchIcon src="/search/lupa_black.png" alt="Filtro" />
-              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} value={busqueda} />
-            </FilterInputWrapper>
-            <SearchButton onClick={() => filtrarCursos()}>Buscar</SearchButton>
-            <ResetButton onClick={() => resetearBusqueda()}>Restablecer resultados</ResetButton>
-          </SecondaryControls>
-        </FilterWrapper>
-        <CourseList>
-          {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
-            <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
-              <Details>
-                <CourseName>{curso.nombre} <CourseCode>{curso.codigo}</CourseCode></CourseName>
-                <CourseMeta>{curso.turno}</CourseMeta>
-                <CourseMeta>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</CourseMeta>
-              </Details>
-            </CourseCard>
-          ))}
-          { cursosFiltrados.length == 0 && 
-              <NoResultsMessage>
-                No se encontraron cursos que coincidan con la búsqueda
-              </NoResultsMessage>
-          }
-        </CourseList>
-      </ContentWrapper>
-    </PageContainer>
-    </>
-  )
-}
-
-export default ListadoCursos

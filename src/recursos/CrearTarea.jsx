@@ -1,8 +1,155 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
+import useCursoData from "../hooks/useCursoData";
+
+const CrearTarea = () => {
+
+    const [nombre, setNombre] = useState("");
+    const [descripcion, setDescripcion] = useState("");
+    const [visible, setVisible] = useState(false);
+    const [fechaInicio, setFechaInicio] = useState("");
+    const [fechaFin, setFechaFin] = useState("");
+
+    const location = useLocation();
+    const params = useParams();
+    let seccionid = location.state?.seccionid;
+    let cursoid = location.state?.id;
+    // fallback: si no viene por state, tomar de params
+    if (seccionid === undefined && params.seccion) {
+      seccionid = params.seccion;
+    }
+    if (cursoid === undefined && params.codigo) {
+      cursoid = params.codigo;
+    }
+    const navigate = useNavigate();
+
+    const { esProfesor, loadingSecciones  } = useCursoData(cursoid);
+    const rol = localStorage.getItem("tipo");
+    if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
+      return <Navigate to="/home" />;
+    }
+
+  const crearTarea = async () => {
+    if(nombre == "" || descripcion == "" || fechaInicio == "" || fechaFin == 0){
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    const fechaI = new Date(fechaInicio);
+    const fechaF = new Date(fechaFin);
+
+    if(fechaI >= fechaF){
+      toast.error("La fecha de inicio debe ser menor a la fecha de fin", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+        const fechaInicioISO = fechaInicio ? new Date(fechaInicio).toISOString() : "";
+        const fechaFinISO = fechaFin ? new Date(fechaFin).toISOString() : "";
+        const idSeccionNum = Number(seccionid);
+        if (isNaN(idSeccionNum)) {
+          console.error("idSeccion es NaN. Valor recibido:", seccionid);
+          toast.error("No se pudo determinar el id de la sección. No se envía la tarea.");
+          return;
+        }
+        const datosTarea = {
+          nombre: String(nombre),
+          visible: Boolean(visible),
+          fechaInicio: fechaInicioISO,
+          fechaFin: fechaFinISO,
+          descripcion: String(descripcion),
+          idSeccion: idSeccionNum
+        };
+        console.log("Datos enviados al crear tarea:", datosTarea);
+
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(`${urlBase}/recursos/tareas`, datosTarea, config);
+      console.log(response);
+      toast.success("Tarea agregada exitosamente", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate(`/curso/${cursoid}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Crear Tarea</Title>
+          <form>
+            <FormGroup>
+              <Label htmlFor="nombre">Nombre</Label>
+              <Input id="nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre de la tarea" />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="descripcion">Descripción</Label>
+              <TextArea id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} placeholder="Descripción de la tarea" rows="4" />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="inicio">Fecha de inicio</Label>
+              <Input id="inicio" type="datetime-local" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="fin">Fecha de fin</Label>
+              <Input id="fin" type="datetime-local" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
+            </FormGroup>
+            <FormGroup>
+              <CheckboxGroup>
+                <CheckboxLabel htmlFor="task-visible">
+                  <CheckboxInput type="checkbox" id="task-visible" checked={visible} onChange={() => setVisible(!visible)} />
+                  <CustomCheckbox />
+                  Visible
+                </CheckboxLabel>
+              </CheckboxGroup>
+            </FormGroup>
+            <ButtonGroup>
+              <CreateButton type="button" onClick={crearTarea}>Crear tarea</CreateButton>
+              <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
+    </Container>
+  );
+}
+
+export default CrearTarea;
+
 
 
 const Container = styled.div`
@@ -183,154 +330,9 @@ const CustomCheckbox = styled.span`
     }
 `;
 
-const LabeledInputGroup = styled.div`
-  display: flex;
-  flex-direction: column; /* Coloca el label encima del input */
-  gap: 5px; /* Espacio entre el label y el input */
-`;
-
 const Label = styled.label`
   font-size: 1em;
   font-weight: 500;
   color: #333;
   margin-left: 5px; /* Pequeño margen para separarlo del borde */
 `;
-
-const CrearTarea = () => {
-
-    const [nombre, setNombre] = useState("");
-    const [descripcion, setDescripcion] = useState("");
-    const [visible, setVisible] = useState(false);
-    const [fechaInicio, setFechaInicio] = useState("");
-    const [fechaFin, setFechaFin] = useState("");
-
-    const location = useLocation();
-    const params = useParams();
-    let seccionid = location.state?.seccionid;
-    let cursoid = location.state?.id;
-    // fallback: si no viene por state, tomar de params
-    if (seccionid === undefined && params.seccion) {
-      seccionid = params.seccion;
-    }
-    if (cursoid === undefined && params.codigo) {
-      cursoid = params.codigo;
-    }
-    const navigate = useNavigate();
-
-  const crearTarea = async () => {
-    if(nombre == "" || descripcion == "" || fechaInicio == "" || fechaFin == 0){
-      toast.error("Debe completar todos los campos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-
-    const fechaI = new Date(fechaInicio);
-    const fechaF = new Date(fechaFin);
-
-    if(fechaI >= fechaF){
-      toast.error("La fecha de inicio debe ser menor a la fecha de fin", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-
-        const fechaInicioISO = fechaInicio ? new Date(fechaInicio).toISOString() : "";
-        const fechaFinISO = fechaFin ? new Date(fechaFin).toISOString() : "";
-        const idSeccionNum = Number(seccionid);
-        if (isNaN(idSeccionNum)) {
-          console.error("idSeccion es NaN. Valor recibido:", seccionid);
-          toast.error("No se pudo determinar el id de la sección. No se envía la tarea.");
-          return;
-        }
-        const datosTarea = {
-          nombre: String(nombre),
-          visible: Boolean(visible),
-          fechaInicio: fechaInicioISO,
-          fechaFin: fechaFinISO,
-          descripcion: String(descripcion),
-          idSeccion: idSeccionNum
-        };
-        console.log("Datos enviados al crear tarea:", datosTarea);
-
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        },
-      };
-      const response = await axios.post(`${urlBase}/recursos/tareas`, datosTarea, config);
-      console.log(response);
-      toast.success("Tarea agregada exitosamente", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      navigate(`/curso/${cursoid}`);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  return (
-    <Container>
-      <ContentWrapper>
-        <FormWrapper>
-          <Title>Crear Tarea</Title>
-          <form>
-            <FormGroup>
-              <Label htmlFor="nombre">Nombre</Label>
-              <Input id="nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre de la tarea" />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="descripcion">Descripción</Label>
-              <TextArea id="descripcion" value={descripcion} onChange={e => setDescripcion(e.target.value)} placeholder="Descripción de la tarea" rows="4" />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="inicio">Fecha de inicio</Label>
-              <Input id="inicio" type="datetime-local" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="fin">Fecha de fin</Label>
-              <Input id="fin" type="datetime-local" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                  <CheckboxInput type="checkbox" id="task-visible" checked={visible} onChange={() => setVisible(!visible)} />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
-            </FormGroup>
-            <ButtonGroup>
-              <CreateButton type="button" onClick={crearTarea}>Crear tarea</CreateButton>
-              <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
-            </ButtonGroup>
-          </form>
-        </FormWrapper>
-      </ContentWrapper>
-    </Container>
-  );
-}
-
-export default CrearTarea

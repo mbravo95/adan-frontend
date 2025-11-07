@@ -4,7 +4,83 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const BlueBackground = '#9DCBD7'; 
+
+const Login = () => {
+
+  const [mail, setMail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const iniciarSesion = async () => {
+    if(mail == "" || password == ""){
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
+      });
+      const {data} = response;
+      const {token, rol} = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("tipo", rol);
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      navigate('/home');
+    } catch (error) {
+      console.log(error);
+      toast.error("Correo y/o contrasenia incorrectos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  return (
+    <>
+        <FullScreenContainer>
+          <LoginColumn>
+            <Form>
+              <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
+              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
+              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
+              <SeparatorContainer>
+                <SeparatorLine />
+                <SeparatorText>o</SeparatorText>
+                <SeparatorLine />
+              </SeparatorContainer>
+              <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
+            </Form>
+          </LoginColumn>
+          <LogoColumn>
+            <LogoImage src = "/logo.jpeg" alt="Logo ADAN" />
+          </LogoColumn>
+        </FullScreenContainer>
+    </>
+  )
+}
+
+export default Login;
+
 
 const FullScreenContainer = styled.div`
   position: fixed;
@@ -121,101 +197,3 @@ const LogoImage = styled.img`
   height: 300px;
   object-fit: contain;
 `;
-
-const Image = styled.img`
-  width: 450px;
-  height: 450px;
-  margin-top: 20px;
-  object-fit: contain;
-`;
-
-
-
-const DivMayor = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #9DCBD7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-
-const Login = () => {
-
-  const [mail, setMail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
-
-  const iniciarSesion = async () => {
-    if(mail == "" || password == ""){
-      toast.error("Debe completar todos los campos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
-      });
-      const {data} = response;
-      const {token, rol} = data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("tipo", rol);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      navigate('/home');
-    } catch (error) {
-      console.log(error);
-      toast.error("Correo y/o contrasenia incorrectos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  }
-
-  return (
-    <>
-        <FullScreenContainer>
-          <LoginColumn>
-            <Form>
-              <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
-              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
-              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
-              <SeparatorContainer>
-                <SeparatorLine />
-                <SeparatorText>o</SeparatorText>
-                <SeparatorLine />
-              </SeparatorContainer>
-              <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
-            </Form>
-          </LoginColumn>
-          <LogoColumn>
-            <LogoImage src = "/logo.jpeg" alt="Logo ADAN" />
-          </LogoColumn>
-        </FullScreenContainer>
-    </>
-  )
-}
-
-export default Login
