@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -7,7 +7,7 @@ import useCursoData from "../hooks/useCursoData";
 
 
 const CrearSeccion = () => {
-  const { codigo } = useParams();
+  const { codigo, idseccion } = useParams();
   const navigate = useNavigate();
   
   const [titulo, setTitulo] = useState("");
@@ -18,6 +18,43 @@ const CrearSeccion = () => {
   if (!loadingSecciones && rol !== "ADMINISTRADOR" && !esProfesor) {
     return <Navigate to="/home" />;
   }
+
+  useEffect(() => {
+    const fetchSeccion = async () => {
+            if(idseccion == null) {
+              setLoading(false);
+              return;
+            } 
+            
+            try {
+              setLoading(true);  
+              const urlBase = import.meta.env.VITE_BACKEND_URL;
+                const token = localStorage.getItem("token");
+                const config = {
+                    headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    },
+                };
+                const response = await axios.get(`${urlBase}/secciones/${idseccion}`, config);
+                console.log(response);
+                /*
+                const {data} = response;
+                const {nombre, urlHtml, visible} = data;
+                setNombre(nombre);
+                setPagina(urlHtml);
+                setVisible(visible);
+                */
+            } catch (error) {
+                console.error("Error al obtener los datos de la seccion:", error);
+                toast.error("No se pudieron cargar los datos de la seccion.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSeccion();
+  },[]);
 
   const crear = async () => {
     if (!titulo) {
