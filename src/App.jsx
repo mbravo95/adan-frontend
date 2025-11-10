@@ -74,6 +74,7 @@ function App() {
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/curso/:codigo" element={<PaginaCurso />} />
               <Route path="/curso/:codigo/alta-seccion" element={<CrearSeccion />} />
+              <Route path="/curso/:codigo/seccion/:idseccion/editar" element={<CrearSeccion />} />
               <Route path="/curso/:codigo/participantes" element={<ParticipantesCurso />} />
               <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />
               <Route path="/curso/:codigo/:seccion/crear-tarea" element={<CrearTarea />} />

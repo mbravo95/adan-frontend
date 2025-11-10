@@ -28,7 +28,7 @@ const Secciones = ({
     const editarPagina = (recursoId) => navigate(`/curso/${cursoCodigo}/pagina/${recursoId}/editar`);
     const verTarea = (recursoId) => navigate(`/curso/${cursoCodigo}/tarea/${recursoId}`);
     const verForo = (recursoId) => navigate(`/curso/${cursoCodigo}/foro/${recursoId}`);
-    const modificarSeccion = (seccionId) => { console.log('Modificando seccion ', seccionId) };
+    const modificarSeccion = (seccionId) => navigate(`/curso/${cursoCodigo}/seccion/${seccionId}/editar`);
     
 
     const handleDescargarMaterial = async (recurso) => {
