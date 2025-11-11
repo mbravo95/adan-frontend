@@ -37,6 +37,7 @@ import CrearHiloForo from "./recursos/CrearHiloForo";
 import PublicarMensajeHiloForo from "./recursos/PublicarMensajeHiloForo";
 import HomeMensajes from "./mensajes/HomeMensajes";
 import GlobalStyles from "./general/GlobalStyles";
+import CalificacionesCurso from "./cursos/CalificacionesCurso";
 import EntregasTarea from "./recursos/EntregasTarea";
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
               <Route path="/home" element={<HomeUsuario />} />
               <Route path="/cursos" element={<ListadoCursos />} />
               <Route path="/mensajes" element={<HomeMensajes />} />
+              <Route path="/calificaciones" element={<CalificacionesCurso />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
               <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />
               <Route path="/admin-cursos/desasignar-profesor" element={<DesasignarDocente />} />

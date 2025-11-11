@@ -106,6 +106,11 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
+  const irCalificaciones = () => {
+    navigate("/calificaciones");
+    setIsMenuOpen(false);
+  }
+
   const irCursos = () => {
     navigate("/cursos");
   }
@@ -179,6 +184,11 @@ const Header = () => {
             <MenuItem onClick={irPerfil}>
               Perfil
             </MenuItem>
+            {esUsuarioRegular && 
+              <MenuItem onClick={irCalificaciones}>
+                Calificaciones
+              </MenuItem>
+            }
             <MenuItem onClick={cerrarSesion}>
               Cerrar sesión
             </MenuItem>
