@@ -2,7 +2,6 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { puedeAdministrarCursos } from '../utils/permisoCursos';
 
 const Container = styled.div`
   background-color: white;
@@ -243,11 +242,9 @@ const ParticipantesCurso = () => {
             {cursoActual.nombre} - Código: {cursoActual.codigo}
           </CourseInfo>
         </div>
-        {puedeAdministrarCursos(location.pathname) && (
-          <EnrollButton onClick={irMatricularEstudiante}>
-            + Matricular Estudiante
-          </EnrollButton>
-        )}
+        <EnrollButton onClick={irMatricularEstudiante}>
+          + Matricular Estudiante
+        </EnrollButton>
       </Header>
 
       <ParticipantsSection>

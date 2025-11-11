@@ -27,9 +27,18 @@ import CambiarContrasena from "./usuario/CambiarContrasena";
 import AsignarDocente from "./cursos/AsignarDocente";
 import DesasignarDocente from "./cursos/DesasignarDocente";
 import Busqueda from "./usuario/Busqueda";
+import CalificacionEstudianteCurso from "./cursos/CalificacionPerfilEstudiante";
+import CalificarEstudiante from "./cursos/CalificarEstudiante";
+import Foro from "./recursos/Foro";
+import EditarTarea from "./recursos/EditarTarea";
+import EditarForo from "./recursos/EditarForo";
+import Hilo from "./recursos/Hilo";
+import CrearHiloForo from "./recursos/CrearHiloForo";
+import PublicarMensajeHiloForo from "./recursos/PublicarMensajeHiloForo";
 import HomeMensajes from "./mensajes/HomeMensajes";
 import GlobalStyles from "./general/GlobalStyles";
 import CalificacionesCurso from "./cursos/CalificacionesCurso";
+import EntregasTarea from "./recursos/EntregasTarea";
 
 function App() {
 
@@ -76,14 +85,26 @@ function App() {
               <Route path="/curso/:codigo/:seccion/subir-material" element={<SubirMaterial />} />
               <Route path="/curso/:codigo/:seccion/crear-foro" element={<CrearForo />} />
               <Route path="/curso/:codigo/tarea/:tareaId" element={<PaginaTarea />} />
-              <Route path="/curso/:codigo/foro/:foroId" element={<PaginaForo />} />
+              <Route path="/curso/:codigo/tarea/:tareaId/entregas" element={<EntregasTarea />} />
+              <Route path="/curso/:codigo/foro/:recursoId" element={<Foro />} />
+              <Route path="/curso/:id/estudiante/:estudianteId/calificacion" element={<CalificacionEstudianteCurso />} />
+              <Route path="/curso/:id/estudiante/:estudianteId/calificar" element={<CalificarEstudiante />} />
+              <Route path="/curso/:codigo/seccion/:seccion/tarea/:recursoId/editar" element={<EditarTarea />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/editar" element={<EditarForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId" element={<Hilo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/crear-hilo" element={<CrearHiloForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/publicar-mensaje" element={<PublicarMensajeHiloForo />} />
+              
+
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
+      <ArbolFondo />
     </>
-  )
+  );
 }
 
+import ArbolFondo from './general/ArbolFondo';
 export default App

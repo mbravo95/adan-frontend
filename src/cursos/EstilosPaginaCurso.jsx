@@ -220,7 +220,7 @@ const CollapseIcon = styled.span`
 const SectionContent = styled.div`
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
-  max-height: ${props => props.collapsed ? '0' : '200px'};
+  max-height: ${props => props.collapsed ? '0' : 'none'};
   padding: ${props => props.collapsed ? '0' : '10px 0'};
 `;
 

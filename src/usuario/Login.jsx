@@ -31,9 +31,44 @@ const Login = () => {
       const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
       });
       const {data} = response;
-      const {token, rol} = data;
+      const {token, rol, id: idLogin} = data;
       localStorage.setItem("token", token);
       localStorage.setItem("tipo", rol);
+
+      let idUsuario = idLogin;
+      if (!idUsuario && token) {
+        try {
+          const perfilResp = await axios.get(`${urlBase}/usuarios/perfil`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          idUsuario = perfilResp.data.id;
+        } catch (err) {
+          idUsuario = undefined;
+        }
+      }
+      localStorage.setItem("idUsuario", idUsuario);
+      if (idUsuario && token) {
+        try {
+          const cursosResp = await axios.get(`${urlBase}/usuarios/${idUsuario}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'accept': '*/*'
+            }
+          });
+          if (cursosResp.data && Array.isArray(cursosResp.data.cursosComoProfesor)) {
+            const codigos = cursosResp.data.cursosComoProfesor.map(curso => curso.codigo);
+            localStorage.setItem("codigosCursosProfesor", JSON.stringify(codigos));
+          } else {
+            localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
+          }
+        } catch (err) {
+          localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
+        }
+      }
+
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -83,11 +118,8 @@ export default Login;
 
 
 const FullScreenContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
+  min-height: 100vh;
   width: 100vw;
-  height: 100vh;
   background-color: #9DCBD7;
   display: flex;
   justify-content: center;
@@ -114,8 +146,8 @@ const LogoColumn = styled(ColumnBase)`
   flex: 1;
   max-width: 400px;
   align-items: center;
-  justify-content: center;
-  padding: 40px;
+  justify-content: flex-start;
+  padding: 40px 40px 0 40px;
 `;
 
 
@@ -193,7 +225,9 @@ const ForgotPasswordLink = styled.a`
 `;
 
 const LogoImage = styled.img`
-  width: 300px;
-  height: 300px;
+  max-width: 340px;
+  width: 100%;
+  height: auto;
   object-fit: contain;
+  margin-top: -160px;
 `;

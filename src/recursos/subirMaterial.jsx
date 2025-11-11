@@ -67,10 +67,12 @@ const SubirMaterial = () => {
 
     setUploading(true);
     try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const token = localStorage.getItem("token");
-      const form = new FormData();
-      form.append("archivo", selectedFile);
+  const urlBase = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem("token");
+  const form = new FormData();
+  form.append("archivo", selectedFile);
+  form.append("nombre", formData.titulo);
+  form.append("descripcion", formData.descripcion);
 
       const response = await axios.post(
         `${urlBase}/recursos/cursos/${codigo}/secciones/${seccion}/materiales`,

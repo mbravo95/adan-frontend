@@ -1,11 +1,8 @@
-import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import axios from "axios";
-import useCursoData from "../hooks/useCursoData";
-
-// ...existing code...
 
 
 const Container = styled.div`
@@ -24,6 +21,7 @@ const Title = styled.h1`
   margin-bottom: 40px;
   font-weight: bold;
   letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
   font-weight: 800;
 `;
 
@@ -148,15 +146,57 @@ const CustomCheckbox = styled.span`
 `;
 
 
-const CrearForo = () => {
+const EditarForo = () => {
 
+
+  // Obtener todos los params de una vez
+  const params = useParams();
+  const foroId = params.recursoId;
+  const codigo = params.codigo;
+  const seccion = params.seccion;
+  const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [visible, setVisible] = useState(false);
 
-  const { codigo, seccion } = useParams();
-  const navigate = useNavigate();
 
-  const crearForo = async () => {
+
+  useEffect(() => {
+    console.log("EditarForo MOUNTED");
+    console.log("params:", params);
+    console.log("foroId:", foroId, "codigo:", codigo, "seccion:", seccion);
+    const fetchForo = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        console.log("Haciendo GET a:", `${urlBase}/recursos/${foroId}`);
+        const response = await axios.get(`${urlBase}/recursos/${foroId}`, config);
+        const { nombre, visible } = response.data;
+        setNombre(nombre);
+        setVisible(visible);
+        console.log("Datos del foro recibidos:", response.data);
+      } catch (error) {
+        console.log("Error al obtener foro:", error);
+        toast.error("Error al obtener los datos del foro", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    };
+    if (foroId) fetchForo();
+  }, [foroId, codigo, seccion]);
+
+  const editarForo = async () => {
     if(nombre == ""){
       toast.error("Debe ingresar un nombre para el foro", {
         position: "top-center",
@@ -179,9 +219,11 @@ const CrearForo = () => {
         Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post(`${urlBase}/recursos/foros`, {nombre, visible, idSeccion: Number(seccion)}, config);
-      console.log(response);
-      toast.success("Foro agregado exitosamente", {
+    const body = {id: Number(foroId), nombre, visible};
+    console.log('[EDITAR FORO] body enviado:', body);
+    const response = await axios.put(`${urlBase}/recursos/foro`, body, config);
+    console.log('[EDITAR FORO] response:', response);
+      toast.success("Foro modificado exitosamente", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
@@ -207,25 +249,37 @@ const CrearForo = () => {
 
   return (
     <>
-
-        <Container>
-          <Title>CREAR FORO</Title>
-          <Form>
-            <Input type="text" onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
-            <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} />
-                    <CustomCheckbox />
-                    Visible
-                </CheckboxLabel>
-            </CheckboxGroup>
-            <CreateButton type="button" onClick={() => crearForo()}>Crear foro</CreateButton>
-            <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>Cancelar</CancelButton>
-          </Form>
-        </Container>
-    
+      <Container>
+        <Title>EDITAR FORO</Title>
+        <Form>
+          <Input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Nombre"
+          />
+          <CheckboxGroup>
+            <CheckboxLabel htmlFor="task-visible">
+              <CheckboxInput
+                type="checkbox"
+                id="task-visible"
+                checked={visible}
+                onChange={() => setVisible(!visible)}
+              />
+              <CustomCheckbox />
+              Visible
+            </CheckboxLabel>
+          </CheckboxGroup>
+          <CreateButton type="button" onClick={() => editarForo()}>
+            Editar foro
+          </CreateButton>
+          <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>
+            Cancelar
+          </CancelButton>
+        </Form>
+      </Container>
     </>
   )
 }
 
-export default CrearForo
+export default EditarForo

@@ -8,7 +8,16 @@ const GlobalStyles = createGlobalStyle`
   body, html, #root {
     font-family: 'Inter', sans-serif;
     line-height: 1.5;
-    min-height: 100vh; 
+    min-height: 100vh;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-image: url('/arbolFondo.png');
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: 320px auto;
+    background-attachment: fixed;
   }
 
   * {

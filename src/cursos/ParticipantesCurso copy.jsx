@@ -2,7 +2,11 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { puedeAdministrarCursos } from '../utils/permisoCursos';
+import { toast } from "react-toastify";
+import ModalConfirmacion from "../general/ModalConfirmacion";
+import Spinner from "../general/Spinner";
+import Header from "../general/Header.jsx";
+import useCursoData from "../hooks/useCursoData";
 
 const Container = styled.div`
   background-color: white;
@@ -238,16 +242,14 @@ const ParticipantesCurso = () => {
       
       <Header>
         <div>
-          <Title>Participantes del Curso</Title>
+          <CourseTitle>Participantes del Curso</CourseTitle>
           <CourseInfo>
             {cursoActual.nombre} - Código: {cursoActual.codigo}
           </CourseInfo>
         </div>
-        {puedeAdministrarCursos(location.pathname) && (
-          <EnrollButton onClick={irMatricularEstudiante}>
-            + Matricular Estudiante
-          </EnrollButton>
-        )}
+        <EnrollButton onClick={irMatricularEstudiante}>
+          + Matricular Estudiante
+        </EnrollButton>
       </Header>
 
       <ParticipantsSection>
