@@ -260,10 +260,6 @@ const PaginaCurso = () => {
     });
   };
 
-  const agregarPagina = (seccionId) => {
-    navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
-  };
-
   const handleAbrirModal = (id) => {
     setPaginaEliminarId(id);
     setIsModalOpen(true);
@@ -334,10 +330,17 @@ const PaginaCurso = () => {
     }
 
 
+  const agregarPagina = (seccionId) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
+  };
+
+  const verPagina = (recursoId, seccionId) => {
+    navigate(`/curso/${codigo}/seccion/${seccionId}/paginaTematica/${recursoId}`);
+  };
+    
   const editarPagina = (recursoId) => {
     navigate(`/curso/${codigo}/pagina/${recursoId}/editar`);
   }
-
 
   const modificarSeccion = (seccionId) => {
   };
@@ -410,10 +413,6 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/tarea/${recursoId}/entregas`);
   }
 
-  const editarForo = (recursoId, seccionId) => {
-    navigate(`/curso/${codigo}/seccion/${seccionId}/foro/${recursoId}/editar`);
-  };
-
   const eliminarTarea = async (recursoId, seccionId) => {
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -464,6 +463,10 @@ const PaginaCurso = () => {
     navigate(`/curso/${codigo}/foro/${recursoId}`);
   }
 
+  const editarForo = (recursoId, seccionId) => {
+    navigate(`/curso/${codigo}/seccion/${seccionId}/foro/${recursoId}/editar`);
+  };
+
   const eliminarForo = async (recursoId) => {
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -496,10 +499,6 @@ const PaginaCurso = () => {
         progress: undefined,
       });
     }
-  };
-
-  const esProfeCurso = () => {
-   //implementar checkeo de profe curso, despues hay que ponerlo en cada tipo de recurso para saber si mostrar los botones o no
   };
 
   const handleBorrarSeccion = async () => {
@@ -789,7 +788,13 @@ const PaginaCurso = () => {
                                 </>
                               ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                 <>
-                                  <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                  <span style={{color:'#222', cursor: 'pointer'}} onClick={() => verPagina(recurso.id, seccion.id)}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                  <button
+                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                    onClick={() => verPagina(recurso.id, seccion.id)}
+                                  >
+                                    Ver
+                                  </button>
                                   {puedeAdministrarCursos(location.pathname) && (
                                     <>
                                       <button

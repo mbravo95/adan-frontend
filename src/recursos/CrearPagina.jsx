@@ -61,6 +61,14 @@ const CrearPagina = () => {
     }, []);
 
     const enviarDatos = async () => {
+      console.log('[CREAR_PAGINA] Variables antes del envío:', {
+        nombre,
+        pagina: pagina ? pagina.substring(0, 100) + '...' : pagina, // Solo primeros 100 caracteres para evitar spam
+        visible,
+        seccion,
+        codigo
+      });
+      
       if(nombre == "" || pagina == ""){
           toast.error("Debe ingresar todos los campos", {
               position: "top-center",
@@ -84,8 +92,13 @@ const CrearPagina = () => {
                 Authorization: `Bearer ${token}`,
                 },
             };
-            const response = await axios.post(`${urlBase}/recursos/paginas-tematicas`, {nombre, visible, idSeccion: Number(seccion), urlHtml: pagina}, config);
-            console.log(response);
+            const payload = {nombre, visible, idSeccion: Number(seccion), urlHtml: pagina};
+            console.log('[CREAR_PAGINA] URL:', `${urlBase}/recursos/paginas-tematicas`);
+            console.log('[CREAR_PAGINA] Payload enviado:', payload);
+            console.log('[CREAR_PAGINA] Config:', config);
+            
+            const response = await axios.post(`${urlBase}/recursos/paginas-tematicas`, payload, config);
+            console.log('[CREAR_PAGINA] Respuesta exitosa:', response);
             toast.success("Página agregada exitosamente", {
                 position: "top-center",
                 autoClose: 3000,
