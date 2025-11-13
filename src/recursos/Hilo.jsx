@@ -6,11 +6,22 @@ import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+const MainContainer = styled.div`
+	height: 100vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+`;
+
 const Container = styled.div`
+	flex: 1;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	scroll-behavior: smooth;
+	padding: 20px 16px;
 	max-width: 1000px;
-	margin: 40px auto;
-	padding: 0 16px;
-	transform: translateZ(0); /* Forzar layer de GPU */
+	margin: 0 auto;
+	width: 100%;
 `;
 
 const Card = styled.div`
@@ -29,10 +40,6 @@ const Title = styled.h2`
 
 const MessageList = styled.div`
 	margin-top: 18px;
-	height: 70vh;
-	overflow-y: auto;
-	scroll-behavior: smooth;
-	-webkit-overflow-scrolling: touch;
 `;
 
 const Meta = styled.div`
@@ -43,17 +50,17 @@ const Meta = styled.div`
 `;
 
 const MessageItem = styled.div`
-  background: #fafafa;
-  border: 1px solid #e0e6ed;
-  border-radius: 8px;
-  padding: 24px;
-  margin-bottom: 16px;
-  display: flex;
-  gap: 0;
-  position: relative;
-`;
-
-const ContenidoMensaje = styled.div`
+	background: #fafafa;
+	border: 1px solid #e0e6ed;
+	border-radius: 8px;
+	padding: 24px;
+	margin-bottom: 16px;
+	display: flex;
+	gap: 0;
+	position: relative;
+	transform: translateZ(0);
+	contain: layout;
+`;const ContenidoMensaje = styled.div`
   flex: 1;
   min-width: 0; /* Evitar flex shrink issues */
 `;
@@ -251,8 +258,9 @@ const Hilo = () => {
 	}
 
 	return (
-		<Container>
-			<Card>
+		<MainContainer>
+			<Container>
+				<Card>
 				<Title>{titulo}</Title>
 				<BotonPublicar onClick={() => irAPublicarMensaje(recursoId, hiloId)}>
 					Publicar nuevo mensaje
@@ -287,6 +295,7 @@ const Hilo = () => {
 				)}
 			</Card>
 		</Container>
+		</MainContainer>
 	);
 }
 
