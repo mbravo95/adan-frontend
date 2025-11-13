@@ -134,6 +134,7 @@ const CrearHiloForo = () => {
       const payload = {
         idForo: recursoId,
         titulo,
+        correoAutor: profile?.correo || "",
       };
       console.log('Payload enviado a la API:', payload);
       const hiloResponse = await axios.post(`${urlBase}/recursos/foro/hilo`, payload, config);
@@ -141,11 +142,10 @@ const CrearHiloForo = () => {
       console.log('Respuesta de creación de hilo:', hiloResponse.data);
   const hiloId = hiloResponse.data.idHilo;
       console.log('Valor de hiloId:', hiloId);
-      // Publicar el primer mensaje automáticamente
       try {
         let urlBaseMsg = import.meta.env.VITE_BACKEND_URL;
         if (urlBaseMsg.endsWith("/")) urlBaseMsg = urlBaseMsg.slice(0, -1);
-        const apiUrl = `${urlBaseMsg}/recursos/foro/publicarMensaje`;
+        const apiUrl = `${urlBaseMsg}/mensajes/foro/publicarMensaje`;
   const correoAutor = profile?.correo || "";
         const msgPayload = {
           idForo: Number(recursoId),

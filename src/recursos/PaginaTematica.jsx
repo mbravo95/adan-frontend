@@ -46,20 +46,36 @@ const PaginaTematica = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* Mostrar el HTML recibido de la API */}
+        <div style={{ 
+            height: '100vh', 
+            overflow: 'hidden', 
+            display: 'flex', 
+            flexDirection: 'column',
+            paddingTop: '80px'
+        }}>
+            {/* Contenedor con scroll interno optimizado */}
             <div 
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-                style={{ 
-                    width: '100%', 
-                    minHeight: '400px',
-                    padding: '20px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollBehavior: 'smooth',
+                    padding: '20px'
                 }}
-            />
+            >
+                <div 
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
+                    style={{ 
+                        width: '100%', 
+                        minHeight: '400px',
+                        padding: '20px',
+                        border: '1px solid #ddd',
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                />
+            </div>
         </div>
     );
 };

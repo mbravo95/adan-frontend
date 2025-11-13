@@ -4,10 +4,13 @@ import { useLocation } from "react-router-dom";
 import { puedeAdministrarCursos } from '../utils/permisoCursos';
 import styled from "styled-components";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
 	max-width: 1000px;
 	margin: 40px auto;
+	padding: 0 16px;
+	transform: translateZ(0); /* Forzar layer de GPU */
 `;
 
 const Card = styled.div`
@@ -26,32 +29,56 @@ const Title = styled.h2`
 
 const MessageList = styled.div`
 	margin-top: 18px;
+	height: 70vh;
+	overflow-y: auto;
+	scroll-behavior: smooth;
+	-webkit-overflow-scrolling: touch;
 `;
 
 const Meta = styled.div`
   font-size: 0.95rem;
   color: #888;
-  margin-bottom: 6px;
-  position: absolute;
-  right: 24px;
-  bottom: 18px;
+  margin-top: 12px;
+  text-align: right;
 `;
 
 const MessageItem = styled.div`
-  display: flex;
-  align-items: flex-start;
-  position: relative;
-  padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: #fafafa;
+  border: 1px solid #e0e6ed;
   border-radius: 8px;
-  margin-bottom: 18px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 24px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 0;
+  position: relative;
 `;
 
 const ContenidoMensaje = styled.div`
   flex: 1;
+  min-width: 0; /* Evitar flex shrink issues */
 `;
+
+const BotonesAccion = styled.div`
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  
+  span {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: rgba(0,0,0,0.1);
+    }
+  }
+`;
+
+
 
 const BotonPublicar = styled.button`
 	display: block;
@@ -104,6 +131,7 @@ const Hilo = () => {
 	const [mensajes, setMensajes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
+	const [mensajesVisibles, setMensajesVisibles] = useState(10); // Mostrar solo 10 inicialmente
 
 	useEffect(() => {
 		const fetchForoYHilo = async () => {
@@ -122,6 +150,8 @@ const Hilo = () => {
 				if (hilo) {
 					setTitulo(hilo.titulo || "Hilo");
 					setMensajes(hilo.mensajes || []);
+					// Resetear mensajes visibles cuando cambie el hilo
+					setMensajesVisibles(10);
 				} else {
 					setTitulo("Hilo no encontrado");
 					setMensajes([]);
@@ -190,10 +220,11 @@ const Hilo = () => {
 					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
 					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
 				</ContenidoMensaje>
-					{puedeAdministrarCursos(location.pathname) && (
+				{puedeAdministrarCursos(location.pathname) && (
+					<BotonesAccion>
 						<span
 							title="Editar mensaje"
-							style={{ position: 'absolute', right: 40, top: 12, color: '#ffd000', fontSize: '18px', cursor: 'pointer' }}
+							style={{ color: '#ffd000' }}
 							onClick={e => {
 								e.stopPropagation();
 								irAEditarMensaje(msg.id);
@@ -201,11 +232,9 @@ const Hilo = () => {
 						>
 							✏️
 						</span>
-					)}
-					{puedeAdministrarCursos(location.pathname) && (
 						<span
 							title="Eliminar mensaje"
-							style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
+							style={{ color: '#ff0000' }}
 							onClick={e => {
 								e.stopPropagation();
 								eliminarMensaje(msg.id);
@@ -213,7 +242,8 @@ const Hilo = () => {
 						>
 							❌
 						</span>
-					)}
+					</BotonesAccion>
+				)}
 			</MessageItem>,
 			Array.isArray(msg.respuestas) && msg.respuestas.length > 0 &&
 				msg.respuestas.map((resp) => renderMensaje(resp))
@@ -232,11 +262,26 @@ const Hilo = () => {
 				) : error ? (
 					<div style={{ color: 'red', textAlign: 'center', margin: '30px 0' }}>{error}</div>
 				) : (
-					<MessageList>
+					<MessageList 
+						onScroll={(e) => {
+							const { scrollTop, scrollHeight, clientHeight } = e.target;
+							// Cargar más mensajes cuando se acerca al final
+							if (scrollHeight - scrollTop <= clientHeight + 100 && mensajesVisibles < mensajes.length) {
+								setMensajesVisibles(prev => Math.min(prev + 5, mensajes.length));
+							}
+						}}
+					>
 						{mensajes.length === 0 ? (
 							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay mensajes en este hilo.</div>
 						) : (
-							mensajes.map((msg) => renderMensaje(msg))
+							<>
+								{mensajes.slice(0, mensajesVisibles).map((msg) => renderMensaje(msg))}
+								{mensajesVisibles < mensajes.length && (
+									<div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+										Cargando más mensajes... ({mensajesVisibles} de {mensajes.length})
+									</div>
+								)}
+							</>
 						)}
 					</MessageList>
 				)}

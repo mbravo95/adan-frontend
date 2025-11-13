@@ -1,5 +1,5 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent } from 'ckeditor5';
+import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent, Image, ImageInsert } from 'ckeditor5';
 import 'ckeditor5/ckeditor5.css';
 import { useState, useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -177,52 +177,58 @@ const CrearPagina = () => {
   return (
     <>
         <GlobalCKEditorStyles />
-
-        <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
-        {loading && <Spinner />}
-        { !loading &&
-          <>
-            <Centrar>
-              <Margen>
-                <Label htmlFor="nombre-input">Titulo</Label>
-              </Margen>
-                <Input 
-                      id="nombre-input"
-                      type="text" 
-                      value={nombre} 
-                      onChange={(e) => setNombre(e.target.value)} 
-                      placeholder="Introduce el titulo de la página"
-                />
-            </Centrar >
-            
-            <DivEditor>
-                <CKEditor
-                editor={ ClassicEditor }
-                config={ {
-                    licenseKey: 'GPL',
-                    plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent ],
-                    toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
-                    initialData: pagina,
-                } }
-                onChange={ ( event, editor ) => {
-                    setPagina(editor.getData());
-                } }
-                />
-            </DivEditor>
-            <CheckboxGroup>
-              <CheckboxLabel htmlFor="task-visible">
-                  <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
-                  <CustomCheckbox />
-                  Visible
-              </CheckboxLabel>
-            </CheckboxGroup>
-            <ButtonGroup>
-                {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
-                {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
-                <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
-            </ButtonGroup>
-          </>
-        }
+        <MainContainer>
+          <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
+          {loading && <Spinner />}
+          { !loading &&
+            <ContentWrapper>
+              <Centrar>
+                <Margen>
+                  <Label htmlFor="nombre-input">Titulo</Label>
+                </Margen>
+                  <Input 
+                        id="nombre-input"
+                        type="text" 
+                        value={nombre} 
+                        onChange={(e) => setNombre(e.target.value)} 
+                        placeholder="Introduce el titulo de la página"
+                  />
+              </Centrar >
+              
+              <DivEditor>
+                  <CKEditor
+                  editor={ ClassicEditor }
+                  config={ {
+                      licenseKey: 'GPL',
+                      plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent, Image, ImageInsert ],
+                      toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'insertImage', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
+                      image: {
+                          insert: {
+                              integrations: [ 'url' ]
+                          }
+                      },
+                      initialData: pagina,
+                  } }
+                  onChange={ ( event, editor ) => {
+                      setPagina(editor.getData());
+                  } }
+                  />
+              </DivEditor>
+              <CheckboxGroup>
+                <CheckboxLabel htmlFor="task-visible">
+                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
+                    <CustomCheckbox />
+                    Visible
+                </CheckboxLabel>
+              </CheckboxGroup>
+              <ButtonGroup>
+                  {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
+                  {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
+                  <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
+              </ButtonGroup>
+            </ContentWrapper>
+          }
+        </MainContainer>
     </>
   )
 }
@@ -234,15 +240,34 @@ export default CrearPagina;
 const GlobalCKEditorStyles = createGlobalStyle`
   .ck-editor__editable_inline {
     min-height: 400px;
-    max-height: 600px;
+    max-height: 70vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
+`;
+
+const MainContainer = styled.div`
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 20px;
 `;
 
 const Title = styled.h1`
   font-size: 1.5em;
   color: black;
   text-align: center;
+  margin: 20px 0;
+  flex-shrink: 0;
 `;
 
 const Button = styled.button`

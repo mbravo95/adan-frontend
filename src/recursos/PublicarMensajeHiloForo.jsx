@@ -76,7 +76,7 @@ const PublicarMensajeHiloForo = ({ onCancelar }) => {
     try {
       let urlBase = import.meta.env.VITE_BACKEND_URL;
       if (urlBase.endsWith("/")) urlBase = urlBase.slice(0, -1);
-      const apiUrl = `${urlBase}/recursos/foro/publicarMensaje`;
+      const apiUrl = `${urlBase}/mensajes/foro/publicarMensaje`;
       const token = localStorage.getItem("token");
       const config = {
         headers: {

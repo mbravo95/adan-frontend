@@ -8,7 +8,22 @@ const initialCursoState = {
     codigo: "codigoCurso"
 };
 
+// Contador global para rastrear invocaciones
+const invocationCounter = {};
+
 const useCursoData = (codigo) => {
+    // Log de invocación por página
+    const callerInfo = new Error().stack.split('\n')[2];
+    const pageMatch = callerInfo.match(/([^\\\/]+\.jsx)/);
+    const pageName = pageMatch ? pageMatch[1] : 'Unknown';
+    
+    if (!invocationCounter[pageName]) {
+        invocationCounter[pageName] = 0;
+    }
+    invocationCounter[pageName]++;
+    
+    console.log(`[HOOK USAGE] useCursoData invocado en ${pageName} - Llamada #${invocationCounter[pageName]} (codigo: ${codigo})`);
+    
     const [cursoActual, setCursoActual] = useState(initialCursoState);
     const [secciones, setSecciones] = useState([]);
     const [recursosPorSeccion, setRecursosPorSeccion] = useState({});
@@ -161,6 +176,12 @@ const useCursoData = (codigo) => {
         setSeccionesColapsadas(colapsadas);
       }
     }, [secciones]);
+
+    // Log del resumen de invocaciones cada 10 llamadas
+    const totalInvocations = Object.values(invocationCounter).reduce((sum, count) => sum + count, 0);
+    if (totalInvocations % 10 === 0) {
+        console.log(`[HOOK SUMMARY] Resumen de useCursoData:`, invocationCounter);
+    }
 
     return {
         cursoActual,
