@@ -28,6 +28,7 @@ const Secciones = ({
     const editarPagina = (recursoId) => navigate(`/curso/${cursoCodigo}/pagina/${recursoId}/editar`);
     const verTarea = (recursoId) => navigate(`/curso/${cursoCodigo}/tarea/${recursoId}`);
     const verForo = (recursoId) => navigate(`/curso/${cursoCodigo}/foro/${recursoId}`);
+    const verPagina = (recursoId) => navigate(`/curso/${cursoCodigo}/pagina/${recursoId}`);
     const modificarSeccion = (seccionId) => navigate(`/curso/${cursoCodigo}/seccion/${seccionId}/editar`);
     
 
@@ -150,23 +151,21 @@ const Secciones = ({
                                         </>
                                     ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                         <>
-                                            <span style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
-                                            {(esProfesor || rol == "ADMINISTRADOR") &&
-                                                <>
-                                                    <button
-                                                        style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                                        onClick={() => editarPagina(recurso.id)}
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                                        onClick={(e) => handleEliminarPaginaClick(e, recurso.id)}
-                                                    >
-                                                        Eliminar
-                                                    </button>
-                                                </>
-                                            }
+                                            <S.Recurso onClick={() => verPagina(recurso.id)} style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</S.Recurso>
+                                            {(esProfesor || rol == "ADMINISTRADOR") &&<>
+                                                <S.ActionButton
+                                                    variant="warning"
+                                                    onClick={() => editarPagina(recurso.id)}
+                                                >
+                                                    Editar
+                                                </S.ActionButton>
+                                                <S.ActionButton
+                                                    variant="danger"
+                                                    onClick={(e) => handleEliminarPaginaClick(e, recurso.id)}
+                                                >
+                                                    Eliminar
+                                                </S.ActionButton>
+                                            </>}
                                         </>
                                     ) : recurso.tipoRecurso === 'TAREA' ? (
                                         <S.Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</S.Recurso>
