@@ -273,7 +273,7 @@ const CrearCursoCsv = () => {
     }
 
     setLoading(true);
-    setResultado(null); // Limpiar resultados anteriores
+    setResultado(null);
     
     try {
       let urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -295,7 +295,6 @@ const CrearCursoCsv = () => {
       console.log('Respuesta exitosa:', response.data);
       setResultado(response.data);
       
-      // Mostrar toast con resumen
       const totalRegistrados = response.data.registrados?.length || 0;
       const totalErrores = response.data.errores?.length || 0;
       

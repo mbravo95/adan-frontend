@@ -363,7 +363,7 @@ const Hilo = () => {
 							↩️
 						</span>
 					)}
-					{(puedeAdministrarCursos(location.pathname) || msg.autorId === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
+					{(puedeAdministrarCursos(location.pathname) || msg.idAutor === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
 						<>
 							<span
 								title="Editar mensaje"

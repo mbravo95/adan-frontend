@@ -8,6 +8,8 @@ import { esUsuarioRegular, esProfesorCurso, puedeAdministrarCursos } from '../ut
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState("Usuario");
+  const [isCursosDropdownOpen, setIsCursosDropdownOpen] = useState(false);
+  const [isUsuariosDropdownOpen, setIsUsuariosDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { setProfile, profile } = useAuth();
@@ -84,7 +86,10 @@ const Header = () => {
           },
         };
         const response = await axios.get(`${urlBase}/usuarios/perfil`, config);
-        setProfile(response.data);
+        setProfile({
+          ...response.data,
+          id: response.data.id || response.data._id || null
+        });
       } catch (error) {
         console.log(error);
         cerrarSesion();
@@ -163,24 +168,30 @@ const Header = () => {
             </NavButton>
             {esUsuarioRegular() ? null : (
               <>
-                <NavButton textcolor={textcolor} onClick={irAltaCursos}>
-                  Crear Curso
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAltaCursosCsv}>
-                  Crear Curso CSV
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
-                  Crear Usuario
-                </NavButton> 
-                <NavButton textcolor={textcolor} onClick={irAltaUsuarioCsv}>
-                  Crear Usuario CSV
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
-                  Buscar Usuarios
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAdminCursos}>
-                  Administrar Cursos
-                </NavButton> 
+                <DropdownContainer>
+                  <NavButton textcolor={textcolor} onClick={() => setIsCursosDropdownOpen(v => !v)}>
+                    Administración Cursos ▼
+                  </NavButton>
+                  {isCursosDropdownOpen && (
+                    <DropdownCursos>
+                      <DropdownItem onClick={irAdminCursos}>Administrar Cursos</DropdownItem>
+                      <DropdownItem onClick={irAltaCursos}>Crear Curso</DropdownItem>
+                      <DropdownItem onClick={irAltaCursosCsv}>Crear Curso CSV</DropdownItem>
+                    </DropdownCursos>
+                  )}
+                </DropdownContainer>
+                <DropdownContainer>
+                  <NavButton textcolor={textcolor} onClick={() => setIsUsuariosDropdownOpen(v => !v)}>
+                    Administración Usuarios ▼
+                  </NavButton>
+                  {isUsuariosDropdownOpen && (
+                    <DropdownUsuarios>
+                      <DropdownItem onClick={irAltaUsuario}>Crear Usuario</DropdownItem>
+                      <DropdownItem onClick={irAltaUsuarioCsv}>Crear Usuario CSV</DropdownItem>
+                      <DropdownItem onClick={irBusquedaUsuarios}>Buscar Usuarios</DropdownItem>
+                    </DropdownUsuarios>
+                  )}
+                </DropdownContainer>
               </>
             )}
         </NavigationSection>
@@ -350,6 +361,45 @@ const DropdownMenu = styled.div`
 
 const MenuItem = styled.div`
   padding: 12px 16px;
+  cursor: pointer;
+  color: black;
+  font-size: 14px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const DropdownContainer = styled.div`
+  position: relative;
+`;
+
+const DropdownCursos = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1001;
+`;
+
+const DropdownUsuarios = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1001;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px 15px;
   cursor: pointer;
   color: black;
   font-size: 14px;

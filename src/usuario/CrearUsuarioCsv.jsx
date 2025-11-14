@@ -256,7 +256,7 @@ const CrearUsuarioCsv = () => {
     }
 
     setLoading(true);
-    setResultado(null); // Limpiar resultados anteriores
+    setResultado(null);
     
     try {
       let urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -278,7 +278,6 @@ const CrearUsuarioCsv = () => {
       console.log('Respuesta exitosa:', response.data);
       setResultado(response.data);
       
-      // Mostrar toast con resumen
       const totalRegistrados = response.data.registrados?.length || 0;
       const totalErrores = response.data.errores?.length || 0;
       
@@ -316,8 +315,11 @@ const CrearUsuarioCsv = () => {
       <InfoBox>
         <InfoTitle>Formato del archivo CSV</InfoTitle>
         <InfoText>
-          El archivo debe contener las columnas: nombres, apellidos, correo, cedula, password.
-          Asegúrate de que la primera fila contenga los nombres de las columnas.
+          El archivo debe contener las columnas: nombre, apellido, correo y cedula separados por coma(,).
+          La primera fila debe contener el nombre de las columnas.<br /><br />
+          Ejemplo:<br />
+          nombre,apellido,correo,cedula<br />
+          Juan,Pérez,juan.perez@correo.com,12345678<br />
         </InfoText>
       </InfoBox>
 
