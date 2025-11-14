@@ -318,9 +318,9 @@ const Hilo = () => {
 			const baseUrl = import.meta.env.VITE_BACKEND_URL.replace(/\/api$/, '').replace(/\/api\/$/, '');
 			finalUrl = fotoPerfil.startsWith('http') ? fotoPerfil : `${baseUrl}${fotoPerfil}`;
 		}
-		// Log para depuración
+
 		if (msg.idAutor === profile?.id) {
-			console.log('FORO FOTO PERFIL', msg.idAutor, finalUrl);
+			console.log('FORO FOTO PERFIL', msg.idAutor, finalUrl, msg);
 		}
 		return (
 			<MessageItem key={msg.id}>
