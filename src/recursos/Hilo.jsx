@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { puedeAdministrarCursos } from '../utils/permisoCursos';
+import useAuth from '../hooks/useAuth';
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -134,6 +135,7 @@ const Hilo = () => {
 	const { recursoId, hiloId, codigo, seccion } = useParams();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { profile } = useAuth();
 	const [titulo, setTitulo] = useState("");
 	const [mensajes, setMensajes] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -202,10 +204,8 @@ const Hilo = () => {
 		const payload = {
 			cuerpo: "{Mensaje Eliminado}"
 		};
-		console.log('[ELIMINAR MENSAJE] PUT:', `${urlBase}/mensajes/foro/${recursoId}/hilo/${hiloId}/editarMensaje/${idMensaje}`, payload);
 		axios.put(`${urlBase}/mensajes/foro/${recursoId}/hilo/${hiloId}/editarMensaje/${idMensaje}`, payload, config)
 			.then(() => {
-				// Actualizar el mensaje en la lista local
 				setMensajes(prev => prev.map(m => 
 					m.id === idMensaje 
 						? { ...m, cuerpo: "{Mensaje Eliminado}" }
@@ -234,7 +234,7 @@ const Hilo = () => {
 					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
 					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
 				</ContenidoMensaje>
-				{puedeAdministrarCursos(location.pathname) && (
+				{(puedeAdministrarCursos(location.pathname) || msg.autorId === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
 					<BotonesAccion>
 						<span
 							title="Editar mensaje"
