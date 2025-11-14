@@ -10,7 +10,7 @@ const Header = () => {
   const [userName, setUserName] = useState("Usuario");
   const navigate = useNavigate();
   const location = useLocation();
-  const { setProfile } = useAuth();
+  const { setProfile, profile } = useAuth();
   
   const getHeaderColors = () => {
     const path = location.pathname;
@@ -152,8 +152,6 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
-  // ...existing code...
-
   return (
     <>
       <HeaderContainer bgcolor={bgcolor}>
@@ -191,7 +189,25 @@ const Header = () => {
           <UserContainer textcolor={textcolor} onClick={toggleMenu}>
             <UserName textcolor={textcolor}>{userName}</UserName>
             <UserIcon>
-              👤
+              {profile?.fotoPerfil ? (
+                (() => {
+                  const baseUrl = import.meta.env.VITE_BACKEND_URL.replace(/\/api$/, '').replace(/\/api\/$/, '');
+                  const finalUrl = profile.fotoPerfil.startsWith('http')
+                    ? profile.fotoPerfil
+                    : `${baseUrl}${profile.fotoPerfil}`;
+                  return (
+                    <img
+                      src={finalUrl}
+                      alt="Foto de perfil"
+                      style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+                    />
+                  );
+                })()
+              ) : (
+                <span role="img" aria-label="profile" style={{ fontSize: "2rem" }}>
+                  👤
+                </span>
+              )}
             </UserIcon>
           </UserContainer>
           <DropdownMenu $isopen={isMenuOpen}>

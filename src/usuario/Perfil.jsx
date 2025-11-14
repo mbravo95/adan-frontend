@@ -13,7 +13,8 @@ const Perfil = () => {
     cedula: "Cargando...",
     fechaNacimiento: "Cargando...",
     fechaIngreso: "Cargando...",
-    rol: "Cargando..."
+    rol: "Cargando...",
+    fotoPerfil: null
   });
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +76,8 @@ const Perfil = () => {
           cedula: data.cedula || "No disponible",
           fechaNacimiento: formatearFecha(data.fechaNacimiento), 
           fechaIngreso: formatearFecha(data.fechaInscripcion),
-          rol: data.tipoUsuario || data.rol || localStorage.getItem("tipo") || "No disponible"
+          rol: data.tipoUsuario || data.rol || localStorage.getItem("tipo") || "No disponible",
+          fotoPerfil: data.fotoPerfil || null
         });
         
         console.log("Datos actualizados:", userData);
@@ -130,7 +132,26 @@ const Perfil = () => {
           <MainContent>
             <ProfileSection>
               <ProfileImage>
-                👤
+                {userData.fotoPerfil ? (
+                  (() => {
+                    const baseUrl = import.meta.env.VITE_BACKEND_URL.replace(/\/api$/, '').replace(/\/api\/$/, '');
+                    const finalUrl = userData.fotoPerfil.startsWith('http')
+                      ? userData.fotoPerfil
+                      : `${baseUrl}${userData.fotoPerfil}`;
+                    console.log('Foto de perfil mostrada:', finalUrl);
+                    return (
+                      <img
+                        src={finalUrl}
+                        alt="Foto de perfil"
+                        style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+                      />
+                    );
+                  })()
+                ) : (
+                  <span role="img" aria-label="profile" style={{ fontSize: "5rem" }}>
+                    👤
+                  </span>
+                )}
               </ProfileImage>
               <ProfileName>{nombreCompleto()}</ProfileName>
               <ProfileRole>{userData.rol}</ProfileRole>
