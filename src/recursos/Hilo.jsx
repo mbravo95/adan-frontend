@@ -174,6 +174,7 @@ const Hilo = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [mensajesVisibles, setMensajesVisibles] = useState(10);
+	const [fotosAutores, setFotosAutores] = useState({});
 
 	useEffect(() => {
 		const fetchForoYHilo = async () => {
@@ -218,6 +219,28 @@ const Hilo = () => {
 					
 					setMensajes(mensajesOrdenados);
 					setMensajesVisibles(10);
+					// Obtener los idAutor únicos
+					const idsAutores = [...new Set(mensajesOrdenados.map(m => m.idAutor).filter(Boolean))];
+					// Peticiones para cada autor
+					const urlBase = import.meta.env.VITE_BACKEND_URL;
+					const token = localStorage.getItem("token");
+					const config = {
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${token}`,
+						}
+					};
+					const promesas = idsAutores.map(id =>
+						axios.get(`${urlBase}/usuarios/${id}`, config)
+							.then(res => ({ id, fotoPerfil: res.data.fotoPerfil }))
+							.catch(() => ({ id, fotoPerfil: null }))
+					);
+					const resultados = await Promise.all(promesas);
+					const fotos = {};
+					resultados.forEach(({ id, fotoPerfil }) => {
+						fotos[id] = fotoPerfil;
+					});
+					setFotosAutores(fotos);
 				} else {
 					setTitulo("Hilo no encontrado");
 					setMensajes([]);
@@ -289,10 +312,20 @@ const Hilo = () => {
 	}
 
 	function renderMensaje(msg) {
+		let fotoPerfil = fotosAutores[msg.idAutor] || null;
+		let finalUrl = '/default-profile.png';
+		if (fotoPerfil) {
+			const baseUrl = import.meta.env.VITE_BACKEND_URL.replace(/\/api$/, '').replace(/\/api\/$/, '');
+			finalUrl = fotoPerfil.startsWith('http') ? fotoPerfil : `${baseUrl}${fotoPerfil}`;
+		}
 		return (
 			<MessageItem key={msg.id}>
 				<InfoAutor>
-					<FotoPerfil src={msg.fotoPerfil || '/default-profile.png'} alt="Foto de perfil" />
+					<img
+						src={finalUrl}
+						alt="Foto de perfil"
+						style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
+					/>
 					<span style={{ 
 						fontWeight: 600, 
 						fontSize: '0.85rem',

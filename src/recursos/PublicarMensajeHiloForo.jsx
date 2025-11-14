@@ -102,6 +102,10 @@ const PublicarMensajeHiloForo = ({ onCancelar }) => {
     }
   };
 
+  const handleCancelar = () => {
+    navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}`);
+  };
+
   return (
     <FormContainer>
       <Label htmlFor="cuerpo">Mensaje</Label>
@@ -114,7 +118,7 @@ const PublicarMensajeHiloForo = ({ onCancelar }) => {
       />
       {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
       <ButtonRow>
-        <BotonCancelar type="button" onClick={onCancelar} disabled={loading}>Cancelar</BotonCancelar>
+        <BotonCancelar type="button" onClick={handleCancelar} disabled={loading}>Cancelar</BotonCancelar>
         <Boton type="button" onClick={handlePublicar} disabled={loading || !cuerpo}>
           {loading ? "Publicando..." : "Publicar"}
         </Boton>
