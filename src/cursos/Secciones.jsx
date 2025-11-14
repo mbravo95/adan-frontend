@@ -151,7 +151,7 @@ const Secciones = ({
                                         </>
                                     ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
                                         <>
-                                            <S.Recurso onClick={() => verPagina(recurso.id)} style={{color:'#222'}}>{recurso.nombre === null ? '(null)' : recurso.nombre}</S.Recurso>
+                                            <S.Recurso onClick={() => verPagina(recurso.id)}>{recurso.nombre === null ? '(null)' : recurso.nombre}</S.Recurso>
                                             {(esProfesor || rol == "ADMINISTRADOR") &&<>
                                                 <S.ActionButton
                                                     variant="warning"

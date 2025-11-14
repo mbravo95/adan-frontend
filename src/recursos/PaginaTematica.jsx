@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import styled, { css, keyframes } from "styled-components";
+import styled from "styled-components";
 import { toast } from "react-toastify";
-import useAuth from "../hooks/useAuth";
 import Spinner from "../general/Spinner";
 
 
