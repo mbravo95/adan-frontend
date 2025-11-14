@@ -41,6 +41,7 @@ import CalificacionesCurso from "./cursos/CalificacionesCurso";
 import EntregasTarea from "./recursos/EntregasTarea";
 import PaginaTematica from "./recursos/PaginaTematica";
 import EditarMensajeHiloForo from "./recursos/EditarMensajeHiloForo";
+import ResponderMensajeHiloForo from "./recursos/ResponderMensajeHiloForo";
 
 function App() {
 
@@ -97,6 +98,7 @@ function App() {
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/crear-hilo" element={<CrearHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/publicar-mensaje" element={<PublicarMensajeHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/editar-mensaje/:idMensaje" element={<EditarMensajeHiloForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/responder-mensaje/:idMensaje" element={<ResponderMensajeHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/paginaTematica/:recursoId" element={<PaginaTematica />} />
               
 

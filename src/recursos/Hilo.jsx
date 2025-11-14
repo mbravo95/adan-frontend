@@ -44,10 +44,16 @@ const MessageList = styled.div`
 `;
 
 const Meta = styled.div`
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #888;
-  margin-top: 12px;
-  text-align: right;
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e0e6ed;
+  z-index: 1;
 `;
 
 const MessageItem = styled.div`
@@ -61,9 +67,31 @@ const MessageItem = styled.div`
 	position: relative;
 	transform: translateZ(0);
 	contain: layout;
+	min-height: 80px;
 `;const ContenidoMensaje = styled.div`
   flex: 1;
   min-width: 0; /* Evitar flex shrink issues */
+  padding-bottom: 25px; /* Espacio para la fecha */
+`;
+
+const MensajeOriginal = styled.div`
+  background: #f0f0f0;
+  border-left: 3px solid #ccc;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #666;
+  border-radius: 4px;
+  
+  &::before {
+    content: "En respuesta a:";
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+    margin-bottom: 4px;
+  }
 `;
 
 const BotonesAccion = styled.div`
@@ -106,15 +134,17 @@ const BotonPublicar = styled.button`
 `;
 
 const CuerpoMensaje = styled.div`
-	font-size: 1.25rem;
+	font-size: 1rem;
 `;
 
 const FotoPerfil = styled.img`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
   object-fit: cover;
-  margin-right: 16px;
+  margin-bottom: 8px;
+  background-color: #f0f0f0;
+  border: 2px solid #e2e8f0;
 `;
 
 const InfoAutor = styled.div`
@@ -122,6 +152,9 @@ const InfoAutor = styled.div`
   flex-direction: column;
   align-items: center;
   margin-right: 16px;
+  width: 120px;
+  min-width: 120px;
+  flex-shrink: 0;
 `;
 
 const SeparadorAutor = styled.div`
@@ -140,7 +173,7 @@ const Hilo = () => {
 	const [mensajes, setMensajes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
-	const [mensajesVisibles, setMensajesVisibles] = useState(10); // Mostrar solo 10 inicialmente
+	const [mensajesVisibles, setMensajesVisibles] = useState(10);
 
 	useEffect(() => {
 		const fetchForoYHilo = async () => {
@@ -158,8 +191,32 @@ const Hilo = () => {
 				const hilo = hilos.find(h => String(h.id) === String(hiloId));
 				if (hilo) {
 					setTitulo(hilo.titulo || "Hilo");
-					setMensajes(hilo.mensajes || []);
-					// Resetear mensajes visibles cuando cambie el hilo
+					const aplanarMensajes = (mensajes, mensajePadre = null) => {
+						let todosLosMensajes = [];
+						
+						mensajes.forEach(mensaje => {
+							todosLosMensajes.push({
+								...mensaje,
+								mensajeOriginal: mensajePadre ? mensajePadre.cuerpo : null,
+								respuestas: []
+							});
+
+							if (mensaje.respuestas && mensaje.respuestas.length > 0) {
+								todosLosMensajes = todosLosMensajes.concat(
+									aplanarMensajes(mensaje.respuestas, mensaje)
+								);
+							}
+						});
+						
+						return todosLosMensajes;
+					};
+
+					const mensajesAplanados = aplanarMensajes(hilo.mensajes || []);
+					const mensajesOrdenados = mensajesAplanados.sort(
+						(a, b) => new Date(a.fechaMensaje) - new Date(b.fechaMensaje)
+					);
+					
+					setMensajes(mensajesOrdenados);
 					setMensajesVisibles(10);
 				} else {
 					setTitulo("Hilo no encontrado");
@@ -176,6 +233,15 @@ const Hilo = () => {
 
 	const irAPublicarMensaje = (recursoId, hiloId) => {
 		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}/publicar-mensaje`);
+	};
+
+	const irAResponderMensaje = (recursoId, hiloId, mensajeId) => {
+		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}/responder-mensaje/${mensajeId}`, {
+			state: { 
+				responderA: mensajeId,
+				mensajeOriginal: mensajes.find(m => m.id === mensajeId)?.cuerpo
+			}
+		});
 	};
 
 	function formatFecha(fecha) {
@@ -223,45 +289,70 @@ const Hilo = () => {
 	}
 
 	function renderMensaje(msg) {
-		return [
+		return (
 			<MessageItem key={msg.id}>
 				<InfoAutor>
 					<FotoPerfil src={msg.fotoPerfil || '/default-profile.png'} alt="Foto de perfil" />
-					<span style={{ fontWeight: 600, marginTop: 6 }}>{msg.autorNombres} {msg.autorApellidos}</span>
+					<span style={{ 
+						fontWeight: 600, 
+						fontSize: '0.85rem',
+						textAlign: 'center',
+						lineHeight: 1.2,
+						color: '#4a5568'
+					}}>
+						{msg.autorNombres} {msg.autorApellidos}
+					</span>
 				</InfoAutor>
 				<SeparadorAutor />
-				<ContenidoMensaje>
-					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
-					<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
-				</ContenidoMensaje>
-				{(puedeAdministrarCursos(location.pathname) || msg.autorId === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
-					<BotonesAccion>
-						<span
-							title="Editar mensaje"
-							style={{ color: '#ffd000' }}
-							onClick={e => {
-								e.stopPropagation();
-								irAEditarMensaje(msg.id);
-							}}
-						>
-							✏️
-						</span>
-						<span
-							title="Eliminar mensaje"
-							style={{ color: '#ff0000' }}
-							onClick={e => {
-								e.stopPropagation();
-								eliminarMensaje(msg.id);
-							}}
-						>
-							❌
-						</span>
-					</BotonesAccion>
+			<ContenidoMensaje>
+				{msg.mensajeOriginal && (
+					<MensajeOriginal>
+						{msg.mensajeOriginal}
+					</MensajeOriginal>
 				)}
-			</MessageItem>,
-			Array.isArray(msg.respuestas) && msg.respuestas.length > 0 &&
-				msg.respuestas.map((resp) => renderMensaje(resp))
-		];
+				<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
+			</ContenidoMensaje>
+			<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
+				<BotonesAccion>
+					{msg.cuerpo !== "{Mensaje Eliminado}" && (
+						<span
+							title="Responder mensaje"
+							style={{ color: '#4285f4' }}
+							onClick={e => {
+								e.stopPropagation();
+								irAResponderMensaje(recursoId, hiloId, msg.id);
+							}}
+						>
+							↩️
+						</span>
+					)}
+					{(puedeAdministrarCursos(location.pathname) || msg.autorId === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
+						<>
+							<span
+								title="Editar mensaje"
+								style={{ color: '#ffd000' }}
+								onClick={e => {
+									e.stopPropagation();
+									irAEditarMensaje(msg.id);
+								}}
+							>
+								✏️
+							</span>
+							<span
+								title="Eliminar mensaje"
+								style={{ color: '#ff0000' }}
+								onClick={e => {
+									e.stopPropagation();
+									eliminarMensaje(msg.id);
+								}}
+							>
+								❌
+							</span>
+						</>
+					)}
+				</BotonesAccion>
+			</MessageItem>
+		);
 	}
 
 	return (
