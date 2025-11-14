@@ -56,6 +56,11 @@ const EnrollButton = styled.button`
   }
 `;
 
+const EnrollButtonGroup = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
 const ParticipantsSection = styled.div`
   margin-top: 40px;
 `;
@@ -226,6 +231,24 @@ const ParticipantesCurso = () => {
     });
   };
 
+  const irMatricularEstudianteCsv = () => {
+    navigate(`/curso/${codigo}/participantes/matricular-csv`, {
+      state: { cursoActual }
+    });
+  }
+
+  const irDesmatricularEstudianteCsv = () => {
+    navigate(`/curso/${codigo}/participantes/desmatricular-csv`, {
+      state: { cursoActual }
+    });
+  }
+
+  const irCalificarEstudianteCsv = () => {
+    navigate(`/curso/${codigo}/participantes/calificar-csv`, {
+      state: { cursoActual }
+    });
+  }
+
   const volverAlCurso = () => {
   navigate(`/curso/${codigo}`);
   };
@@ -244,9 +267,20 @@ const ParticipantesCurso = () => {
           </CourseInfo>
         </div>
         {puedeAdministrarCursos(location.pathname) && (
-          <EnrollButton onClick={irMatricularEstudiante}>
-            + Matricular Estudiante
-          </EnrollButton>
+          <EnrollButtonGroup>
+            <EnrollButton onClick={irMatricularEstudiante}>
+              + Matricular Estudiante
+            </EnrollButton>
+            <EnrollButton onClick={irMatricularEstudianteCsv}>
+              + Matricular Múltiple
+            </EnrollButton>
+            <EnrollButton onClick={irDesmatricularEstudianteCsv}>
+              - Desmatricular Múltiple
+            </EnrollButton>
+            <EnrollButton onClick={irCalificarEstudianteCsv}>
+              Calificar Estudiantes CSV
+            </EnrollButton>
+          </EnrollButtonGroup>
         )}
       </Header>
 

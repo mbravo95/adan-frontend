@@ -123,8 +123,16 @@ const Header = () => {
     navigate("/crear-curso");
   }
 
+  const irAltaCursosCsv = () => {
+    navigate("/crear-curso-csv");
+  }
+
   const irAltaUsuario = () => {
     navigate("/crear-usuario");
+  }
+
+  const irAltaUsuarioCsv = () => {
+    navigate("/crear-usuario-csv");
   }
 
   const irAdminCursos = () => {
@@ -160,9 +168,15 @@ const Header = () => {
                 <NavButton textcolor={textcolor} onClick={irAltaCursos}>
                   Crear Curso
                 </NavButton>
+                <NavButton textcolor={textcolor} onClick={irAltaCursosCsv}>
+                  Crear Curso CSV
+                </NavButton>
                 <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
                   Crear Usuario
                 </NavButton> 
+                <NavButton textcolor={textcolor} onClick={irAltaUsuarioCsv}>
+                  Crear Usuario CSV
+                </NavButton>
                 <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
                   Buscar Usuarios
                 </NavButton>

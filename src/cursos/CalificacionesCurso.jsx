@@ -174,7 +174,7 @@ export default CalificacionesCurso;
 const DEFAULT_AVATAR_URL = "/header/avatar.png";
 
 const CalificacionesContainer = styled.div`
-    background-color: #f7f7f7;
+    background-color: #9DCBD7;
     min-height: 100vh;
     padding: 40px;
 `;

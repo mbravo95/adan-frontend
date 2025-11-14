@@ -58,7 +58,7 @@ const CalificarEstudiante = () => {
         idCurso: Number(id),
         calificacion: calificacion
       };
-      await fetch(`${urlBase}/calificaciones`, {
+      await fetch(`${urlBase}/calificaciones/curso`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

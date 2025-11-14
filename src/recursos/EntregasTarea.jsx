@@ -7,7 +7,7 @@ import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
 
 const EntregasTarea = () => {
-  const { tareaId } = useParams();
+  const { tareaId, codigo } = useParams();
   const [entregas, setEntregas] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -86,9 +86,18 @@ const EntregasTarea = () => {
     }
   };
 
+  const irCalificarEntregasCsv = () => {
+    navigate(`/curso/${codigo}/tarea/${tareaId}/entregas/calificar-csv`);
+  }
+
   return (
     <PageContainer>
       <Title>Entregas de la tarea</Title>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+        <EnrollButton onClick={() => irCalificarEntregasCsv()}>
+          Calificar entregas vía CSV
+        </EnrollButton>
+      </div>
       {loading ? (
         <Spinner />
       ) : entregas.length === 0 ? (
@@ -218,4 +227,26 @@ const EmptyMessage = styled.div`
   color: #888;
   font-size: 1.2em;
   margin-top: 40px;
+`;
+
+const EnrollButton = styled.button`
+  background-color: #4C241D;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #3a1b16;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 `;

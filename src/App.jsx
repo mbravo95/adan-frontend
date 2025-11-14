@@ -42,6 +42,12 @@ import EntregasTarea from "./recursos/EntregasTarea";
 import PaginaTematica from "./recursos/PaginaTematica";
 import EditarMensajeHiloForo from "./recursos/EditarMensajeHiloForo";
 import ResponderMensajeHiloForo from "./recursos/ResponderMensajeHiloForo";
+import CrearUsuarioCsv from "./usuario/CrearUsuarioCsv";
+import CrearCursoCsv from "./cursos/CrearCursoCsv";
+import MatricularEstudianteCursoCsv from "./cursos/MatricularEstudianteCursoCsv";
+import DesmatricularEstudianteCursoCsv from "./cursos/DesmatricularEstudianteCursoCsv";
+import CalificarEstudianteCsv from "./cursos/CalificarEstudianteCsv";
+import CalificarEntregaCsv from "./recursos/CalificarEntregaCsv";
 
 function App() {
 
@@ -100,6 +106,12 @@ function App() {
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/editar-mensaje/:idMensaje" element={<EditarMensajeHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/responder-mensaje/:idMensaje" element={<ResponderMensajeHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/paginaTematica/:recursoId" element={<PaginaTematica />} />
+              <Route path="/crear-usuario-csv" element={<CrearUsuarioCsv />} />
+              <Route path="/crear-curso-csv" element={<CrearCursoCsv />} />
+              <Route path="/curso/:codigo/participantes/matricular-csv" element={<MatricularEstudianteCursoCsv />} />
+              <Route path="/curso/:codigo/participantes/desmatricular-csv" element={<DesmatricularEstudianteCursoCsv />} />
+              <Route path="/curso/:codigo/participantes/calificar-csv" element={<CalificarEstudianteCsv />} />
+              <Route path="/curso/:codigo/tarea/:tareaId/entregas/calificar-csv" element={<CalificarEntregaCsv />} />
               
 
             </Route>
@@ -107,10 +119,8 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-      <ArbolFondo />
     </>
   );
 }
 
-import ArbolFondo from './general/ArbolFondo';
 export default App
