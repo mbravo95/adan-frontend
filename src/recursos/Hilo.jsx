@@ -324,7 +324,7 @@ const Hilo = () => {
 					<img
 						src={finalUrl}
 						alt="Foto de perfil"
-						style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
+						style={{ width: "64px", height: "64px", objectFit: "cover", marginBottom: "8px" }}
 					/>
 					<span style={{ 
 						fontWeight: 600, 
