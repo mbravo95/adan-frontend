@@ -187,23 +187,30 @@ const Hilo = () => {
 	}
 
 	function eliminarMensaje(idMensaje) {
+		if (!confirm('¿Estás seguro de que deseas eliminar este mensaje?')) {
+			return;
+		}
+		
 		const urlBase = import.meta.env.VITE_BACKEND_URL;
 		const token = localStorage.getItem("token");
 		const config = {
 			headers: {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
-			},
-			data: {
-				idForo: Number(recursoId),
-				idHilo: Number(hiloId),
-				idMensaje: Number(idMensaje)
 			}
 		};
-		console.log('[ELIMINAR MENSAJE] body:', config.data);
-		axios.delete(`${urlBase}/recursos/foro/hilo/mensaje`, config)
+		const payload = {
+			cuerpo: "{Mensaje Eliminado}"
+		};
+		console.log('[ELIMINAR MENSAJE] PUT:', `${urlBase}/mensajes/foro/${recursoId}/hilo/${hiloId}/editarMensaje/${idMensaje}`, payload);
+		axios.put(`${urlBase}/mensajes/foro/${recursoId}/hilo/${hiloId}/editarMensaje/${idMensaje}`, payload, config)
 			.then(() => {
-				setMensajes(prev => prev.filter(m => m.id !== idMensaje));
+				// Actualizar el mensaje en la lista local
+				setMensajes(prev => prev.map(m => 
+					m.id === idMensaje 
+						? { ...m, cuerpo: "{Mensaje Eliminado}" }
+						: m
+				));
 				toast.success("Mensaje eliminado exitosamente");
 			})
 			.catch(() => {

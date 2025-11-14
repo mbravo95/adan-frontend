@@ -40,6 +40,7 @@ import GlobalStyles from "./general/GlobalStyles";
 import CalificacionesCurso from "./cursos/CalificacionesCurso";
 import EntregasTarea from "./recursos/EntregasTarea";
 import PaginaTematica from "./recursos/PaginaTematica";
+import EditarMensajeHiloForo from "./recursos/EditarMensajeHiloForo";
 
 function App() {
 
@@ -95,6 +96,7 @@ function App() {
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId" element={<Hilo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/crear-hilo" element={<CrearHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/publicar-mensaje" element={<PublicarMensajeHiloForo />} />
+              <Route path="/curso/:codigo/seccion/:seccion/foro/:recursoId/hilo/:hiloId/editar-mensaje/:idMensaje" element={<EditarMensajeHiloForo />} />
               <Route path="/curso/:codigo/seccion/:seccion/paginaTematica/:recursoId" element={<PaginaTematica />} />
               
 

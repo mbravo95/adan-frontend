@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import useAuth from '../hooks/useAuth';
 import axios from "axios";
+import { toast } from "react-toastify";
 import Spinner from '../general/Spinner';
 
 const Busqueda = () => {
@@ -78,8 +79,49 @@ const Busqueda = () => {
         } 
     };
 
-    const handleDeleteUser = (userId) => {
-        console.log(`Eliminando usuario con ID: ${userId}`);
+    const handleDeleteUser = async (userId) => {
+        if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+            return;
+        }
+        
+        try {
+            const urlBase = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            
+            await axios.put(`${urlBase}/usuarios/baja/${userId}`, {}, config);
+            
+            // Actualizar la lista de usuarios eliminando el usuario borrado
+            const nuevosUsuarios = usuarios.filter(user => user.id !== userId);
+            setUsuarios(nuevosUsuarios);
+            setUsuariosFiltrados(usuariosFiltrados.filter(user => user.id !== userId));
+            
+            toast.success("Usuario eliminado exitosamente", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } catch (error) {
+            console.log(error);
+            toast.error("Error al eliminar el usuario", {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
     }
 
     const formatearFecha = (fechaString) => {
@@ -133,6 +175,9 @@ const Busqueda = () => {
                                     <UserDetails>
                                         <UserName>{user.nombres} {user.apellidos}</UserName>
                                         <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
+                                        <UserStatus blocked={user.bloqueado}>
+                                            {user.bloqueado ? 'Bloqueado' : 'Activo'}
+                                        </UserStatus>
                                         <DetailRow>
                                             <DetailLabel>Cédula:</DetailLabel>
                                             <DetailValue>{user.cedula}</DetailValue>
@@ -148,7 +193,9 @@ const Busqueda = () => {
                                     </UserDetails>
                                     
                                     <ActionGroup>
-                                        <ActionButton onClick={() => handleDeleteUser(user.id)} danger>Eliminar</ActionButton>
+                                        <ActionButton onClick={() => handleDeleteUser(user.id)} danger>
+                                            {user.bloqueado ? 'Desbloquear' : 'Bloquear'}
+                                        </ActionButton>
                                     </ActionGroup>
                                 </UserCard>
                             ))
@@ -321,6 +368,18 @@ const UserRol = styled.p`
   font-weight: 600;
   margin: 0 0 10px 0;
   text-transform: uppercase;
+`;
+
+const UserStatus = styled.p`
+  color: ${props => props.blocked ? '#e53935' : '#4caf50'};
+  font-size: 0.85em;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  background-color: ${props => props.blocked ? 'rgba(229, 57, 53, 0.1)' : 'rgba(76, 175, 80, 0.1)'};
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid ${props => props.blocked ? '#ffcdd2' : '#c8e6c9'};
 `;
 
 const DetailRow = styled.div`
