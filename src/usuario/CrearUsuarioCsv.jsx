@@ -4,12 +4,27 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Container = styled.div`
+  background-color: #9DCBD7;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   max-width: 600px;
-  margin: 40px auto;
-  padding: 32px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  padding: 32px 28px;
 `;
 
 const Title = styled.h2`
@@ -310,6 +325,7 @@ const CrearUsuarioCsv = () => {
 
   return (
     <Container>
+      <ContentWrapper>
       <Title>Crear Usuarios desde CSV</Title>
       
       <InfoBox>
@@ -385,6 +401,7 @@ const CrearUsuarioCsv = () => {
           </NuevoCargaButton>
         </ResultadoContainer>
       )}
+      </ContentWrapper>
     </Container>
   );
 };
