@@ -96,8 +96,8 @@ const Login = () => {
           <LoginColumn>
             <Form>
               <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
-              <Input type="password" placeholder="**************" onChange={(e) => setPassword(e.target.value)} />
-              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesion</LoginButton>
+              <Input type="password" placeholder="*******************" onChange={(e) => setPassword(e.target.value)} />
+              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
               <SeparatorContainer>
                 <SeparatorLine />
                 <SeparatorText>o</SeparatorText>
@@ -107,7 +107,7 @@ const Login = () => {
             </Form>
           </LoginColumn>
           <LogoColumn>
-            <LogoImage src = "/logo.jpeg" alt="Logo ADAN" />
+            <LogoImage src = "/logo- SinFondo.png" alt="Logo ADAN" />
           </LogoColumn>
         </FullScreenContainer>
     </>
@@ -124,7 +124,7 @@ const FullScreenContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 10vw;
 `;
 
 const ColumnBase = styled.div`
@@ -138,16 +138,15 @@ const ColumnBase = styled.div`
 
 const LoginColumn = styled(ColumnBase)`
   flex: 1;
-  max-width: 400px;
-  padding: 40px;
+  max-width: 30vw;
+  margin-top: 8vh;
 `;
 
 const LogoColumn = styled(ColumnBase)`
   flex: 1;
-  max-width: 400px;
+  max-width: 22vw;
   align-items: center;
-  justify-content: flex-start;
-  padding: 40px 40px 0 40px;
+  justify-content: center;
 `;
 
 
@@ -225,9 +224,7 @@ const ForgotPasswordLink = styled.a`
 `;
 
 const LogoImage = styled.img`
-  max-width: 340px;
-  width: 100%;
+  width: 22vw;
   height: auto;
   object-fit: contain;
-  margin-top: -160px;
 `;
