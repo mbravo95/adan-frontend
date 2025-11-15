@@ -59,10 +59,10 @@ const OlvidoPassword = () => {
         <Container>
           <ContentWrapper>
             <FormWrapper>
-              <Title>Olvido Password</Title>
+              <Title>Recupera tu cuenta</Title>
 
               <FormGroup>
-                <Label>Correo Electrónico</Label>
+                <Label>Ingresa tu correo electrónico y recibirás un enlace para recuperar el acceso a tu cuenta.</Label>
                 <Input
                   type="email"
                   value={correo}
@@ -73,8 +73,11 @@ const OlvidoPassword = () => {
 
               <ButtonGroup>
                 <CreateButton onClick={enviarCorreo}>
-                  Enviar Correo
+                  Enviar enlace
                 </CreateButton>
+                <CancelButton onClick={() => navigate("/login")}>
+                  Cancelar
+                </CancelButton>
               </ButtonGroup>
             </FormWrapper>
           </ContentWrapper>
@@ -89,9 +92,8 @@ export default OlvidoPassword;
 
 const Container = styled.div`
   background-color: #9DCBD7;
+  min-height: 100vh;
   width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -131,8 +133,9 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
+  margin-bottom: 5vh;
+  font-weight: 400;
+  text-align: center;
   color: #333;
   font-size: 14px;
 `;
@@ -160,6 +163,7 @@ const Input = styled.input`
 
 const ButtonGroup = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 15px;
   margin-top: 30px;
 `;
@@ -187,5 +191,21 @@ const CreateButton = styled(Button)`
     opacity: 0.6;
     cursor: not-allowed;
     background-color: #999;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
+  &:hover:not(:disabled) {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    color: #999;
   }
 `;
