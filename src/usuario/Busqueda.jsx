@@ -80,7 +80,7 @@ const Busqueda = () => {
     };
 
     const handleDeleteUser = async (userId) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+        if (!confirm('¿Estás seguro de que deseas bloquear o desbloquear este usuario?')) {
             return;
         }
         
@@ -101,7 +101,7 @@ const Busqueda = () => {
             setUsuarios(nuevosUsuarios);
             setUsuariosFiltrados(usuariosFiltrados.filter(user => user.id !== userId));
             
-            toast.success("Usuario eliminado exitosamente", {
+            toast.success("Usuario bloqueado/desbloqueado exitosamente", {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -134,12 +134,12 @@ const Busqueda = () => {
     <>
         <Container>
             <ContentWrapper>
-                <Title>Gestión de Usuarios</Title>
+                {/*<Title>Gestión de Usuarios</Title>*/}
                 
                 <FilterBar>
                     <FilterInput
                         type="text"
-                        placeholder="Filtrar por nombre, correo, rol o cédula..."
+                        placeholder="Filtrar usuarios..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                     />
@@ -180,7 +180,7 @@ const Busqueda = () => {
                                         </UserStatus>
                                         <DetailRow>
                                             <DetailLabel>Cédula:</DetailLabel>
-                                            <DetailValue>{user.cedula}</DetailValue>
+                                            <DetailValue>{user.cedula ? user.cedula : "No disponible"}</DetailValue>
                                         </DetailRow>
                                         <DetailRow>
                                             <DetailLabel>Correo:</DetailLabel>
@@ -221,13 +221,13 @@ const SecondaryColor = '#1d3557';
 
 const Container = styled.div`
   background-color: ${BackgroundColor};
-  width: 100vw;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
+  width: 100%;
   margin-top: 60px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 20px;
+  /*padding: 40px 20px;*/
   box-sizing: border-box;
 `;
 
@@ -252,6 +252,7 @@ const FilterBar = styled.div`
   gap: 15px;
   width: 100%;
   max-width: 900px;
+  margin-top: 40px;
   margin-bottom: 40px;
   padding: 10px;
   flex-wrap: wrap;
@@ -282,29 +283,29 @@ const BaseFilterButton = styled.button`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   transition: background-color 0.3s, transform 0.2s;
   flex-shrink: 0;
+  
   svg {
-    fill: currentColor;
     width: 1em;
     height: 1em;
   }
 `;
 
 const SearchButton = styled(BaseFilterButton)`
-  background-color: ${SecondaryColor}; 
+  background-color: #2a2a2a;
   color: white;
 
   &:hover {
-    background-color: #112a45;
+    background-color: #171717ff;
     transform: translateY(-1px);
   }
 `;
 
 const ResetButton = styled(BaseFilterButton)`
-  background-color: ${PrimaryColor};
+  background-color: #2a2a2a;
   color: white;
 
   &:hover {
-    background-color: #4C241D;
+    background-color: #171717ff;
     transform: translateY(-1px);
   }
 `;
@@ -425,7 +426,7 @@ const ActionButton = styled.button`
     cursor: pointer;
     transition: background-color 0.2s;
     
-    background-color: ${props => props.primary ? '#007bff' : (props.danger ? '#dc3545' : '#ccc')};
+    background-color: ${props => props.primary ? '#007bff' : (props.danger ? '#d72d3eff' : '#ccc')};
     color: ${props => props.primary || props.danger ? 'white' : '#333'};
 
     &:hover {
@@ -444,13 +445,13 @@ const NoResults = styled.div`
 `;
 
 const SearchIconSVG = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M39.2 42L26.6 29.4C25.6 30.2 24.45 30.8333 23.15 31.3C21.85 31.7667 20.4667 32 19 32C15.3667 32 12.2917 30.7417 9.775 28.225C7.25833 25.7083 6 22.6333 6 19C6 15.3667 7.25833 12.2917 9.775 9.775C12.2917 7.25833 15.3667 6 19 6C22.6333 6 25.7083 7.25833 28.225 9.775C30.7417 12.2917 32 15.3667 32 19C32 20.4667 31.7667 21.85 31.3 23.15C30.8333 24.45 30.2 25.6 29.4 26.6L42 39.2L39.2 42ZM19 28C21.5 28 23.625 27.125 25.375 25.375C27.125 23.625 28 21.5 28 19C28 16.5 27.125 14.375 25.375 12.625C23.625 10.875 21.5 10 19 10C16.5 10 14.375 10.875 12.625 12.625C10.875 14.375 10 16.5 10 19C10 21.5 10.875 23.625 12.625 25.375C14.375 27.125 16.5 28 19 28Z" fill="white"/>
     </svg>
 );
 
 const ResetIconSVG = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M11.173 2.004a.5.5 0 0 1 .634.032l2.364 2.363a.5.5 0 0 1 0 .708l-2.364 2.364a.5.5 0 0 1-.708-.708l1.791-1.79H9c-2.4 0-4.5 1.7-5.1 4.1a.5.5 0 0 1-.9.3c.4-2.8 2.8-5 5.9-5h3.966L9.899 2.712a.5.5 0 0 1 .032-.634zM4.09 9.902a.5.5 0 0 1 .707 0l1.79 1.79H13c2.4 0 4.5-1.7 5.1-4.1a.5.5 0 0 1 .9-.3c-.4 2.8-2.8 5-5.9 5h-3.966l1.791 1.79a.5.5 0 0 1-.707.707l-2.364-2.364a.5.5 0 0 1 0-.708l2.364-2.363z"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M46 8.00015V20.0002M46 20.0002H34M46 20.0002L36.72 11.2802C34.5705 9.12958 31.9113 7.55856 28.9904 6.7137C26.0695 5.86883 22.9822 5.77765 20.0166 6.44867C17.0509 7.11968 14.3036 8.53102 12.0309 10.551C9.75827 12.571 8.03434 15.1337 7.02 18.0002M2 40.0002V28.0002M2 28.0002H14M2 28.0002L11.28 36.7202C13.4295 38.8707 16.0887 40.4417 19.0096 41.2866C21.9305 42.1315 25.0178 42.2226 27.9834 41.5516C30.9491 40.8806 33.6964 39.4693 35.9691 37.4493C38.2417 35.4293 39.9657 32.8666 40.98 30.0002" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
 );

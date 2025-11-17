@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  /*padding: 20px;*/
   box-sizing: border-box;
 `;
 

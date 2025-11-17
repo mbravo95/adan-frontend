@@ -78,7 +78,7 @@ const Login = () => {
       navigate('/home');
     } catch (error) {
       console.log(error);
-      toast.error("Correo y/o contrasenia incorrectos", {
+      toast.error("Correo y/o contraseña incorrectos", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
