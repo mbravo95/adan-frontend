@@ -158,7 +158,7 @@ const Perfil = () => {
             </ProfileSection>
             
             <DataSection>
-              <Title>Perfil del Usuario</Title>
+              {/*<Title>Perfil del Usuario</Title>*/}
               <UserCard>
                 <DataRow>
                   <Label>Nombres:</Label>
@@ -185,17 +185,18 @@ const Perfil = () => {
                   <Value>{userData.fechaIngreso}</Value>
                 </DataRow>
               </UserCard>
+              <ButtonContainer>
+                <EditButton onClick={irEditarPerfil}>
+                  Editar perfil
+                </EditButton>
+                <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
+                  Cambiar contraseña
+                </EditButton>
+              </ButtonContainer>
             </DataSection>
           </MainContent>
           
-          <ButtonContainer>
-            <EditButton onClick={irEditarPerfil}>
-              Editar perfil
-            </EditButton>
-            <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
-              Cambiar contraseña
-            </EditButton>
-          </ButtonContainer>
+          
         </ContentWrapper>
       }
     </Container>
@@ -207,9 +208,8 @@ export default Perfil;
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -253,7 +253,7 @@ const ProfileImage = styled.div`
   border: 6px solid white;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 20px;
-  margin-top: 60px;
+  margin-top: 20px;
 `;
 
 const ProfileName = styled.h2`
