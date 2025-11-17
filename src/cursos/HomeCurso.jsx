@@ -142,10 +142,23 @@ const HomeCurso = () => {
       }
     }
 
+    const formatearListaProfesores = (profesores, maxLength = 33) => {
+      const nombresCompletos = profesores
+        .map(p => `${p.nombres} ${p.apellidos}`)
+        .join(', ');
+
+      if (nombresCompletos.length > maxLength) {
+        return nombresCompletos.substring(0, maxLength) + "...";
+      }
+
+      return nombresCompletos;
+    };
+
+
   return (
     <Container>
       <ContentWrapper>
-        <Title>Administración de Cursos</Title>
+        {/*<Title>Administración de Cursos</Title>*/}
 
         <ModalConfirmacion
                 isOpen={isModalOpen}
@@ -179,22 +192,20 @@ const HomeCurso = () => {
                     </CourseDescription>
                     <CourseDetails>
                       <DetailRow>
-                        <DetailLabel>Duración:</DetailLabel>
-                        <DetailValue>{curso.duracion || "No especificada"}</DetailValue>
+                        <DetailLabel>Código:</DetailLabel>
+                        <DetailValue>{curso.codigo || "No disponible"}</DetailValue>
                       </DetailRow>
                       <DetailRow>
-                        <DetailLabel>Modalidad:</DetailLabel>
-                        <DetailValue>{curso.modalidad || "No especificada"}</DetailValue>
+                        <DetailLabel>Turno:</DetailLabel>
+                        <DetailValue>{curso.turno || "No disponible"}</DetailValue>
                       </DetailRow>
                       <DetailRow>
-                        <DetailLabel>Precio:</DetailLabel>
-                        <DetailValue>
-                          {curso.precio ? `$${curso.precio}` : "No especificado"}
-                        </DetailValue>
+                        <DetailLabel>Año:</DetailLabel>
+                        <DetailValue>{curso.anio || "No disponible"}</DetailValue>
                       </DetailRow>
                       <DetailRow>
-                        <DetailLabel>Fecha de creación:</DetailLabel>
-                        <DetailValue>{formatearFecha(curso.fechaCreacion)}</DetailValue>
+                        <DetailLabel>Profesores:</DetailLabel>
+                        <DetailValue>{curso.profesores.length > 0 ? formatearListaProfesores(curso.profesores) : 'Sin profesor asignado'}</DetailValue>
                       </DetailRow>
                     </CourseDetails>
                     <CourseActions>
@@ -238,8 +249,8 @@ export default HomeCurso;
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
+  width: 100%;
   margin-top: 60px;
   display: flex;
   justify-content: center;
@@ -381,11 +392,11 @@ const Button = styled.button`
 `;
 
 const EditButton = styled(Button)`
-  background-color: #007bff;
+  background-color: #a0aec0;
   color: white;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #8c99a9ff;
   }
 
   &:disabled {
@@ -396,7 +407,7 @@ const EditButton = styled(Button)`
 `;
 
 const DeleteButton = styled(Button)`
-  background-color: #dc3545;
+  background-color: #d72d3eff;
   color: white;
 
   &:hover {
@@ -411,11 +422,11 @@ const DeleteButton = styled(Button)`
 `;
 
 const AsignarDocenteButton = styled(Button)`
-  background-color: #1d4c4c;
+  background-color: #746a65ff;
   color: white;
   
   &:hover {
-    background-color: #163a38;
+    background-color: #59524dff;
   }
   
   &:disabled {
@@ -426,11 +437,11 @@ const AsignarDocenteButton = styled(Button)`
 `;
 
 const DesasignarDocenteButton = styled(Button)`
-  background-color: #4c2c1d;
+  background-color: #746a65ff;
   color: white;
   
   &:hover {
-    background-color: #3a2716;
+    background-color: #59524dff;
   }
   
   &:disabled {
