@@ -160,7 +160,7 @@ const Busqueda = () => {
                                     <UserIcon role={user.tipoUsuario}>
                                         {user.fotoPerfil ? (
                                             <img 
-                                                src={user.fotoPerfil} 
+                                                src={`${import.meta.env.VITE_BACKEND_URL.replace('/api', '')}${user.fotoPerfil}`} 
                                                 alt={`${user.nombres} ${user.apellidos}`} 
                                                 style={{ width: '100%', height: '100%', borderRadius: '50%' }}
                                             />
