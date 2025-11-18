@@ -188,7 +188,7 @@ const DarkBackground = '#2a2a2a';
 
 const colores = [
   "#74B8FF", // Azul
-  "#FD79A8", // Rosado
+  "#EE6A98", // Rosado
   "#A19BFD", // Violeta
   "#00B894", // Verde
   "#FDCA6E", // Amarillo
