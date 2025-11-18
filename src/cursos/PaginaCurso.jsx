@@ -547,7 +547,7 @@ const PaginaCurso = () => {
   function getColorForCurso(idCurso) {
     const colores = [
       "#74B8FF",
-      "#FD79A8",
+      "#EE6A98",
       "#A19BFD",
       "#00B894",
       "#FDCA6E",
@@ -575,344 +575,484 @@ const PaginaCurso = () => {
 
   return (
   <S.Container>
-      <Sidebar>
-        <CourseTitle>
-          {cursoActual.nombre}
-        </CourseTitle>
-        
-        <div style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
-          Código: {cursoActual.codigo}
-        </div>
-        
-        <ParticipantsButton onClick={verParticipantes}>
-          Participantes
-        </ParticipantsButton>
-        
-        <IndexSection>
-          <IndexTitle>Indice del Curso</IndexTitle>
-          <IndexList>
-            {secciones.length > 0 ? (
-              secciones.map((seccion, idx) => (
-                <IndexItem
-                  key={seccion.id}
-                  style={{ cursor: 'pointer', color: '#4C241D' }}
-                  onClick={() => toggleSeccion(seccion.id)}
-                >
-                  {seccion.titulo || `Sección ${idx + 1}`}
-                </IndexItem>
-              ))
-            ) : (
-              <IndexItem style={{ color: '#999' }}>Sin secciones</IndexItem>
-            )}
-          </IndexList>
-        </IndexSection>
-      </Sidebar>
-
-      <ModalConfirmacion
-        isOpen={isModalOpen}
-        message={seccionEliminarId ? `¿Estás seguro de que quieres eliminar esta sección?` : `¿Estás seguro de que quieres eliminar este recurso?`}
-        onConfirm={seccionEliminarId ? handleBorrarSeccion : handleBorrarPagina}
-        onCancel={handleCancelar}
-        isLoading={loadingSecciones}
-      />
+    <Sidebar>
+      <CourseTitle>
+        {cursoActual.nombre}
+      </CourseTitle>
       
-      <MainContent>
-        <CourseInfoHeader bg={getColorForCurso(cursoActual.id)}>
-          <CourseInfoGrid>
-            <InfoSection>
-              <InfoLabel>Nombre del Curso</InfoLabel>
-              <InfoValue>{cursoActual.nombre}</InfoValue>
-            </InfoSection>
-            
-            <InfoSection>
-              <InfoLabel>Profesores</InfoLabel>
-              <InfoValue>
-                {cursoActual.profesores?.length > 0
-                  ? cursoActual.profesores.join(", ")
-                  : "Sin profesores"}
-              </InfoValue>
-            </InfoSection>
-            
-            <InfoSection>
-              <InfoLabel>Turno</InfoLabel>
-              <InfoValue>{cursoActual.turno || "Sin turno"}</InfoValue>
-            </InfoSection>
-          </CourseInfoGrid>
-        </CourseInfoHeader>
-        
-        {puedeAdministrarCursos(location.pathname) && (
-          <AddSectionButton onClick={() => irAltaSeccion()}>
-            + Agregar Sección
-          </AddSectionButton>
-        )}
-        
-        <SectionsContainer>
-          {loadingSecciones ? (
-            <LoadingMessage>
-              Cargando secciones...
-            </LoadingMessage>
-          ) : secciones.length > 0 ? (
-            secciones.map((seccion) => {
-              const collapsed = seccionesColapsadas[seccion.id] ?? true;
-              return (
-                <SectionPlaceholder key={seccion.id}>
-                  <SectionHeader 
-                    collapsed={collapsed}
-                    onClick={() => toggleSeccion(seccion.id)}
+      <div style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
+        Código: {cursoActual.codigo}
+      </div>
+      
+      <ParticipantsButton onClick={verParticipantes}>
+        Participantes
+      </ParticipantsButton>
+      
+      <IndexSection>
+        <IndexTitle>Contenido del Curso:</IndexTitle>
+        <IndexList>
+          {secciones.length > 0 ? (
+            secciones.map((seccion, idx) => (
+              <IndexItem
+                key={seccion.id}
+                style={{ cursor: 'pointer', color: '#4C241D' }}
+                onClick={() => toggleSeccion(seccion.id)}
+              >
+                {seccion.titulo || `Sección ${idx + 1}`}
+              </IndexItem>
+            ))
+          ) : (
+            <IndexItem style={{ color: '#999' }}>Sin secciones</IndexItem>
+          )}
+        </IndexList>
+      </IndexSection>
+    </Sidebar>
+
+    <ModalConfirmacion
+      isOpen={isModalOpen}
+      message={seccionEliminarId ? `¿Estás seguro de que quieres eliminar esta sección?` : `¿Estás seguro de que quieres eliminar este recurso?`}
+      onConfirm={seccionEliminarId ? handleBorrarSeccion : handleBorrarPagina}
+      onCancel={handleCancelar}
+      isLoading={loadingSecciones}
+    />
+      
+    <MainContent>
+      <CourseInfoHeader bg={getColorForCurso(cursoActual.id)}>
+        <CourseInfoGrid>
+          <InfoSection>
+            <InfoLabel>Nombre del Curso</InfoLabel>
+            <InfoValue>{cursoActual.nombre}</InfoValue>
+          </InfoSection>
+          
+          <InfoSection>
+            <InfoLabel>Profesores</InfoLabel>
+            <InfoValue>
+              {cursoActual.profesores?.length > 0
+                ? cursoActual.profesores.join(", ")
+                : "Sin profesores"}
+            </InfoValue>
+          </InfoSection>
+          
+          <InfoSection>
+            <InfoLabel>Turno</InfoLabel>
+            <InfoValue>{cursoActual.turno || "Sin turno"}</InfoValue>
+          </InfoSection>
+        </CourseInfoGrid>
+      </CourseInfoHeader>
+      
+      <SectionsContainer>
+        {loadingSecciones ? (
+          <LoadingMessage>
+            Cargando secciones...
+          </LoadingMessage>
+        ) : secciones.length > 0 ? (
+          <>
+            {/* Renderizar primero la Cartelera de Novedades */}
+            {secciones
+              .filter(seccion => seccion.titulo && seccion.titulo.trim().toLowerCase() === 'cartelera de novedades')
+              .map((seccion) => {
+                const collapsed = seccionesColapsadas[seccion.id] ?? true;
+                return (
+                  <SectionPlaceholder 
+                    key={seccion.id}
+                    style={{
+                      backgroundColor: '#d7d7d7ff'
+                    }}
                   >
-                    <SectionTitleContainer>
-                      <CollapseIcon collapsed={collapsed}>
-                        ▼
-                      </CollapseIcon>
-                      <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
-                    </SectionTitleContainer>
-                  </SectionHeader>
-                  {puedeAdministrarCursos(location.pathname) && (
-                    seccion.titulo && seccion.titulo.trim().toLowerCase() === 'cartelera de novedades'
-                      ? (
-                        <ButtonGroup style={{ marginBottom: '10px' }}>
-                          <ActionButton 
-                            variant="success" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              agregarPagina(seccion.id);
-                            }}
-                          >
-                            Agregar Pagina
-                          </ActionButton>
-                        </ButtonGroup>
-                      )
-                      : (
-                        <ButtonGroup style={{ marginBottom: '10px' }}>
-                          <ActionButton 
-                            variant="success" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              agregarTarea(seccion.id);
-                            }}
-                          >
-                            Agregar Tarea
-                          </ActionButton>
-                          <ActionButton 
-                            variant="info" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              irSubirMaterial(seccion.id);
-                            }}
-                          >
-                            Subir Material
-                          </ActionButton>
-                          <ActionButton 
-                            variant="success" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              agregarForo(seccion.id);
-                            }}
-                          >
-                            Agregar Foro
-                          </ActionButton>
-                          <ActionButton 
-                            variant="success" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              agregarPagina(seccion.id);
-                            }}
-                          >
-                            Agregar Pagina
-                          </ActionButton>
-                          <ActionButton 
-                            variant="warning" 
+                    <SectionHeader 
+                      collapsed={collapsed}
+                      onClick={() => toggleSeccion(seccion.id)}
+                    >
+                      <SectionTitleContainer>
+                        <CollapseIcon collapsed={collapsed}>
+                          ▼
+                        </CollapseIcon>
+                        <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
+                      </SectionTitleContainer>
+                    </SectionHeader>
+                    {puedeAdministrarCursos(location.pathname) && (
+                      <ButtonGroup style={{ marginBottom: '10px' }}>
+                        <ActionButton 
+                          variant="success" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            agregarPagina(seccion.id);
+                          }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Novedad
+                        </ActionButton>
+                      </ButtonGroup>
+                    )}
+                    <SectionContent collapsed={collapsed}>
+                      <SectionInfo>
+                        <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
+                          {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
+                            recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
+                              <li
+                                key={recurso.id}
+                                style={{
+                                  paddingBottom: '8px',
+                                  marginBottom: '8px',
+                                  borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '12px',
+                                  cursor: recurso.tipoRecurso === 'FORO' ? 'pointer' : 'default',
+                                }}
+                                onClick={
+                                  recurso.tipoRecurso === 'FORO'
+                                    ? () => navigate(`/curso/${codigo}/foro/${recurso.id}`)
+                                    : undefined
+                                }
+                              >
+                                {recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
+                                  <>
+                                    <span style={{color:'#222', cursor: 'pointer'}} onClick={() => verPagina(recurso.id, seccion.id)}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                    <button
+                                      style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                      onClick={() => verPagina(recurso.id, seccion.id)}
+                                    >
+                                      Ver
+                                    </button>
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <>
+                                        <button
+                                          style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                          onClick={() => editarPagina(recurso.id)}
+                                        >
+                                          Editar
+                                        </button>
+                                        <button
+                                          style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                          onClick={() => handleAbrirModal(recurso.id)}
+                                        >
+                                          Eliminar
+                                        </button>
+                                      </>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span style={{color:'#222'}}>Recurso sin tipo</span>
+                                )}
+                              </li>
+                            ))
+                          ) : (
+                            <li style={{color:'#999'}}>No hay recursos en esta sección.</li>
+                          )}
+                        </ul>
+                      </SectionInfo>
+                    </SectionContent>
+                  </SectionPlaceholder>
+                );
+              })
+            }
+          </>
+        ) : (
+          <NoSectionsMessage>
+            <h3>No hay secciones creadas</h3>
+            <p>Aún no se han creado secciones para este curso.</p>
+            <p>Utiliza el botón "Agregar Sección" para crear la primera sección.</p>
+          </NoSectionsMessage>
+        )}
+      </SectionsContainer>
+
+      {/* Botón de agregar sección solo para profesores */}
+      {puedeAdministrarCursos(location.pathname) && secciones.length > 0 && (
+        <AddSectionButton onClick={() => irAltaSeccion()}>
+          + Agregar Sección
+        </AddSectionButton>
+      )}
+      
+      <SectionsContainer>
+        {!loadingSecciones && secciones.length > 0 && (
+          <>
+            {/* Renderizar el resto de las secciones */}
+            {secciones
+              .filter(seccion => !seccion.titulo || seccion.titulo.trim().toLowerCase() !== 'cartelera de novedades')
+              .map((seccion) => {
+                const collapsed = seccionesColapsadas[seccion.id] ?? true;
+                return (
+                  <SectionPlaceholder key={seccion.id}>
+                    <SectionHeader 
+                      collapsed={collapsed} 
+                      onClick={() => toggleSeccion(seccion.id)}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <SectionTitleContainer>
+                        <CollapseIcon collapsed={collapsed}>
+                          ▼
+                        </CollapseIcon>
+                        <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
+                      </SectionTitleContainer>
+                      
+                      {/* Botones de gestión a la derecha */}
+                      {puedeAdministrarCursos(location.pathname) && (
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <ActionButton
+                            variant="warning"
                             onClick={(e) => {
                               e.stopPropagation();
                               modificarSeccion(seccion.id);
                             }}
                           >
-                            Modificar sección
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_387_2092)">
+                            <path d="M6.875 2.50014H2.5C2.16848 2.50014 1.85054 2.63184 1.61612 2.86626C1.3817 3.10068 1.25 3.41862 1.25 3.75014V12.5001C1.25 12.8317 1.3817 13.1496 1.61612 13.384C1.85054 13.6184 2.16848 13.7501 2.5 13.7501H11.25C11.5815 13.7501 11.8995 13.6184 12.1339 13.384C12.3683 13.1496 12.5 12.8317 12.5 12.5001V8.12514M11.5625 1.56264C11.8111 1.314 12.1484 1.17432 12.5 1.17432C12.8516 1.17432 13.1889 1.314 13.4375 1.56264C13.6861 1.81128 13.8258 2.14851 13.8258 2.50014C13.8258 2.85177 13.6861 3.189 13.4375 3.43764L7.5 9.37514L5 10.0001L5.625 7.50014L11.5625 1.56264Z" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_387_2092">
+                            <rect width="15" height="15" fill="white"/>
+                            </clipPath>
+                            </defs>
+                            </svg>
+
+
+
+
+                            Modificar
                           </ActionButton>
-                          <ActionButton 
-                            variant="danger" 
+                          
+                          <ActionButton
+                            variant="danger"
                             onClick={(e) => {
                               e.stopPropagation();
                               eliminarSeccion(seccion.id);
                             }}
                           >
-                            Eliminar sección
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.875 3.75H3.125M3.125 3.75H13.125M3.125 3.75V12.5C3.125 12.8315 3.2567 13.1495 3.49112 13.3839C3.72554 13.6183 4.04348 13.75 4.375 13.75H10.625C10.9565 13.75 11.2745 13.6183 11.5089 13.3839C11.7433 13.1495 11.875 12.8315 11.875 12.5V3.75M5 3.75V2.5C5 2.16848 5.1317 1.85054 5.36612 1.61612C5.60054 1.3817 5.91848 1.25 6.25 1.25H8.75C9.08152 1.25 9.39946 1.3817 9.63388 1.61612C9.8683 1.85054 10 2.16848 10 2.5V3.75M6.25 6.875V10.625M8.75 6.875V10.625" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Eliminar
                           </ActionButton>
-                        </ButtonGroup>
-                      )
-                  )}
-                  <SectionContent collapsed={collapsed}>
-                    <SectionInfo>
-                      <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
-                        {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
-                          recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
-                            <li
-                              key={recurso.id}
-                              style={{
-                                paddingBottom: '8px',
-                                marginBottom: '8px',
-                                borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                cursor: recurso.tipoRecurso === 'FORO' ? 'pointer' : 'default',
-                              }}
-                              onClick={
-                                recurso.tipoRecurso === 'FORO'
-                                  ? () => navigate(`/curso/${codigo}/foro/${recurso.id}`)
-                                  : undefined
-                              }
-                            >
-                              {recurso.tipoRecurso === 'MATERIAL' ? (
-                                <>
-                                  <span style={{color:'#222', display:'flex', alignItems:'center', gap:'6px'}}>
-                                    <span role="img" aria-label="archivo">📄</span>
-                                    {recurso.nombre === null ? '(null)' : recurso.nombre}
-                                  </span>
-                                  <button
-                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      handleDescargarMaterial(codigo, seccion.id, recurso);
-                                    }}
-                                  >
-                                    Descargar
-                                  </button>
-                                  {puedeAdministrarCursos(location.pathname) && (
-                                    <span
-                                      title="Eliminar material"
-                                      style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        eliminarMaterial(recurso.id, seccion.id);
-                                      }}
-                                    >
-                                      ❌
-                                    </span>
-                                  )}
-                                </>
-                              ) : recurso.tipoRecurso === 'FORO' ? (
-                                <>
-                                  <Recurso>{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
-                                  {puedeAdministrarCursos(location.pathname) && (
-                                    <>
-                                      <span
-                                        title="Modificar foro"
-                                        style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
-                                        onClick={e => {
-                                          e.stopPropagation();
-                                          editarForo(recurso.id, seccion.id);
-                                        }}
-                                      >
-                                        ✏️
-                                      </span>
-                                      <span
-                                        title="Eliminar foro"
-                                        style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                        onClick={e => {
-                                          e.stopPropagation();
-                                          eliminarForo(recurso.id);
-                                        }}
-                                      >
-                                        ❌
-                                      </span>
-                                    </>
-                                  )}
-                                </>
-                              ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
-                                <>
-                                  <span style={{color:'#222', cursor: 'pointer'}} onClick={() => verPagina(recurso.id, seccion.id)}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
-                                  <button
-                                    style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                    onClick={() => verPagina(recurso.id, seccion.id)}
-                                  >
-                                    Ver
-                                  </button>
-                                  {puedeAdministrarCursos(location.pathname) && (
-                                    <>
-                                      <button
-                                        style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                        onClick={() => editarPagina(recurso.id)}
-                                      >
-                                        Editar
-                                      </button>
-                                      <button
-                                        style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
-                                        onClick={() => handleAbrirModal(recurso.id)}
-                                      >
-                                        Eliminar
-                                      </button>
-                                    </>
-                                  )}
-                                </>
-                              ) : recurso.tipoRecurso === 'TAREA' ? (
-                                <>
-                                  <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
-                                  {puedeAdministrarCursos(location.pathname) && (
-                                    <button
-                                      style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        verEntregasTarea(recurso.id, seccion.id);
-                                      }}
-                                    >
-                                      Ver entregas
-                                    </button>
-                                  )}
-                                  {puedeAdministrarCursos(location.pathname) && (
-                                    <>
-                                      <span
-                                        title="Modificar tarea"
-                                        style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
-                                        onClick={e => {
-                                          e.stopPropagation();
-                                          editarTarea(recurso.id);
-                                        }}
-                                      >
-                                        ✏️
-                                      </span>
-                                      <span
-                                        title="Eliminar tarea"
-                                        style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
-                                        onClick={e => {
-                                          e.stopPropagation();
-                                          eliminarTarea(recurso.id);
-                                        }}
-                                      >
-                                        ❌
-                                      </span>
-                                    </>
-                                  )}
-                                </>
-                              ): recurso.tipoRecurso === 'FORO' ? (
-                                <>
-                                  <Recurso onClick={() => verForo(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
-                                  
-                                </>
-                              ) : (
-                                <span style={{color:'#222'}}>Recurso sin tipo</span>
-                              )}
-                            </li>
-                          ))
-                        ) : (
-                          <li style={{color:'#999'}}>No hay recursos en esta sección.</li>
-                        )}
-                      </ul>
-                    </SectionInfo>
-                  </SectionContent>
-                </SectionPlaceholder>
-              );
-            })
-          ) : (
-            <NoSectionsMessage>
-              <h3>No hay secciones creadas</h3>
-              <p>Aún no se han creado secciones para este curso.</p>
-              <p>Utiliza el botón "Agregar Sección" para crear la primera sección.</p>
-            </NoSectionsMessage>
-          )}
-        </SectionsContainer>
+                        </div>
+                      )}
+                    </SectionHeader>
 
-      </MainContent>
+                    {puedeAdministrarCursos(location.pathname) && (
+                      <ButtonGroup style={{ marginBottom: '10px' }}>
+                        <ActionButton
+                          variant="success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            agregarTarea(seccion.id);
+                          }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Tarea
+                        </ActionButton>
+                        
+                        <ActionButton
+                          variant="info"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            irSubirMaterial(seccion.id);
+                          }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Material
+                        </ActionButton>
+                        
+                        <ActionButton
+                          variant="success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            agregarForo(seccion.id);
+                          }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Foro
+                        </ActionButton>
+                        
+                        <ActionButton
+                          variant="success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            agregarPagina(seccion.id);
+                          }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Página Temática
+                        </ActionButton>
+                      </ButtonGroup>
+                    )}
+                    <SectionContent collapsed={collapsed}>
+                      <SectionInfo>
+                        <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
+                          {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
+                            recursosPorSeccion[seccion.id].map((recurso, idx, arr) => (
+                              <li
+                                key={recurso.id}
+                                style={{
+                                  paddingBottom: '8px',
+                                  marginBottom: '8px',
+                                  borderBottom: idx < arr.length - 1 ? '2px solid #222' : 'none',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '12px',
+                                  cursor: recurso.tipoRecurso === 'FORO' ? 'pointer' : 'default',
+                                }}
+                                onClick={
+                                  recurso.tipoRecurso === 'FORO'
+                                    ? () => navigate(`/curso/${codigo}/foro/${recurso.id}`)
+                                    : undefined
+                                }
+                              >
+                                {recurso.tipoRecurso === 'MATERIAL' ? (
+                                  <>
+                                    <span style={{color:'#222', display:'flex', alignItems:'center', gap:'6px'}}>
+                                      <span role="img" aria-label="archivo">📄</span>
+                                      {recurso.nombre === null ? '(null)' : recurso.nombre}
+                                    </span>
+                                    <button
+                                      style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        handleDescargarMaterial(codigo, seccion.id, recurso);
+                                      }}
+                                    >
+                                      Descargar
+                                    </button>
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <span
+                                        title="Eliminar material"
+                                        style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          eliminarMaterial(recurso.id, seccion.id);
+                                        }}
+                                      >
+                                        ❌
+                                      </span>
+                                    )}
+                                  </>
+                                ) : recurso.tipoRecurso === 'FORO' ? (
+                                  <>
+                                    <Recurso>{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <>
+                                        <span
+                                          title="Modificar foro"
+                                          style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                          onClick={e => {
+                                            e.stopPropagation();
+                                            editarForo(recurso.id, seccion.id);
+                                          }}
+                                        >
+                                          ✏️
+                                        </span>
+                                        <span
+                                          title="Eliminar foro"
+                                          style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                          onClick={e => {
+                                            e.stopPropagation();
+                                            eliminarForo(recurso.id);
+                                          }}
+                                        >
+                                          ❌
+                                        </span>
+                                      </>
+                                    )}
+                                  </>
+                                ) : recurso.tipoRecurso === 'PAGINA_TEMATICA' ? (
+                                  <>
+                                    <span style={{color:'#222', cursor: 'pointer'}} onClick={() => verPagina(recurso.id, seccion.id)}>{recurso.nombre === null ? '(null)' : recurso.nombre}</span>
+                                    <button
+                                      style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                      onClick={() => verPagina(recurso.id, seccion.id)}
+                                    >
+                                      Ver
+                                    </button>
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <>
+                                        <button
+                                          style={{color:'#fff', background:'#ffd000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                          onClick={() => editarPagina(recurso.id)}
+                                        >
+                                          Editar
+                                        </button>
+                                        <button
+                                          style={{color:'#fff', background:'#ff0000', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'10px', display:'flex', alignItems:'center', gap:'4px'}}
+                                          onClick={() => handleAbrirModal(recurso.id)}
+                                        >
+                                          Eliminar
+                                        </button>
+                                      </>
+                                    )}
+                                  </>
+                                ) : recurso.tipoRecurso === 'TAREA' ? (
+                                  <>
+                                    <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <button
+                                        style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          verEntregasTarea(recurso.id, seccion.id);
+                                        }}
+                                      >
+                                        Ver entregas
+                                      </button>
+                                    )}
+                                    {puedeAdministrarCursos(location.pathname) && (
+                                      <>
+                                        <span
+                                          title="Modificar tarea"
+                                          style={{ cursor: 'pointer', marginLeft: '10px', color: '#ffd000', fontSize: '18px' }}
+                                          onClick={e => {
+                                            e.stopPropagation();
+                                            editarTarea(recurso.id);
+                                          }}
+                                        >
+                                          ✏️
+                                        </span>
+                                        <span
+                                          title="Eliminar tarea"
+                                          style={{ cursor: 'pointer', marginLeft: '8px', color: '#ff0000', fontSize: '18px' }}
+                                          onClick={e => {
+                                            e.stopPropagation();
+                                            eliminarTarea(recurso.id);
+                                          }}
+                                        >
+                                          ❌
+                                        </span>
+                                      </>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span style={{color:'#222'}}>Recurso sin tipo</span>
+                                )}
+                              </li>
+                            ))
+                          ) : (
+                            <li style={{color:'#999'}}>No hay recursos en esta sección.</li>
+                          )}
+                        </ul>
+                      </SectionInfo>
+                    </SectionContent>
+                  </SectionPlaceholder>
+                );
+              })
+            }
+          </>
+        )}
+      </SectionsContainer>
+
+    </MainContent>
   </S.Container>
   )
 }

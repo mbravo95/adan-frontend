@@ -2,8 +2,8 @@ import styled from "styled-components";
 
 const Container = styled.div`
   background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
+  width: 100%;
   margin-top: 60px;
   display: flex;
   box-sizing: border-box;
@@ -32,9 +32,9 @@ const ParticipantsButton = styled.button`
   background-color: black;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 15px;
-  font-size: 12px;
+  padding: 14px 12px;
+  border-radius: 25px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -146,7 +146,7 @@ const AddSectionButton = styled.button`
 
   
   &:hover {
-    background-color: #9DCBD7;
+    background-color: #d7d7d7ff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
@@ -213,7 +213,7 @@ const SectionTitleContainer = styled.div`
 
 const CollapseIcon = styled.span`
   font-size: 16px;
-  color: #4C241D;
+  color: #000000ff;
   transition: transform 0.3s ease;
   transform: ${props => props.collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
 `;
@@ -239,14 +239,19 @@ const ButtonGroup = styled.div`
 `;
 
 const ActionButton = styled.button`
-  background-color: ${props => props.variant === 'danger' ? '#dc3545' : props.variant === 'warning' ? '#ffc107' : '#28a745'};
-  color: ${props => props.variant === 'warning' ? '#000' : '#fff'};
-  border: none;
+  /*background-color: ${props => props.variant === 'danger' ? '#dc3545' : props.variant === 'warning' ? '#ffc107' : '#28a745'};*/
+  background-color: '#dededeff';
+  /*color: ${props => props.variant === 'warning' ? '#000' : '#fff'};*/
+  color: #000;
+  border: 1px solid #4b4b4bff;
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: all 0.3s ease;
   
   &:hover {
