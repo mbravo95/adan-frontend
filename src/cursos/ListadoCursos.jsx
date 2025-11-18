@@ -154,7 +154,7 @@ const ListadoCursos = () => {
             {cursosFiltrados.length > 0 && cursosFiltrados.map((curso, index) => (
               <CourseCard key={index} onClick={() => irAlCurso(curso.codigo)}>
                 
-                <Avatar style={{ backgroundColor: colores[index % colores.length] }}>
+                <Avatar style={{ backgroundColor: getColorForCurso(curso.id) }}>
                   <img src="/header/avatar.png" alt="avatar" />
                 </Avatar>
 
@@ -195,6 +195,11 @@ const colores = [
   "#80ECEC", // Celeste
   "#F7634D"  // Rojo
 ];
+
+function getColorForCurso(idCurso) {
+  const index = idCurso % colores.length;
+  return colores[index];
+}
 
 const colorRandom = () => {
   return colores[Math.floor(Math.random() * colores.length)];

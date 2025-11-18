@@ -89,7 +89,8 @@ const MainContent = styled.div`
 
 const CourseInfoHeader = styled.div`
   width: calc(100% - 40px);
-  background-color: #c0386eff;
+  /*background-color: #c0386eff;*/
+  background-color: ${props => props.bg};
   color: white;
   padding: 15px 25px;
   margin: 20px;

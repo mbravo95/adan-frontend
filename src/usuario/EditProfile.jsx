@@ -68,7 +68,7 @@ const ProfileImage = styled.div`
   border: 6px solid #ddd;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  margin-top: 60px;
+  margin-top: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
@@ -382,9 +382,16 @@ const EditProfile = () => {
                   );
                 })()
               ) : (
-                <span role="img" aria-label="profile" style={{ fontSize: "5rem" }}>
-                  👤
-                </span>
+                <img
+                  src="/header/avatar.png"
+                  alt="Avatar por defecto"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover"
+                  }}
+                />
               )}
               <input
                 type="file"
