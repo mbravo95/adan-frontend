@@ -544,6 +544,35 @@ const PaginaCurso = () => {
     }
   };
 
+  function getColorForCurso(idCurso) {
+    const colores = [
+      "#74B8FF",
+      "#FD79A8",
+      "#A19BFD",
+      "#00B894",
+      "#FDCA6E",
+      "#80ECEC",
+      "#F7634D"
+    ];
+
+    const index = idCurso % colores.length;
+    return colores[index];
+  }
+
+  if (!cursoActual || !cursoActual.id) {
+    return (
+      <S.Container> 
+        <Sidebar>
+
+        </Sidebar>
+        <MainContent>
+          <div style={{ marginTop: "60px" }}></div>
+            <Spinner />
+        </MainContent>
+      </S.Container>
+    );
+  }
+
   return (
   <S.Container>
       <Sidebar>
@@ -588,7 +617,7 @@ const PaginaCurso = () => {
       />
       
       <MainContent>
-        <CourseInfoHeader>
+        <CourseInfoHeader bg={getColorForCurso(cursoActual.id)}>
           <CourseInfoGrid>
             <InfoSection>
               <InfoLabel>Nombre del Curso</InfoLabel>
@@ -597,7 +626,11 @@ const PaginaCurso = () => {
             
             <InfoSection>
               <InfoLabel>Profesores</InfoLabel>
-              <InfoValue>{cursoActual.profesores || "Sin profesores"}</InfoValue>
+              <InfoValue>
+                {cursoActual.profesores?.length > 0
+                  ? cursoActual.profesores.join(", ")
+                  : "Sin profesores"}
+              </InfoValue>
             </InfoSection>
             
             <InfoSection>

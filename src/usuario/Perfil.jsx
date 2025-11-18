@@ -148,9 +148,16 @@ const Perfil = () => {
                     );
                   })()
                 ) : (
-                  <span role="img" aria-label="profile" style={{ fontSize: "5rem" }}>
-                    👤
-                  </span>
+                  <img
+                    src="/header/avatar.png"
+                    alt="Avatar por defecto"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover"
+                    }}
+                  />
                 )}
               </ProfileImage>
               <ProfileName>{nombreCompleto()}</ProfileName>
