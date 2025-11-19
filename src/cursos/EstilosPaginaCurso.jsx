@@ -359,13 +359,42 @@ const NoSectionsMessage = styled.div`
   }
 `;
 
-const Recurso = styled.a`
+const Recurso = styled.span`
   color: #222;
+  cursor: pointer;
   &:hover {
-    text-decoration: underline;
-    color: blue;
-    cursor: pointer;
+    color: #222;
   }
+`;
+
+// NUEVO: Contenedor para cada recurso
+const RecursoContainer = styled.div`
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #4C241D;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+// NUEVO: Contenedor para los botones de acción del recurso
+const RecursoActions = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 `;
 
 export {
@@ -401,5 +430,7 @@ export {
     SectionInfo,
     LoadingMessage,
     NoSectionsMessage,
-    Recurso
+    Recurso,
+    RecursoContainer,
+    RecursoActions
 }
