@@ -2,9 +2,9 @@ import styled from "styled-components";
 
 const Container = styled.div`
   background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100vh;
+  width: 100%;
+  margin-top: 70px;
   display: flex;
   box-sizing: border-box;
 `;
@@ -32,9 +32,9 @@ const ParticipantsButton = styled.button`
   background-color: black;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 15px;
-  font-size: 12px;
+  padding: 14px 12px;
+  border-radius: 25px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -89,18 +89,33 @@ const MainContent = styled.div`
 
 const CourseInfoHeader = styled.div`
   width: calc(100% - 40px);
-  background-color: #c0386eff;
+  /*background-color: #c0386eff;*/
+  background-color: ${props => props.bg};
   color: white;
   padding: 15px 25px;
   margin: 20px;
   border-radius: 8px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CourseImageContainer = styled.div`
+  img {
+    width: 150px; 
+    height: auto;
+    object-fit: contain;
+  }
+
+  /*margin: -15px;
+  margin-right: -35px;*/
 `;
 
 const CourseInfoGrid = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   align-items: flex-start;
   max-width: 500px;
 `;
@@ -110,18 +125,23 @@ const InfoSection = styled.div`
   flex-direction: column;
   width: 100%;
   color : black;
+
+  &.inline {
+  flex-direction: row;
+  gap: 6px;
+}
 `;
 
 const InfoLabel = styled.div`
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: uppercase;
+  font-size: 30px;
+  font-weight: 600;
+  /*text-transform: uppercase;*/
   letter-spacing: 1px;
   color: black;
 `;
 
 const InfoValue = styled.div`
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 500;
   line-height: 1.3;
   margin-bottom: 3px;
@@ -131,7 +151,7 @@ const InfoValue = styled.div`
 const AddSectionButton = styled.button`
   background-color: #ffffffff;
   color: black;
-  width: 96.4%;
+  width: calc(100% - 40px);
   text-align: left;
   border: 1px solid grey;
   padding: 12px 24px;
@@ -145,7 +165,7 @@ const AddSectionButton = styled.button`
 
   
   &:hover {
-    background-color: #9DCBD7;
+    background-color: #d7d7d7ff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
@@ -191,6 +211,9 @@ const SectionPlaceholder = styled.div`
 `;
 
 const SectionHeader = styled.div`
+  
+  position: relative; /* importante */
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -201,6 +224,11 @@ const SectionHeader = styled.div`
   &:hover {
     background-color: rgba(76, 36, 29, 0.05);
   }
+
+  &.cartelera-header {
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
 `;
 
 const SectionTitleContainer = styled.div`
@@ -210,9 +238,31 @@ const SectionTitleContainer = styled.div`
   flex: 1;
 `;
 
+const RightIconContainer = styled.div`
+  /*display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  opacity: 0.2;*/
+
+  position: absolute;
+  right: -25px;   /* sobresale hacia afuera */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 85;
+  height: 85;
+  opacity: 0.2;
+  pointer-events: none; /* no bloquea el click */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 25px;
+`;
+
 const CollapseIcon = styled.span`
   font-size: 16px;
-  color: #4C241D;
+  color: #000000ff;
   transition: transform 0.3s ease;
   transform: ${props => props.collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
 `;
@@ -238,14 +288,19 @@ const ButtonGroup = styled.div`
 `;
 
 const ActionButton = styled.button`
-  background-color: ${props => props.variant === 'danger' ? '#dc3545' : props.variant === 'warning' ? '#ffc107' : '#28a745'};
-  color: ${props => props.variant === 'warning' ? '#000' : '#fff'};
-  border: none;
+  /*background-color: ${props => props.variant === 'danger' ? '#dc3545' : props.variant === 'warning' ? '#ffc107' : '#28a745'};*/
+  background-color: '#dededeff';
+  /*color: ${props => props.variant === 'warning' ? '#000' : '#fff'};*/
+  color: #000;
+  border: 1px solid #4b4b4bff;
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: all 0.3s ease;
   
   &:hover {
@@ -304,13 +359,42 @@ const NoSectionsMessage = styled.div`
   }
 `;
 
-const Recurso = styled.a`
+const Recurso = styled.span`
   color: #222;
+  cursor: pointer;
   &:hover {
-    text-decoration: underline;
-    color: blue;
-    cursor: pointer;
+    color: #222;
   }
+`;
+
+// NUEVO: Contenedor para cada recurso
+const RecursoContainer = styled.div`
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #4C241D;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+// NUEVO: Contenedor para los botones de acción del recurso
+const RecursoActions = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 `;
 
 export {
@@ -324,6 +408,7 @@ export {
     IndexItem,
     MainContent,
     CourseInfoHeader,
+    CourseImageContainer,
     CourseInfoGrid,
     InfoSection,
     InfoLabel,
@@ -334,6 +419,7 @@ export {
     SectionPlaceholder,
     SectionHeader,
     SectionTitleContainer,
+    RightIconContainer,
     CollapseIcon,
     SectionContent,
     SectionTitle,
@@ -344,5 +430,7 @@ export {
     SectionInfo,
     LoadingMessage,
     NoSectionsMessage,
-    Recurso
+    Recurso,
+    RecursoContainer,
+    RecursoActions
 }

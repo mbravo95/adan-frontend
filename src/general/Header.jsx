@@ -240,9 +240,16 @@ const Header = () => {
                   );
                 })()
               ) : (
-                <span role="img" aria-label="profile" style={{ fontSize: "2rem" }}>
-                  👤
-                </span>
+                <img
+                  src="/header/avatar.png"
+                  alt="Avatar por defecto"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover"
+                  }}
+                />
               )}
             </UserIcon>
           </UserContainer>
@@ -284,7 +291,7 @@ export default Header;
 const HeaderContainer = styled.header`
   background-color: ${props => props.bgcolor || 'white'};
   width: 100%;
-  height: 60px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;

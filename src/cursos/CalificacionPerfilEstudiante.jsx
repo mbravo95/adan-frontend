@@ -8,11 +8,12 @@ import { toast } from "react-toastify";
 
 const Container = styled.div`
   background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
-  padding: 40px;
+  min-height: 100%;
+  width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 `;
 
 const Card = styled.div`
@@ -25,6 +26,7 @@ const Card = styled.div`
   margin: 0 auto;
 `;
 const CalificarButton = styled.button`
+  width: 100%;
   margin-top: 32px;
   background: #4C241D;
   color: #fff;
@@ -38,8 +40,9 @@ const CalificarButton = styled.button`
 `;
 
 const DesmatricularButton = styled.button`
+  width: 100%;
   margin-top: 18px;
-  background: #c0386e;
+  background: #d72d3eff;
   color: #fff;
   border: none;
   padding: 12px 28px;
@@ -123,10 +126,10 @@ const CalificacionPerfilEstudiante = () => {
         <p><strong>Nombre:</strong> {estudiante.nombres} {estudiante.apellidos}</p>
         <p><strong>Correo:</strong> {estudiante.correo}</p>
         <p><strong>Cédula:</strong> {estudiante.cedula}</p>
-        <h3 style={{ marginTop: 24 }}>Calificación en el curso</h3>
+        <h3 style={{ marginTop: 24 }}>Calificación en el curso:</h3>
         <div style={{ textAlign: 'center' }}>
           <CalificarButton onClick={() => navigate(`/curso/${id}/estudiante/${estudianteId}/calificar`)}>
-            Calificar Estudiante
+            Calificar estudiante
           </CalificarButton>
           <DesmatricularButton onClick={handleDesmatricular}>
             Desmatricular estudiante

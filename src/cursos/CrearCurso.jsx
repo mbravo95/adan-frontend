@@ -90,7 +90,7 @@ const CrearCurso = () => {
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          <Title>Crear Nuevo Curso</Title>
+          <Title>Crear Curso</Title>
 
           <FormGroup>
             <Label>Nombre del Curso</Label>
@@ -162,13 +162,13 @@ export default CrearCurso;
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  /*padding: 20px;*/
   box-sizing: border-box;
 `;
 
@@ -233,12 +233,22 @@ const Input = styled.input`
 const Select = styled.select`
   width: 100%;
   padding: 12px;
+  padding-right: 32px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
   box-sizing: border-box;
   background-color: white;
   color: #333;
+
+  appearance: none;         /* oculta la flecha nativa */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center; /* controla separación de la flecha */
+  background-size: 16px;
   
   &:focus {
     outline: none;

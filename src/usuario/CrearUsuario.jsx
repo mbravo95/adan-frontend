@@ -67,7 +67,198 @@ const CrearUsuario = () => {
         });
       }
     }
+  return (
+  <>
+    {rol === "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Crear Usuario</Title>
 
+          <Form onSubmit={(e) => e.preventDefault()}>
+            
+            <RadioGroup>
+              <RadioLabel>
+                <RadioInput 
+                  type="radio" 
+                  name="tipo" 
+                  checked={tipo === "USUARIO"} 
+                  onChange={() => setTipo("USUARIO")}
+                />
+                Profesor / Estudiante
+              </RadioLabel>
+
+              <RadioLabel>
+                <RadioInput 
+                  type="radio" 
+                  name="tipo" 
+                  checked={tipo === "ADMINISTRADOR"} 
+                  onChange={() => setTipo("ADMINISTRADOR")}
+                />
+                Administrador
+              </RadioLabel>
+            </RadioGroup>
+
+            {(tipo == "" || tipo == "USUARIO") && (
+              <>
+                <Input type="text" placeholder="Nombre" onChange={(e) => setNombres(e.target.value)} />
+                <Input type="text" placeholder="Apellido" onChange={(e) => setApellidos(e.target.value)} />
+                <Input type="number" placeholder="Cédula de Identidad" onChange={(e) => setCedula(e.target.value)} />
+              </>
+            )}
+
+            <Input type="email" placeholder="Correo electrónico" onChange={(e) => setCorreo(e.target.value)} />
+
+            <ButtonGroup>
+              <CreateButton onClick={() => crear()}>
+                Crear Usuario
+              </CreateButton>
+              <CancelButton onClick={() => navigate('/curso')}>
+                Cancelar
+              </CancelButton>
+            </ButtonGroup>
+
+          </Form>
+        </FormWrapper>
+      </ContentWrapper>
+    </Container>
+  </>
+)
+}
+
+export default CrearUsuario;
+
+const Container = styled.div`
+  background-color: #9DCBD7;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+`;
+
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+`;
+
+const CreateButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const RadioLabel = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+`;
+
+const RadioInput = styled.input`
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+
+  appearance: none;
+  border: 2px solid #4C241D;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:checked {
+    background-color: #4C241D;
+  }
+`;
+
+    /*
   return (
     <>
       {rol == "ADMINISTRADOR" ? <Outlet /> : <Navigate to="/home" />}
@@ -230,12 +421,12 @@ const RadioInput = styled.input`
   transition: all 0.2s ease;
 
   &:checked {
-    background-color: #60a5fa; 
-    border-color: #60a5fa;
+    background-color: #5a2e2e; 
+    border-color: #3e2121ff;
   }
 
   &:focus {
-    outline: 2px solid #60a5fa;
+    outline: 2px solid #585858ff;
     outline-offset: 1px;
   }
-`;
+`;*/

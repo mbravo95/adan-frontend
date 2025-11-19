@@ -58,14 +58,16 @@ const Perfil = () => {
 
         const data = response.data;
         
-        // Función para formatear fecha a YYYY-MM-DD
+        // Función para formatear fecha a DD/MM/YYYY
         const formatearFecha = (fechaString) => {
           if (!fechaString) return "No disponible";
           try {
-            const fecha = new Date(fechaString);
-            return fecha.toISOString().split('T')[0]; // Obtiene solo YYYY-MM-DD
+            // viene como YYYY-MM-DD
+            const [year, month, day] = fechaString.split("-");
+
+            return `${day}/${month}/${year}`;
           } catch (error) {
-            return fechaString; // Si no se puede parsear, devuelve original
+            return fechaString;
           }
         };
         
@@ -148,9 +150,16 @@ const Perfil = () => {
                     );
                   })()
                 ) : (
-                  <span role="img" aria-label="profile" style={{ fontSize: "5rem" }}>
-                    👤
-                  </span>
+                  <img
+                    src="/header/avatar.png"
+                    alt="Avatar por defecto"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover"
+                    }}
+                  />
                 )}
               </ProfileImage>
               <ProfileName>{nombreCompleto()}</ProfileName>
@@ -158,7 +167,7 @@ const Perfil = () => {
             </ProfileSection>
             
             <DataSection>
-              <Title>Perfil del Usuario</Title>
+              {/*<Title>Perfil del Usuario</Title>*/}
               <UserCard>
                 <DataRow>
                   <Label>Nombres:</Label>
@@ -185,17 +194,18 @@ const Perfil = () => {
                   <Value>{userData.fechaIngreso}</Value>
                 </DataRow>
               </UserCard>
+              <ButtonContainer>
+                <EditButton onClick={irEditarPerfil}>
+                  Editar perfil
+                </EditButton>
+                <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
+                  Cambiar contraseña
+                </EditButton>
+              </ButtonContainer>
             </DataSection>
           </MainContent>
           
-          <ButtonContainer>
-            <EditButton onClick={irEditarPerfil}>
-              Editar perfil
-            </EditButton>
-            <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
-              Cambiar contraseña
-            </EditButton>
-          </ButtonContainer>
+          
         </ContentWrapper>
       }
     </Container>
@@ -207,14 +217,12 @@ export default Perfil;
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center; 
 `;
 
 const ContentWrapper = styled.div`
@@ -253,7 +261,7 @@ const ProfileImage = styled.div`
   border: 6px solid white;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 20px;
-  margin-top: 60px;
+  margin-top: 20px;
 `;
 
 const ProfileName = styled.h2`
