@@ -251,7 +251,7 @@ const Container = styled.div`
   background-color: #9DCBD7;
   min-height: 100vh;
   width: 100%;
-  margin-top: 60px;
+  margin-top: 70px;
   display: flex;
   justify-content: center;
   align-items: flex-start;

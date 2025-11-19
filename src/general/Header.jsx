@@ -258,7 +258,7 @@ export default Header;
 const HeaderContainer = styled.header`
   background-color: ${props => props.bgcolor || 'white'};
   width: 100%;
-  height: 60px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
