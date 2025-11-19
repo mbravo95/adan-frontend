@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { messaging, getToken } from '../../firebase';
 
 
 const Login = () => {
@@ -11,6 +12,19 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+
+  async function obtenerFcmToken() {
+    try {
+      const token = await getToken(messaging, { vapidKey: 'BIJwy2uMJrGLrBTOjsCyQQrnIbVR_IPuRuFub_l_9gQIm6yYmBBPBE8XxmhzVFNtEZ8CeSTPj1zeOiYqPPzmKFY' });
+      if (token) {
+        localStorage.setItem('fcmToken', token);
+        return token;
+      }
+    } catch (err) {
+      console.error('Error obteniendo token FCM:', err);
+      return null;
+    }
+  }
 
   const iniciarSesion = async () => {
     if(mail == "" || password == ""){
@@ -28,8 +42,18 @@ const Login = () => {
     
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.post(`${urlBase}/auth/login`, {correo: mail, pw: password}, { headers: { 'Content-Type': 'application/json' }
-      });
+      const tokenFcm = await obtenerFcmToken();
+      const plataforma = 'pc';
+      const response = await axios.post(
+        `${urlBase}/auth/login`,
+        {
+          correo: mail,
+          pw: password,
+          tokenFcm : tokenFcm,
+          plataforma : plataforma
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
       const {data} = response;
       const {token, rol, id: idLogin} = data;
       localStorage.setItem("token", token);
