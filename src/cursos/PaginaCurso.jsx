@@ -453,6 +453,28 @@ const PaginaCurso = () => {
     }
   };
 
+  const enviarNotificacionFechaTarea = async (recursoId,cursoId) => {
+  const urlBase = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const url = `${urlBase}/notificaciones/avisoFechaLimite/curso/${cursoActual.id}/tarea/${recursoId}`;
+  await axios.post(url, {}, config);
+  toast.success("Notificación enviada exitosamente", {
+    position: "top-center",
+    autoClose: 1500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+  };
+
   const agregarForo = (seccionId) => {
     navigate(`/curso/${codigo}/${seccionId}/crear-foro`, {
       state: { cursoActual }
@@ -816,15 +838,26 @@ const PaginaCurso = () => {
                                 <>
                                   <Recurso onClick={() => verTarea(recurso.id)} >{recurso.nombre === null ? '(null)' : recurso.nombre}</Recurso>
                                   {puedeAdministrarCursos(location.pathname) && (
-                                    <button
-                                      style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        verEntregasTarea(recurso.id, seccion.id);
-                                      }}
-                                    >
-                                      Ver entregas
-                                    </button>
+                                    <>
+                                      <button
+                                        style={{color:'#fff', background:'#28a745', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          verEntregasTarea(recurso.id, seccion.id);
+                                        }}
+                                      >
+                                        Ver entregas
+                                      </button>
+                                      <button
+                                        style={{color:'#fff', background:'#007bff', border:'none', borderRadius:'4px', fontSize:'14px', cursor:'pointer', padding:'4px 12px', marginLeft:'6px', display:'flex', alignItems:'center', gap:'4px'}}
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          enviarNotificacionFechaTarea(recurso.id, codigo);
+                                        }}
+                                      >
+                                        Enviar notificación
+                                      </button>
+                                    </>
                                   )}
                                   {puedeAdministrarCursos(location.pathname) && (
                                     <>
