@@ -1,3 +1,28 @@
+// Icono de campanita SVG
+const BellIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  cursor: pointer;
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: #f4b400;
+    transition: fill 0.2s;
+  }
+  &:hover svg {
+    fill: #e67c00;
+  }
+`;
+
+function BellSvg() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C8.13 2 5 5.13 5 9v5c0 .55-.45 1-1 1H3c-.55 0-1 .45-1 1s.45 1 1 1h18c.55 0 1-.45 1-1s-.45-1-1-1h-1c-.55 0-1-.45-1-1V9c0-3.87-3.13-7-7-7zm0 19c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" />
+    </svg>
+  );
+}
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
@@ -155,11 +180,16 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
+  const irNotificacionBandeja = () => {
+    navigate("/usuario/notificacion-bandeja");
+    setIsMenuOpen(false);
+  }
+
   return (
     <>
       <HeaderContainer bgcolor={bgcolor}>
         <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irAlHome} />
-        
+
         <NavigationSection>
             <NavButton textcolor={textcolor} onClick={irCursos}>
               Cursos
@@ -187,7 +217,10 @@ const Header = () => {
               </>
             )}
         </NavigationSection>
-        
+
+        <BellIcon title="Notificaciones" style={{marginRight: '32px'}} onClick={irNotificacionBandeja}><BellSvg />
+        </BellIcon>
+
         <UserMenuContainer>
           <UserContainer textcolor={textcolor} onClick={toggleMenu}>
             <UserName textcolor={textcolor}>{userName}</UserName>

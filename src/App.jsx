@@ -48,10 +48,18 @@ import MatricularEstudianteCursoCsv from "./cursos/MatricularEstudianteCursoCsv"
 import DesmatricularEstudianteCursoCsv from "./cursos/DesmatricularEstudianteCursoCsv";
 import CalificarEstudianteCsv from "./cursos/CalificarEstudianteCsv";
 import CalificarEntregaCsv from "./recursos/CalificarEntregaCsv";
+import NotificacionBandeja from "./notificaciones/NotificacionBandeja";
+import { useContext } from "react";
+import AuthContext from "./context/AuthProvider";
 
 function App() {
 
   const token = localStorage.getItem("token");
+
+  function NotificacionBandejaWrapper() {
+    const { profile } = useContext(AuthContext);
+    return <NotificacionBandeja idUsuario={profile?.id} />;
+  }
 
   return (
     <>
@@ -112,6 +120,7 @@ function App() {
               <Route path="/curso/:codigo/participantes/desmatricular-csv" element={<DesmatricularEstudianteCursoCsv />} />
               <Route path="/curso/:codigo/participantes/calificar-csv" element={<CalificarEstudianteCsv />} />
               <Route path="/curso/:codigo/tarea/:tareaId/entregas/calificar-csv" element={<CalificarEntregaCsv />} />
+              <Route path="/usuario/notificacion-bandeja" element={<NotificacionBandejaWrapper />} />
               
 
             </Route>
