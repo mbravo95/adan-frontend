@@ -226,8 +226,8 @@ const SectionHeader = styled.div`
   }
 
   &.cartelera-header {
-    padding-top: 35px;
-    padding-bottom: 35px;
+    padding-top: 25px;
+    padding-bottom: 25px;
   }
 `;
 
