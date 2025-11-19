@@ -56,6 +56,7 @@ import {
   IndexItem,
   MainContent,
   CourseInfoHeader,
+  CourseImageContainer,
   CourseInfoGrid,
   InfoSection,
   InfoLabel,
@@ -66,6 +67,7 @@ import {
   SectionPlaceholder,
   SectionHeader,
   SectionTitleContainer,
+  RightIconContainer,
   CollapseIcon,
   SectionContent,
   SectionTitle,
@@ -620,12 +622,17 @@ const PaginaCurso = () => {
       <CourseInfoHeader bg={getColorForCurso(cursoActual.id)}>
         <CourseInfoGrid>
           <InfoSection>
-            <InfoLabel>Nombre del Curso</InfoLabel>
-            <InfoValue>{cursoActual.nombre}</InfoValue>
+            {/*<InfoLabel>Nombre del Curso:</InfoLabel>*/}
+            <InfoLabel>{cursoActual.nombre}</InfoLabel>
           </InfoSection>
           
           <InfoSection>
-            <InfoLabel>Profesores</InfoLabel>
+            {/*<InfoLabel>Turno:</InfoLabel>*/}
+            <InfoValue>{cursoActual.turno + " - " + cursoActual.anio|| "Sin turno"}</InfoValue>
+          </InfoSection>
+          
+          <InfoSection className="inline">
+            <InfoValue>{"Profesores: "}</InfoValue>
             <InfoValue>
               {cursoActual.profesores?.length > 0
                 ? cursoActual.profesores.join(", ")
@@ -633,11 +640,12 @@ const PaginaCurso = () => {
             </InfoValue>
           </InfoSection>
           
-          <InfoSection>
-            <InfoLabel>Turno</InfoLabel>
-            <InfoValue>{cursoActual.turno || "Sin turno"}</InfoValue>
-          </InfoSection>
+          
         </CourseInfoGrid>
+        {/* Imagen a la derecha */}
+        <CourseImageContainer>
+          <img src="/logoCurso.png" alt="Logo" />
+        </CourseImageContainer>
       </CourseInfoHeader>
       
       <SectionsContainer>
@@ -661,6 +669,7 @@ const PaginaCurso = () => {
                   >
                     <SectionHeader 
                       collapsed={collapsed}
+                      className="cartelera-header"
                       onClick={() => toggleSeccion(seccion.id)}
                     >
                       <SectionTitleContainer>
@@ -669,8 +678,29 @@ const PaginaCurso = () => {
                         </CollapseIcon>
                         <SectionTitle>{seccion.titulo || `Sección ${seccion.id}`}</SectionTitle>
                       </SectionTitleContainer>
+                      
+                      
+                      {/* Ícono solo al estar colapsada */}
+                      
+                      <RightIconContainer>
+                        <svg width="85" height="85" viewBox="0 0 70 70" fill="none">
+                          <g opacity="1">
+                            <path d="M46.667 11.6668H52.5003C54.0474 11.6668 55.5312 12.2814 56.6251 13.3754C57.7191 14.4693 58.3337 15.9531 58.3337 17.5002V58.3335C58.3337 59.8806 57.7191 61.3643 56.6251 62.4583C55.5312 63.5522 54.0474 64.1668 52.5003 64.1668H17.5003C15.9532 64.1668 14.4695 63.5522 13.3755 62.4583C12.2816 61.3643 11.667 59.8806 11.667 58.3335V17.5002C11.667 15.9531 12.2816 14.4693 13.3755 13.3754C14.4695 12.2814 15.9532 11.6668 17.5003 11.6668H23.3337M26.2503 5.8335H43.7503C45.3612 5.8335 46.667 7.13933 46.667 8.75016V14.5835C46.667 16.1943 45.3612 17.5002 43.7503 17.5002H26.2503C24.6395 17.5002 23.3337 16.1943 23.3337 14.5835V8.75016C23.3337 7.13933 24.6395 5.8335 26.2503 5.8335Z" 
+                              stroke="#1E1E1E" 
+                              strokeWidth="5" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                            />
+                          </g>
+                        </svg>
+                      </RightIconContainer>
+                      
+
+
+
+
                     </SectionHeader>
-                    {puedeAdministrarCursos(location.pathname) && (
+                    {puedeAdministrarCursos(location.pathname) && !collapsed && (
                       <ButtonGroup style={{ marginBottom: '10px' }}>
                         <ActionButton 
                           variant="success" 
@@ -835,7 +865,7 @@ const PaginaCurso = () => {
                       )}
                     </SectionHeader>
 
-                    {puedeAdministrarCursos(location.pathname) && (
+                    {puedeAdministrarCursos(location.pathname) && !collapsed && (
                       <ButtonGroup style={{ marginBottom: '10px' }}>
                         <ActionButton
                           variant="success"
