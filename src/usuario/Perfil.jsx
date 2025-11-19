@@ -58,14 +58,16 @@ const Perfil = () => {
 
         const data = response.data;
         
-        // Función para formatear fecha a YYYY-MM-DD
+        // Función para formatear fecha a DD/MM/YYYY
         const formatearFecha = (fechaString) => {
           if (!fechaString) return "No disponible";
           try {
-            const fecha = new Date(fechaString);
-            return fecha.toISOString().split('T')[0]; // Obtiene solo YYYY-MM-DD
+            // viene como YYYY-MM-DD
+            const [year, month, day] = fechaString.split("-");
+
+            return `${day}/${month}/${year}`;
           } catch (error) {
-            return fechaString; // Si no se puede parsear, devuelve original
+            return fechaString;
           }
         };
         

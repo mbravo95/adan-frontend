@@ -96,12 +96,26 @@ const CourseInfoHeader = styled.div`
   margin: 20px;
   border-radius: 8px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CourseImageContainer = styled.div`
+  img {
+    width: 150px; 
+    height: auto;
+    object-fit: contain;
+  }
+
+  /*margin: -15px;
+  margin-right: -35px;*/
 `;
 
 const CourseInfoGrid = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   align-items: flex-start;
   max-width: 500px;
 `;
@@ -111,18 +125,23 @@ const InfoSection = styled.div`
   flex-direction: column;
   width: 100%;
   color : black;
+
+  &.inline {
+  flex-direction: row;
+  gap: 6px;
+}
 `;
 
 const InfoLabel = styled.div`
-  font-size: 16px;
-  font-weight: 500;
-  text-transform: uppercase;
+  font-size: 30px;
+  font-weight: 600;
+  /*text-transform: uppercase;*/
   letter-spacing: 1px;
   color: black;
 `;
 
 const InfoValue = styled.div`
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 500;
   line-height: 1.3;
   margin-bottom: 3px;
@@ -132,7 +151,7 @@ const InfoValue = styled.div`
 const AddSectionButton = styled.button`
   background-color: #ffffffff;
   color: black;
-  width: 96.4%;
+  width: calc(100% - 40px);
   text-align: left;
   border: 1px solid grey;
   padding: 12px 24px;
@@ -192,6 +211,9 @@ const SectionPlaceholder = styled.div`
 `;
 
 const SectionHeader = styled.div`
+  
+  position: relative; /* importante */
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -202,6 +224,11 @@ const SectionHeader = styled.div`
   &:hover {
     background-color: rgba(76, 36, 29, 0.05);
   }
+
+  &.cartelera-header {
+    padding-top: 35px;
+    padding-bottom: 35px;
+  }
 `;
 
 const SectionTitleContainer = styled.div`
@@ -209,6 +236,28 @@ const SectionTitleContainer = styled.div`
   align-items: center;
   gap: 12px;
   flex: 1;
+`;
+
+const RightIconContainer = styled.div`
+  /*display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  opacity: 0.2;*/
+
+  position: absolute;
+  right: -25px;   /* sobresale hacia afuera */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 85;
+  height: 85;
+  opacity: 0.2;
+  pointer-events: none; /* no bloquea el click */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 25px;
 `;
 
 const CollapseIcon = styled.span`
@@ -330,6 +379,7 @@ export {
     IndexItem,
     MainContent,
     CourseInfoHeader,
+    CourseImageContainer,
     CourseInfoGrid,
     InfoSection,
     InfoLabel,
@@ -340,6 +390,7 @@ export {
     SectionPlaceholder,
     SectionHeader,
     SectionTitleContainer,
+    RightIconContainer,
     CollapseIcon,
     SectionContent,
     SectionTitle,
