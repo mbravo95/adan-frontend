@@ -217,13 +217,12 @@ export default Perfil;
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center; 
 `;
 
 const ContentWrapper = styled.div`

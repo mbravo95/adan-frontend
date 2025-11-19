@@ -237,7 +237,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 40px 40px 0 40px;
+  padding: 50px 40px 0 40px;
   box-sizing: border-box;
 `;
 
