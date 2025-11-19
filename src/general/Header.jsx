@@ -218,10 +218,10 @@ const Header = () => {
             )}
         </NavigationSection>
 
-        <BellIcon title="Notificaciones" style={{marginRight: '32px'}} onClick={irNotificacionBandeja}><BellSvg />
-        </BellIcon>
-
         <UserMenuContainer>
+          <BellIcon title="Notificaciones" onClick={irNotificacionBandeja}>
+            <BellSvg />
+          </BellIcon>
           <UserContainer textcolor={textcolor} onClick={toggleMenu}>
             <UserName textcolor={textcolor}>{userName}</UserName>
             <UserIcon>
@@ -339,6 +339,9 @@ const NavButton = styled.button`
 `;
 
 const UserMenuContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   position: relative;
 `;
 

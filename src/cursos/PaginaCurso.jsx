@@ -457,7 +457,7 @@ const PaginaCurso = () => {
     }
   };
 
-  const enviarNotificacionFechaTarea = async (recursoId,cursoId) => {
+  const enviarNotificacionFechaTarea = async (recursoId) => {
   const urlBase = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("token");
   const config = {
@@ -1130,25 +1130,39 @@ const PaginaCurso = () => {
                                     </Recurso>
                                     <RecursoActions>
                                       {puedeAdministrarCursos(location.pathname) && (
-                                        <ActionButton
-                                          onClick={e => {
-                                            e.stopPropagation();
-                                            verEntregasTarea(recurso.id, seccion.id);
-                                          }}
-                                        >
-                                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <g clipPath="url(#clip0_407_2127)">
-                                              <path d="M0.625 7.5C0.625 7.5 3.125 2.5 7.5 2.5C11.875 2.5 14.375 7.5 14.375 7.5C14.375 7.5 11.875 12.5 7.5 12.5C3.125 12.5 0.625 7.5 0.625 7.5Z" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                              <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                            </g>
-                                            <defs>
-                                              <clipPath id="clip0_407_2127">
-                                                <rect width="15" height="15" fill="white"/>
-                                              </clipPath>
-                                            </defs>
-                                          </svg>
-                                          Ver entregas
-                                        </ActionButton>
+                                        <>
+                                          <ActionButton
+                                            onClick={e => {
+                                              e.stopPropagation();
+                                              verEntregasTarea(recurso.id, seccion.id);
+                                            }}
+                                          >
+                                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <g clipPath="url(#clip0_407_2127)">
+                                                <path d="M0.625 7.5C0.625 7.5 3.125 2.5 7.5 2.5C11.875 2.5 14.375 7.5 14.375 7.5C14.375 7.5 11.875 12.5 7.5 12.5C3.125 12.5 0.625 7.5 0.625 7.5Z" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                                <path d="M7.5 9.375C8.53553 9.375 9.375 8.53553 9.375 7.5C9.375 6.46447 8.53553 5.625 7.5 5.625C6.46447 5.625 5.625 6.46447 5.625 7.5C5.625 8.53553 6.46447 9.375 7.5 9.375Z" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                              </g>
+                                              <defs>
+                                                <clipPath id="clip0_407_2127">
+                                                  <rect width="15" height="15" fill="white"/>
+                                                </clipPath>
+                                              </defs>
+                                            </svg>
+                                            Ver entregas
+                                          </ActionButton>
+                                          <ActionButton
+                                            onClick={e => {
+                                              e.stopPropagation();
+                                              enviarNotificacionFechaTarea(recurso.id);
+                                            }}
+                                          >
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M3 10V14H7L14 19V5L7 10H3Z" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                              <path d="M16 8C17.1046 8 18 8.89543 18 10V14C18 15.1046 17.1046 16 16 16" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            </svg>
+                                            Enviar aviso
+                                          </ActionButton>
+                                        </>
                                       )}
                                       {puedeAdministrarCursos(location.pathname) && (
                                         <>
