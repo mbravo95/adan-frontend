@@ -176,17 +176,23 @@ const DEFAULT_AVATAR_URL = "/header/avatar.png";
 const CalificacionesContainer = styled.div`
     background-color: #9DCBD7;
     min-height: 100vh;
-    padding: 40px;
+    width: 100%;
+    /*margin-top: 70px;*/
+    display: flex;
+    box-sizing: border-box;
 `;
 
 const CardContainer = styled.div`
     max-width: 1000px;
+    width: 100%;
+    height: 100%;
     margin: 0 auto;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-top: 20px;
+    margin-top: 90px;
+    margin-bottom: 20px;
 `;
 
 

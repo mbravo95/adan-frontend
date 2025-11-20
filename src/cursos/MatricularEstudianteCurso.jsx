@@ -240,15 +240,13 @@ export default MatricularEstudianteCurso;
 
 
 const Container = styled.div`
-  background-color: #ffffffff;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  background-color: #fff;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-  box-sizing: border-box;
+  align-items: center; 
 `;
 
 const ContentWrapper = styled.div`
@@ -257,6 +255,7 @@ const ContentWrapper = styled.div`
   align-items: center;
   width: 100%;
   max-width: 800px;
+  margin-top: 70px;
 `;
 
 const FormWrapper = styled.div`
@@ -267,6 +266,7 @@ const FormWrapper = styled.div`
   border: 1px solid #e0e0e0;
   width: 100%;
   margin-bottom: 30px;
+  margin-top: 30px;
 `;
 
 const Title = styled.h1`

@@ -91,94 +91,108 @@ const EntregasTarea = () => {
   }
 
   return (
-    <PageContainer>
-      <Title>Entregas de la tarea</Title>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
-        <EnrollButton onClick={() => irCalificarEntregasCsv()}>
-          Calificar entregas vía CSV
-        </EnrollButton>
-      </div>
-      {loading ? (
-        <Spinner />
-      ) : entregas.length === 0 ? (
-        <EmptyMessage>No hay entregas para esta tarea.</EmptyMessage>
-      ) : (
-        <EntregaList>
-          {entregas.map((entrega) => (
-            <EntregaItem key={entrega.id}>
-              <EntregaInfo>
-                <strong>Alumno:</strong> {entrega.nombres} {entrega.apellidos}<br />
-                <strong>Fecha de entrega:</strong> {entrega.fechaEntrega ? new Date(entrega.fechaEntrega).toLocaleString('es-ES') : "-"}<br />
-                <strong>Archivo:</strong> {entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : "-"}<br />
-                <strong>Calificación:</strong> {entrega.calificacion ? entrega.calificacion : "Sin calificar"}
-              </EntregaInfo>
-              <div style={{display:'flex', alignItems:'center'}}>
-                <DownloadButton
-                  onClick={() => descargarEntrega(entrega.idTarea || tareaId, entrega.id, entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : undefined)}
-                  as="button"
-                >
-                  Descargar
-                </DownloadButton>
-                <button
-                  style={{
-                    background: '#28a745',
-                    color: '#fff',
-                    padding: '10px 18px',
-                    borderRadius: '6px',
-                    fontWeight: 'bold',
-                    marginLeft: '10px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s'
-                  }}
-                  onClick={() => setCalificandoId(entrega.id)}
-                >
-                  Calificar entrega
-                </button>
-              </div>
-              {calificandoId === entrega.id && (
-                <div style={{marginTop:'10px', display:'flex', alignItems:'center', gap:'10px'}}>
-                  <input
-                    type="text"
-                    value={calificacion}
-                    onChange={e => setCalificacion(e.target.value)}
-                    placeholder="Ingresa la calificación"
-                    style={{padding:'8px', borderRadius:'4px', border:'1px solid #ccc'}}
-                  />
-                  <button
-                    style={{background:'#007bff', color:'#fff', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
-                    onClick={() => handleEnviarCalificacion(entrega)}
+    <Container>
+      <PageContainer>
+        <Title>Entregas de la tarea</Title>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+          <EnrollButton onClick={() => irCalificarEntregasCsv()}>
+            Calificar entregas vía CSV
+          </EnrollButton>
+        </div>
+        {loading ? (
+          <Spinner />
+        ) : entregas.length === 0 ? (
+          <EmptyMessage>No hay entregas para esta tarea.</EmptyMessage>
+        ) : (
+          <EntregaList>
+            {entregas.map((entrega) => (
+              <EntregaItem key={entrega.id}>
+                <EntregaInfo>
+                  <strong>Alumno:</strong> {entrega.nombres} {entrega.apellidos}<br />
+                  <strong>Fecha de entrega:</strong> {entrega.fechaEntrega ? new Date(entrega.fechaEntrega).toLocaleString('es-ES') : "-"}<br />
+                  <strong>Archivo:</strong> {entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : "-"}<br />
+                  <strong>Calificación:</strong> {entrega.calificacion ? entrega.calificacion : "Sin calificar"}
+                </EntregaInfo>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  <DownloadButton
+                    onClick={() => descargarEntrega(entrega.idTarea || tareaId, entrega.id, entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : undefined)}
+                    as="button"
                   >
-                    Enviar
-                  </button>
+                    Descargar
+                  </DownloadButton>
                   <button
-                    style={{background:'#ccc', color:'#333', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
-                    onClick={() => {
-                      setCalificandoId(null);
-                      setCalificacion("");
+                    style={{
+                      background: '#28a745',
+                      color: '#fff',
+                      padding: '10px 18px',
+                      borderRadius: '6px',
+                      fontWeight: 'bold',
+                      marginLeft: '10px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s'
                     }}
+                    onClick={() => setCalificandoId(entrega.id)}
                   >
-                    Cancelar
+                    Calificar entrega
                   </button>
                 </div>
-              )}
-            </EntregaItem>
-          ))}
-        </EntregaList>
-      )}
-    </PageContainer>
+                {calificandoId === entrega.id && (
+                  <div style={{marginTop:'10px', display:'flex', alignItems:'center', gap:'10px'}}>
+                    <input
+                      type="text"
+                      value={calificacion}
+                      onChange={e => setCalificacion(e.target.value)}
+                      placeholder="Ingresa la calificación"
+                      style={{padding:'8px', borderRadius:'4px', border:'1px solid #ccc'}}
+                    />
+                    <button
+                      style={{background:'#007bff', color:'#fff', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
+                      onClick={() => handleEnviarCalificacion(entrega)}
+                    >
+                      Enviar
+                    </button>
+                    <button
+                      style={{background:'#ccc', color:'#333', padding:'8px 16px', borderRadius:'4px', border:'none', fontWeight:'bold', cursor:'pointer'}}
+                      onClick={() => {
+                        setCalificandoId(null);
+                        setCalificacion("");
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+              </EntregaItem>
+            ))}
+          </EntregaList>
+        )}
+      </PageContainer>
+    </Container>
   );
 };
 
 export default EntregasTarea;
 
+const Container = styled.div`
+  background-color: #fff;
+  justify-content: center;
+  min-height: 100vh;
+  display: flex;
+  box-sizing: border-box;
+`;
+
 const PageContainer = styled.div`
-  max-width: 1200px;
-  margin: 40px auto;
-  background: #f8f8f8;
+  width: 100%;
+  max-width: 1600px;
+  height: 100%;
+  margin: 70px auto 40px auto;
+  background: #e2e1e1ff;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   padding: 32px 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  margin: 20px;
+  margin-top: 90px;
 `;
 
 const Title = styled.h2`

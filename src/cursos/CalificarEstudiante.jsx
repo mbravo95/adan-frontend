@@ -5,37 +5,126 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 
 const Container = styled.div`
-  background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
-  padding: 40px;
+  background-color: #ffffffff;
+  min-height: 100%;
+  width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 70px;
 `;
-const Card = styled.div`
-  background: #fff;
-  color: #222;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px #eee;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
 `;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 10px;
+`;
+
+const Label = styled.label`
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+  margin-left: 5px;
+  display: block;
+  margin-bottom: 8px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #b71c1c;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  border-left: 4px solid #b71c1c;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+`;
+
 const Button = styled.button`
-  background: #4C241D;
-  color: #fff;
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin: 16px 8px 0 8px;
-  box-shadow: 0 2px 8px #eee;
+  transition: all 0.3s ease;
 `;
+
+const CreateButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+  }
+`;
+
 const CancelButton = styled(Button)`
-  background: #e0e0e0;
+  background-color: white;
   color: #333;
+  border: 2px solid #ddd;
+  
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
 `;
 
 const CalificarEstudiante = () => {
@@ -77,24 +166,37 @@ const CalificarEstudiante = () => {
     navigate(-1);
   };
 
+
   return (
     <Container>
-      <Card>
-        <h2 style={{ textAlign: "center", marginBottom: 24 }}>Calificar Estudiante</h2>
-        <label htmlFor="calificacion" style={{ fontWeight: 600, display: "block", marginBottom: 8 }}>Calificación final:</label>
-        <input
-          id="calificacion"
-          type="text"
-          value={calificacion}
-          onChange={e => { setCalificacion(e.target.value); setError(""); }}
-          style={{ width: "100%", padding: "10px", fontSize: "16px", borderRadius: "6px", border: "1px solid #ccc", marginBottom: "12px" }}
-        />
-        {error && <div style={{ color: "#b71c1c", marginBottom: 12 }}>{error}</div>}
-        <div style={{ textAlign: "center" }}>
-          <Button onClick={handleConfirmar}>Confirmar calificación</Button>
-          <CancelButton onClick={handleCancelar}>Cancelar</CancelButton>
-        </div>
-      </Card>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Calificar Estudiante</Title>
+          <form>
+            <FormGroup>
+              <Label htmlFor="calificacion">Calificación final</Label>
+              <Input
+                id="calificacion"
+                type="text"
+                value={calificacion}
+                onChange={e => { setCalificacion(e.target.value); setError(""); }}
+                placeholder="Ingresa la calificación"
+              />
+            </FormGroup>
+
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+
+            <ButtonGroup>
+              <CreateButton type="button" onClick={handleConfirmar}>
+                Aceptar
+              </CreateButton>
+              <CancelButton type="button" onClick={handleCancelar}>
+                Cancelar
+              </CancelButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
     </Container>
   );
 };

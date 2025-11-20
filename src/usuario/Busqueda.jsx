@@ -112,7 +112,7 @@ const Busqueda = () => {
             });
         } catch (error) {
             console.log(error);
-            toast.error("Error al eliminar el usuario", {
+            toast.error("Error al bloquear/desbloquear el usuario", {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,

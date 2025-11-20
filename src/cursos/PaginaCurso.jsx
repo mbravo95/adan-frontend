@@ -347,6 +347,7 @@ const PaginaCurso = () => {
   }
 
   const modificarSeccion = (seccionId) => {
+    // ???????????????????????
   };
 
   const eliminarSeccion = (seccionId) => {
@@ -769,7 +770,7 @@ const PaginaCurso = () => {
                       <SectionInfo>
                         {Array.isArray(recursosPorSeccion[seccion.id]) && recursosPorSeccion[seccion.id].length > 0 ? (
                           <div style={{ marginTop: '10px' }}>
-                            {recursosPorSeccion[seccion.id].map((recurso) => (
+                            {[...recursosPorSeccion[seccion.id]].reverse().map((recurso) => (
                               <RecursoContainer
                                 key={recurso.id}
                                 clickable={true}
@@ -1156,9 +1157,8 @@ const PaginaCurso = () => {
                                               enviarNotificacionFechaTarea(recurso.id);
                                             }}
                                           >
-                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M3 10V14H7L14 19V5L7 10H3Z" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                              <path d="M16 8C17.1046 8 18 8.89543 18 10V14C18 15.1046 17.1046 16 16 16" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8.58125 13.125C8.47137 13.3144 8.31365 13.4717 8.12389 13.581C7.93413 13.6903 7.71899 13.7478 7.5 13.7478C7.28101 13.7478 7.06587 13.6903 6.87611 13.581C6.68635 13.4717 6.52863 13.3144 6.41875 13.125M11.25 5C11.25 4.00544 10.8549 3.05161 10.1517 2.34835C9.44839 1.64509 8.49456 1.25 7.5 1.25C6.50544 1.25 5.55161 1.64509 4.84835 2.34835C4.14509 3.05161 3.75 4.00544 3.75 5C3.75 9.375 1.875 10.625 1.875 10.625H13.125C13.125 10.625 11.25 9.375 11.25 5Z" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                             Enviar aviso
                                           </ActionButton>

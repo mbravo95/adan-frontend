@@ -177,97 +177,222 @@ const CrearPagina = () => {
   return (
     <>
         <GlobalCKEditorStyles />
-        <MainContainer>
-          <Title>{idpagina ? "Editar página" : "Crea una nueva página"}</Title>
-          {loading && <Spinner />}
-          { !loading &&
-            <ContentWrapper>
-              <Centrar>
-                <Margen>
-                  <Label htmlFor="nombre-input">Titulo</Label>
-                </Margen>
-                  <Input 
-                        id="nombre-input"
-                        type="text" 
-                        value={nombre} 
-                        onChange={(e) => setNombre(e.target.value)} 
-                        placeholder="Introduce el titulo de la página"
-                  />
-              </Centrar >
-              
-              <DivEditor>
-                  <CKEditor
-                  editor={ ClassicEditor }
-                  config={ {
-                      licenseKey: 'GPL',
-                      plugins: [ Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent, Image, ImageInsert ],
-                      toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'insertImage', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
-                      image: {
-                          insert: {
-                              integrations: [ 'url' ]
-                          }
-                      },
-                      initialData: pagina,
-                  } }
-                  onChange={ ( event, editor ) => {
-                      setPagina(editor.getData());
-                  } }
-                  />
-              </DivEditor>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
-                    <CustomCheckbox />
-                    Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
-              <ButtonGroup>
-                  {idpagina && <CreateButton onClick={actualizarDatos}>Actualizar página</CreateButton>}
-                  {!idpagina && <CreateButton onClick={enviarDatos}>Crear página</CreateButton>}
-                  <CancelButton onClick={() => navigate(`/curso/${codigo}`)}> {!idpagina ? "Descartar página" : "Descartar cambios"} </CancelButton>
-              </ButtonGroup>
-            </ContentWrapper>
-          }
-        </MainContainer>
+        <Container>
+          <ContentWrapper>
+            <FormWrapper>
+              {/*<Title>{idpagina ? "Editar página" : "Crear página"}</Title>*/}
+              {loading && <Spinner />}
+              {!loading && (
+                <form>
+                  <FormGroup>
+                    <Label htmlFor="nombre-input">Título</Label>
+                    <Input 
+                      id="nombre-input"
+                      type="text" 
+                      value={nombre} 
+                      onChange={(e) => setNombre(e.target.value)} 
+                      placeholder="Título de la página"
+                    />
+                  </FormGroup>
+
+                  <FormGroup>
+                    <DivEditor>
+                      <CKEditor
+                        editor={ClassicEditor}
+                        config={{
+                          licenseKey: 'GPL',
+                          plugins: [Essentials, Paragraph, Bold, Italic, Heading, BlockQuote, Font, Link, List, CodeBlock, Indent, Image, ImageInsert],
+                          toolbar: ['undo', 'redo','|','heading','|','fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor','|','bold', 'italic','|','link', 'insertImage', 'blockQuote', 'codeBlock','|','bulletedList', 'numberedList', 'outdent', 'indent'],
+                          image: {
+                            insert: {
+                              integrations: ['url']
+                            }
+                          },
+                          initialData: pagina,
+                        }}
+                        onChange={(event, editor) => {
+                          setPagina(editor.getData());
+                        }}
+                      />
+                    </DivEditor>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <CheckboxGroup>
+                      <CheckboxLabel htmlFor="pagina-visible">
+                        <CheckboxInput type="checkbox" id="pagina-visible" onChange={() => setVisible(!visible)} checked={visible} />
+                        <CustomCheckbox />
+                        Visible
+                      </CheckboxLabel>
+                    </CheckboxGroup>
+                  </FormGroup>
+
+                  <ButtonGroup>
+                    {idpagina && <CreateButton type="button" onClick={actualizarDatos}>Actualizar</CreateButton>}
+                    {!idpagina && <CreateButton type="button" onClick={enviarDatos}>Aceptar</CreateButton>}
+                    <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>
+                      {!idpagina ? "Cancelar" : "Cancelar"}
+                    </CancelButton>
+                  </ButtonGroup>
+                </form>
+              )}
+            </FormWrapper>
+          </ContentWrapper>
+        </Container>
     </>
-  )
+  );
 }
 
 export default CrearPagina;
 
 
-
 const GlobalCKEditorStyles = createGlobalStyle`
   .ck-editor__editable_inline {
-    min-height: 400px;
+    min-height: 280px;
     max-height: 70vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    border: 1px solid #ddd;
+    border-radius: 4px;
   }
 `;
 
-const MainContainer = styled.div`
-  height: 100vh;
-  overflow: hidden;
+const Container = styled.div`
+  background-color: #ffffffff;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 70px;
+  /*padding-bottom: 40px;*/
 `;
 
 const ContentWrapper = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
 `;
 
 const Title = styled.h1`
-  font-size: 1.5em;
-  color: black;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 25px;
   text-align: center;
-  margin: 20px 0;
+  font-weight: 600;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 25px;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const DivEditor = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+`;
+
+const CheckboxGroup = styled.div`
+  margin-top: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1em;
+  color: #333;
+  font-weight: 500;
+`;
+
+const CheckboxInput = styled.input`
+  opacity: 0;
+  position: absolute;
+`;
+
+const CustomCheckbox = styled.span`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #5a2e2e;
+  margin-right: 10px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+  position: relative;
+  background-color: white;
+
+  ${CheckboxInput}:checked + & {
+    background-color: #5a2e2e;
+    border-color: #5a2e2e;
+  }
+
+  ${CheckboxInput}:checked + &::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
+  ${CheckboxInput}:focus + & {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: center;
 `;
 
 const Button = styled.button`
@@ -278,14 +403,7 @@ const Button = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 180px;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 15px;
-  margin-top: 30px;
-  justify-content: center;
+  min-width: 150px;
 `;
 
 const CreateButton = styled(Button)`
@@ -312,114 +430,4 @@ const CancelButton = styled(Button)`
     background-color: #f8f8f8;
     border-color: #bbb;
   }
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #1e1e1e;
-  font-size: 16px;
-  min-width: 80px;
-  text-align: right;
-`;
-
-const Input = styled.input`
-  width: 400px;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-  background-color: white;
-  color: #333;
-  
-  &:focus {
-    outline: none;
-    border-color: #4C241D;
-  }
-  
-  &::placeholder {
-    color: #999;
-  }
-`;
-
-const DivEditor = styled.div`
-  margin: 0 auto;
-  width: 80%;
-  max-width: 900px;
-`;
-
-const Margen = styled.div`
-  margin-right: 15px;
-  display: flex;
-  align-items: center;
-`;
-
-const Centrar = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 25px;
-  margin-top: 40px;
-`;
-
-const CheckboxGroup = styled.div`
-    margin-top: 25px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    justify-content: center;
-`;
-
-const CheckboxLabel = styled.label`
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1.1em;
-    color: #333;
-    font-weight: 500;
-`;
-
-const CheckboxInput = styled.input`
-    opacity: 0;
-    position: absolute;
-`;
-
-const CustomCheckbox = styled.span`
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 2px solid #5a2e2e;
-    margin-right: 10px;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    position: relative;
-    background-color: white;
-
-    ${CheckboxInput}:checked + & {
-        background-color: #60a5fa;
-        border-color: #60a5fa;
-    }
-
-    ${CheckboxInput}:checked + &::after {
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 5px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 3px 3px 0;
-        transform: rotate(45deg);
-    }
-    
-
-    ${CheckboxInput}:focus + & {
-        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
-    }
 `;
