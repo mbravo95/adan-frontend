@@ -110,11 +110,11 @@ const CrearTarea = () => {
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          <Title>Crear Tarea</Title>
+          {/*<Title>Crear Tarea</Title>*/}
           <form>
             <FormGroup>
-              <Label htmlFor="nombre">Nombre</Label>
-              <Input id="nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre de la tarea" />
+              <Label htmlFor="nombre">Título</Label>
+              <Input id="nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Título de la tarea" />
             </FormGroup>
             <FormGroup>
               <Label htmlFor="descripcion">Descripción</Label>
@@ -138,7 +138,7 @@ const CrearTarea = () => {
               </CheckboxGroup>
             </FormGroup>
             <ButtonGroup>
-              <CreateButton type="button" onClick={crearTarea}>Crear tarea</CreateButton>
+              <CreateButton type="button" onClick={crearTarea}>Aceptar</CreateButton>
               <CancelButton type="button" onClick={() => navigate(`/curso/${cursoid}`)}>Cancelar</CancelButton>
             </ButtonGroup>
           </form>
@@ -153,15 +153,14 @@ export default CrearTarea;
 
 
 const Container = styled.div`
-  background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  background-color: #ffffffff;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
+  padding-top: 70px;
 `;
 
 const ContentWrapper = styled.div`
@@ -185,13 +184,13 @@ const FormWrapper = styled.div`
 const Title = styled.h1`
   color: #333;
   font-size: 28px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   text-align: center;
   font-weight: 600;
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const Input = styled.input`
@@ -215,7 +214,7 @@ const Input = styled.input`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 15px;
-  margin-top: 30px;
+  margin-top: 20px;
 `;
 
 const Button = styled.button`
@@ -308,8 +307,8 @@ const CustomCheckbox = styled.span`
     background-color: white;
 
     ${CheckboxInput}:checked + & {
-        background-color: #60a5fa;
-        border-color: #60a5fa;
+        background-color: #5a2e2e;
+        border-color: #5a2e2e;
     }
 
     ${CheckboxInput}:checked + &::after {

@@ -1,34 +1,158 @@
-// Icono de campanita SVG
-const BellIcon = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 8px;
-  cursor: pointer;
-  svg {
-    width: 22px;
-    height: 22px;
-    fill: #f4b400;
-    transition: fill 0.2s;
-  }
-  &:hover svg {
-    fill: #e67c00;
-  }
-`;
-
-function BellSvg() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <path d="M12 2C8.13 2 5 5.13 5 9v5c0 .55-.45 1-1 1H3c-.55 0-1 .45-1 1s.45 1 1 1h18c.55 0 1-.45 1-1s-.45-1-1-1h-1c-.55 0-1-.45-1-1V9c0-3.87-3.13-7-7-7zm0 19c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" />
-    </svg>
-  );
-}
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
-import { esUsuarioRegular, esProfesorCurso, puedeAdministrarCursos } from '../utils/permisoCursos';
+import { esUsuarioRegular } from '../utils/permisoCursos';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGraduationCap, faBell, faComments } from '@fortawesome/free-solid-svg-icons';
+
+function CursosIcono() {
+  return (
+    <FontAwesomeIcon 
+      icon={faGraduationCap} 
+      style={{ fontSize: 22, color: "#1E1E1E" }}
+    />
+  );
+}
+
+function NotificacionesIcono() {
+  return (
+    <FontAwesomeIcon 
+      icon={faBell}
+      style={{ fontSize: 22, color: "#1E1E1E" }}
+    />
+  );
+}
+
+function MensajesIcono() {
+  return (
+    <FontAwesomeIcon 
+      icon={faComments}
+      style={{ fontSize: 22, color: "#1E1E1E" }}
+    />
+  );
+}
+
+
+const HeaderContainer = styled.header`
+  background-color: ${props => props.bgcolor || 'white'};
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+`;
+
+const Logo = styled.img`
+  height: 40px;
+  width: auto;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const NavigationSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  color: ${props => props.textcolor || 'black'};
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.3s ease;
+  
+  &:hover {
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+  }
+`;
+
+const UserMenuContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+`;
+
+const UserContainer = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+  }
+`;
+
+const UserName = styled.span`
+  color: ${props => props.textcolor || 'black'};
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+`;
+
+const UserIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #666;
+  border: 2px solid #ddd;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  display: ${props => props.$isopen ? 'block' : 'none'};
+  z-index: 1001;
+  transform: translateX(0);
+  max-width: 200px;
+`;
+
+const MenuItem = styled.div`
+  padding: 12px 16px;
+  cursor: pointer;
+  color: black;
+  font-size: 14px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -185,43 +309,49 @@ const Header = () => {
     setIsMenuOpen(false);
   }
 
+  const irMensajes = () => {
+    navigate("/mensajes");
+  }
+
   return (
     <>
       <HeaderContainer bgcolor={bgcolor}>
         <Logo src="/logoHeader.png" alt="Logo ADAN" onClick={irAlHome} />
 
-        <NavigationSection>
-            <NavButton textcolor={textcolor} onClick={irCursos}>
-              Cursos
-            </NavButton>
-            {esUsuarioRegular() ? null : (
-              <>
-                <NavButton textcolor={textcolor} onClick={irAltaCursos}>
-                  Crear Curso
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAltaCursosCsv}>
-                  Crear Curso CSV
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAltaUsuario}>
-                  Crear Usuario
-                </NavButton> 
-                <NavButton textcolor={textcolor} onClick={irAltaUsuarioCsv}>
-                  Crear Usuario CSV
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irBusquedaUsuarios}>
-                  Buscar Usuarios
-                </NavButton>
-                <NavButton textcolor={textcolor} onClick={irAdminCursos}>
-                  Administrar Cursos
-                </NavButton> 
-              </>
-            )}
-        </NavigationSection>
-
         <UserMenuContainer>
-          <BellIcon title="Notificaciones" onClick={irNotificacionBandeja}>
-            <BellSvg />
-          </BellIcon>
+
+          <UserContainer onClick={irCursos}>
+            <CursosIcono />
+            Cursos
+          </UserContainer>
+
+          <UserContainer onClick={irMensajes}>
+            <MensajesIcono />
+            Mensajes
+          </UserContainer>
+
+          <UserContainer onClick={irNotificacionBandeja}>
+            <NotificacionesIcono />
+            Notificaciones
+          </UserContainer>
+
+          
+          {/*
+          {!esUsuarioRegular() ? null : (
+            <>
+              <UserContainer onClick={irMensajes}>
+                <MensajesIcono />
+                Mensajes
+              </UserContainer>
+
+              <UserContainer onClick={irNotificacionBandeja}>
+                <NotificacionesIcono />
+                Notificaciones
+              </UserContainer>
+            </>
+          )}
+          */}
+
           <UserContainer textcolor={textcolor} onClick={toggleMenu}>
             <UserName textcolor={textcolor}>{userName}</UserName>
             <UserIcon>
@@ -287,120 +417,3 @@ const Header = () => {
 }
 
 export default Header;
-
-const HeaderContainer = styled.header`
-  background-color: ${props => props.bgcolor || 'white'};
-  width: 100%;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  box-sizing: border-box;
-  transition: background-color 0.3s ease;
-`;
-
-const Logo = styled.img`
-  height: 40px;
-  width: auto;
-  transition: opacity 0.3s ease;
-  cursor: pointer;
-  
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const NavigationSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const NavButton = styled.button`
-  background: none;
-  border: none;
-  color: ${props => props.textcolor || 'black'};
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.3s ease;
-  
-  &:hover {
-    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
-  }
-`;
-
-const UserMenuContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-`;
-
-const UserContainer = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  gap: 12px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
-  }
-`;
-
-const UserName = styled.span`
-  color: ${props => props.textcolor || 'black'};
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.3s ease;
-`;
-
-const UserIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #666;
-  border: 2px solid #ddd;
-`;
-
-const DropdownMenu = styled.div`
-  position: absolute;
-  top: 45px;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 150px;
-  display: ${props => props.$isopen ? 'block' : 'none'};
-  z-index: 1001;
-  transform: translateX(0);
-  max-width: 200px;
-`;
-
-const MenuItem = styled.div`
-  padding: 12px 16px;
-  cursor: pointer;
-  color: black;
-  font-size: 14px;
-  
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;

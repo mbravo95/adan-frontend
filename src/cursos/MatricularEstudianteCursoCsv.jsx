@@ -6,14 +6,12 @@ import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #fff;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center; 
 `;
 
 const ContentWrapper = styled.div`
@@ -26,6 +24,7 @@ const ContentWrapper = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.10);
   padding: 32px 28px;
+  margin-top: 70px;
 `;
 
 const Title = styled.h2`

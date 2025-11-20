@@ -132,7 +132,7 @@ const Container = styled.div`
   background-color: #9DCBD7;
   min-height: 100vh;
   width: 100%;
-  padding-top: 60px;
+  padding-top: 70px;
   display: flex;
   justify-content: center;
   align-items: center;

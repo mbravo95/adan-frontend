@@ -1,230 +1,200 @@
-import styled, { keyframes } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-
-const HomeUsuario = () => {
-    const navigate = useNavigate();
-    //Si se quiere agregar botones segun el rol
-    //const userRole = 'PROFESOR'; 
-
-    const handleNavigation = (path) => {
-        navigate(path);
-    };
-
-    return (
-        <Container>
-            <ContentWrapper>
-                <Title>Home</Title>
-                <MenuContainer>
-                    
-                    <CentralLogo>
-                        <LogoImage src="/logo.jpeg" alt="Logo de la Aplicación" />
-                    </CentralLogo>
-                    
-                    <ActionCard position="bottom-center" onClick={() => handleNavigation('/usuario')}>
-                        <IconWrapper>👤</IconWrapper>
-                        <ActionText>Mi Perfil</ActionText>
-                    </ActionCard>
-
-                    <ActionCard position="top-right" onClick={() => handleNavigation('/mensajes')}>
-                        <IconWrapper>✉️</IconWrapper>
-                        <ActionText>Mensajes</ActionText>
-                    </ActionCard>
-
-                    <ActionCard position="top-left" onClick={() => handleNavigation('/cursos')}>
-                        <IconWrapper>📚</IconWrapper>
-                        <ActionText>Cursos</ActionText>
-                    </ActionCard>
-                     {/* Acciones extra o para el admin
-                    <ActionCard position="bottom-right" onClick={() => handleNavigation('/recursos')}>
-                        <IconWrapper>📁</IconWrapper>
-                        <ActionText>Recursos</ActionText>
-                    </ActionCard>
-                    
-                    {userRole === 'ADMINISTRADOR' && (
-                        <ActionCard position="bottom-center" onClick={() => handleNavigation('/admin')}>
-                            <IconWrapper>⚙️</IconWrapper>
-                            <ActionText>Administración</ActionText>
-                        </ActionCard>
-                    )}
-                    */}
-                    
-                </MenuContainer>
-            </ContentWrapper>
-        </Container>
-    );
-};
-
-export default HomeUsuario;
+import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { esUsuarioRegular } from "../utils/permisoCursos";
 
 
-const BackgroundColor = '#9DCBD7'; 
-const PrimaryColor = '#5a2e2e'; 
-const AccentColor = 'white';
-
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0px); }
-`;
+const BackgroundColor = "#9DCBD7";
+const PrimaryColor = "#5a2e2e";
 
 const Container = styled.div`
   background-color: ${BackgroundColor};
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center; 
-  padding: 40px 20px;
-  box-sizing: border-box;
+  padding-top: 70px;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  max-width: 1000px;
-  min-height: 500px;
+  max-width: 1400px;
+  gap: 40px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+const LeftSection = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  min-width: 300px;
+`;
+
+const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 300px;
+`;
+
+const Logo = styled.img`
+  max-width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: contain;
 `;
 
 const Title = styled.h1`
-  font-size: 2.5em;
+  font-size: 3em;
   color: #333;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-  font-weight: 800;
   text-align: center;
-`;
+  font-weight: 800;
+  letter-spacing: 1px;
 
-const MenuContainer = styled.div`
-  position: relative;
-  width: 500px; 
-  height: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
   @media (max-width: 600px) {
-    width: 300px;
-    height: 300px;
+    font-size: 2.2em;
   }
 `;
 
-
-const CentralLogo = styled.div`
-  width: 200px;
-  height: 200px;
-  background-color: ${AccentColor};
+const AdminPanel = styled.div`
+  width: 100%;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute; 
-  z-index: 10;
-  overflow: hidden;
-  
+  gap: 30px;
+`;
+
+const AdminTitle = styled.h2`
+  font-size: 2em;
+  color: #333;
+  text-align: center;
+  font-weight: 700;
+  margin: 0;
+`;
+
+const GridButtons = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+
   @media (max-width: 600px) {
-    width: 120px;
-    height: 120px;
+    grid-template-columns: 1fr;
   }
 `;
 
-
-const LogoImage = styled.img`
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    box-sizing: border-box;
-`;
-
-const ActionCard = styled.div`
-  position: absolute;
-  width: 180px; 
-  height: 60px; 
-  padding: 10px;
-  background-color: ${AccentColor};
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
+const AdminButton = styled.button`
+  background-color: white;
+  color: #333;
+  border: none;
+  padding: 20px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  
-  
-  ${props => props.position === 'top-left' && `
-    top: 50px;
-    left: 0px;
-  `}
-  ${props => props.position === 'top-right' && `
-    top: 50px;
-    right: 0px;
-  `}
-  ${props => props.position === 'bottom-left' && `
-    bottom: 50px;
-    left: 0px;
-  `}
-  ${props => props.position === 'bottom-right' && `
-    bottom: 50px;
-    right: 0px;
-  `}
-  ${props => props.position === 'bottom-center' && `
-    bottom: 50px;
-  `}
 
   &:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-    transform: scale(1.05);
-    animation: ${float} 2s ease-in-out infinite;
-  }
-  
-  @media (max-width: 600px) {
-    width: 100px;
-    height: 40px;
-    
-    ${props => props.position === 'top-left' && `
-      top: 20px; left: 0px;
-    `}
-    ${props => props.position === 'top-right' && `
-      top: 20px; right: 0px;
-    `}
-    ${props => props.position === 'bottom-left' && `
-      bottom: 20px; left: 0px;
-    `}
-    ${props => props.position === 'bottom-right' && `
-      bottom: 20px; right: 0px;
-    `}
+    background-color: ${PrimaryColor};
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 `;
 
-const IconWrapper = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${PrimaryColor};
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
-  margin-right: 10px;
-  flex-shrink: 0;
 
-  @media (max-width: 600px) {
-    width: 30px;
-    height: 30px;
-    font-size: 0.9em;
-  }
-`;
+const HomeUsuario = () => {
+  const navigate = useNavigate();
 
-const ActionText = styled.span`
-  font-size: 1em;
-  font-weight: 600;
-  color: #333;
-  
-  @media (max-width: 600px) {
-    font-size: 0.7em;
-  }
-`;
+  const [userName, setUserName] = useState("Usuario");
+
+  const regular = esUsuarioRegular();
+
+  const handleNavigation = (path) => navigate(path);
+
+  useEffect(() => {
+    const cargarUsuario = async () => {
+      try {
+        const base = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          const mail = localStorage.getItem("mail");
+          setUserName(mail?.split("@")[0] || "Usuario");
+          return;
+        }
+
+        const res = await axios.get(`${base}/usuarios/perfil`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUserName(res.data.nombres || res.data.apellidos || "Usuario");
+      } catch (e) {
+        const mail = localStorage.getItem("mail");
+        setUserName(mail?.split("@")[0] || "Usuario");
+      }
+    };
+
+    cargarUsuario();
+  }, []);
+
+  return (
+    <Container>
+      <ContentWrapper>
+        <LeftSection>
+          {regular ? (
+            <Title>Bienvenido/a {userName}!</Title>
+          ) : (
+            <AdminPanel>
+              <AdminTitle>Panel de Administración</AdminTitle>
+
+              <GridButtons>
+                <AdminButton onClick={() => handleNavigation("/admin-cursos")}>
+                  Administrar Cursos
+                </AdminButton>
+
+                <AdminButton onClick={() => handleNavigation("/buscar-usuarios")}>
+                  Administrar Usuarios
+                </AdminButton>
+
+                <AdminButton onClick={() => handleNavigation("/crear-curso")}>
+                  Crear Curso
+                </AdminButton>
+
+                <AdminButton onClick={() => handleNavigation("/crear-usuario")}>
+                  Crear Usuario
+                </AdminButton>
+
+                <AdminButton onClick={() => handleNavigation("/crear-curso-csv")}>
+                  Crear Cursos CSV
+                </AdminButton>
+
+                <AdminButton onClick={() => handleNavigation("/crear-usuario-csv")}>
+                  Crear Usuarios CSV
+                </AdminButton>
+                
+              </GridButtons>
+            </AdminPanel>
+          )}
+        </LeftSection>
+
+        <RightSection>
+          <Logo
+            src = "/serpiente.png"
+            alt="Logo"
+          />
+        </RightSection>
+      </ContentWrapper>
+    </Container>
+  );
+};
+
+export default HomeUsuario;

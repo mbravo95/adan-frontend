@@ -107,77 +107,82 @@ const SubirMaterial = () => {
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          <Title>Subir Material</Title>
+          {/*<Title>Subir Material</Title>*/}
 
-          <FormGroup>
-            <Label htmlFor="titulo">Titulo</Label>
-            <Input
-              id="titulo"
-              name="titulo"
-              type="text"
-              value={formData.titulo}
-              onChange={handleInputChange}
-              maxLength="100"
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="descripcion">Descripcion</Label>
-            <TextArea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleInputChange}
-              maxLength="500"
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Archivo</Label>
-            <FileUploadSection>
-              <FileUploadButton
-                type="button"
-                onClick={() => document.getElementById('file-input').click()}
-              >
-                Adjuntar Archivo
-              </FileUploadButton>
-              
-              <FileInput
-                id="file-input"
-                type="file"
-                onChange={handleFileSelect}
+          <form>
+            <FormGroup>
+              <Label htmlFor="titulo">Titulo</Label>
+              <Input
+                id="titulo"
+                name="titulo"
+                type="text"
+                value={formData.titulo}
+                onChange={handleInputChange}
+                maxLength="100"
+                placeholder="Título del material"
               />
-             
+            </FormGroup>
 
-              {selectedFile && (
-                <SelectedFile>
-                  <span>
-                    {selectedFile.name} 
-                    <small> ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</small>
-                  </span>
-                  <RemoveFileButton onClick={removeFile}>
-                    ✕
-                  </RemoveFileButton>
-                </SelectedFile>
-              )}
-            </FileUploadSection>
-          </FormGroup>
+            <FormGroup>
+              <Label htmlFor="descripcion">Descripcion</Label>
+              <TextArea
+                id="descripcion"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleInputChange}
+                maxLength="500"
+                placeholder="Descripción del material"
+                rows="4"
+              />
+            </FormGroup>
 
-          <ButtonGroup>
-            <Button 
-              variant="secondary" 
-              onClick={handleVolver}
-              disabled={uploading}
-            >
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleGuardarCambios}
-              disabled={uploading}
-            >
-              {uploading ? "Subiendo..." : "Guardar Cambios"}
-            </Button>
-          </ButtonGroup>
+            <FormGroup>
+              <Label>Archivo</Label>
+              <FileUploadSection>
+                <FileUploadButton
+                  type="button"
+                  onClick={() => document.getElementById('file-input').click()}
+                >
+                  Adjuntar Archivo
+                </FileUploadButton>
+                
+                <FileInput
+                  id="file-input"
+                  type="file"
+                  onChange={handleFileSelect}
+                />
+
+                {selectedFile && (
+                  <SelectedFile>
+                    <span>
+                      {selectedFile.name} 
+                      <small> ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</small>
+                    </span>
+                    <RemoveFileButton onClick={removeFile}>
+                      ✕
+                    </RemoveFileButton>
+                  </SelectedFile>
+                )}
+              </FileUploadSection>
+            </FormGroup>
+
+            <ButtonGroup>
+              <CreateButton 
+                type="button"
+                onClick={handleGuardarCambios}
+                disabled={uploading}
+              >
+                {uploading ? "Subiendo..." : "Aceptar"}
+              </CreateButton>
+              <CancelButton 
+                type="button"
+                onClick={handleVolver}
+                disabled={uploading}
+              >
+                Cancelar
+              </CancelButton>
+            </ButtonGroup>
+          </form>
         </FormWrapper>
       </ContentWrapper>
     </Container>
@@ -189,14 +194,13 @@ export default SubirMaterial;
 
 const Container = styled.div`
   background-color: #ffffffff;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-  box-sizing: border-box;
+  align-items: center;
+  padding-top: 70px;
 `;
 
 const ContentWrapper = styled.div`
@@ -204,7 +208,7 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
 `;
 
 const FormWrapper = styled.div`
@@ -214,10 +218,11 @@ const FormWrapper = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
   width: 100%;
+  max-width: 400px;
 `;
 
 const Title = styled.h1`
-  color: #000000ff;
+  color: #333;
   font-size: 28px;
   margin-bottom: 10px;
   text-align: center;
@@ -225,34 +230,31 @@ const Title = styled.h1`
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 `;
 
 const Label = styled.label`
-  display: block;
+  font-size: 1em;
+  font-weight: 500;
   color: #333;
-  font-size: 14px;
-  font-weight: 600;
+  margin-left: 5px;
+  display: block;
   margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 16px;
-  color: #333;
-  background-color: white;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  background-color: white;
+  color: #333;
   
   &:focus {
     outline: none;
     border-color: #4C241D;
-    box-shadow: 0 0 0 3px rgba(76, 36, 29, 0.1);
   }
   
   &::placeholder {
@@ -262,22 +264,19 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 16px;
-  color: #333;
-  background-color: white;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  background-color: white;
+  color: #333;
   resize: vertical;
-  min-height: 100px;
-  font-family: inherit;
+  min-height: 80px;
   
   &:focus {
     outline: none;
     border-color: #4C241D;
-    box-shadow: 0 0 0 3px rgba(76, 36, 29, 0.1);
   }
   
   &::placeholder {
@@ -308,17 +307,14 @@ const FileUploadButton = styled.button`
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 10px;
   
   &:hover {
     background-color: #3a1b16;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
   &:active {
@@ -327,12 +323,12 @@ const FileUploadButton = styled.button`
 `;
 
 const SelectedFile = styled.div`
-  background-color: #e8f5e8;
-  border: 1px solid #4caf50;
-  border-radius: 6px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   padding: 10px;
   margin-top: 10px;
-  color: #2e7d32;
+  color: #333;
   font-size: 14px;
   display: flex;
   justify-content: space-between;
@@ -355,36 +351,42 @@ const RemoveFileButton = styled.button`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 15px;
-  justify-content: center;
-  margin-top: 30px;
+  margin-top: 20px;
 `;
 
 const Button = styled.button`
-  background-color: ${props => props.variant === 'secondary' ? '#6c757d' : '#28a745'};
-  color: white;
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 120px;
+`;
+
+const CreateButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
   
   &:hover {
-    background-color: ${props => props.variant === 'secondary' ? '#5a6268' : '#218838'};
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  &:active {
-    transform: translateY(0);
+    background-color: #3a1b16;
   }
   
   &:disabled {
-    background-color: #cccccc;
+    opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    background-color: #999;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
   }
 `;

@@ -190,7 +190,7 @@ const CrearSeccion = () => {
       <ContentWrapper>
         {loading ? <Spinner /> : (
           <FormWrapper>
-            <Title>{!idseccion  ? 'Crear Nueva Sección' : 'Editar Sección'}</Title>
+            {/*<Title>{!idseccion  ? 'Crear Nueva Sección' : 'Editar Sección'}</Title>*/}
 
             <FormGroup>
               <Label>Título de la Sección</Label>
@@ -216,12 +216,12 @@ const CrearSeccion = () => {
             <ButtonGroup>
               {!idseccion && 
                 <CreateButton onClick={crear} disabled={loading}>
-                  {loading ? "Creando..." : "Crear Sección"}
+                  {loading ? "Creando..." : "Aceptar"}
                 </CreateButton>
               }
               {idseccion &&
                 <CreateButton onClick={modificar} disabled={loading}>
-                  {loading ? "Modificando..." : "Confirmar Cambios"}
+                  {loading ? "Modificando..." : "Actualizar"}
                 </CreateButton>
               }
               <CancelButton onClick={cancelar} disabled={loading}>
@@ -240,15 +240,13 @@ export default CrearSeccion;
 
 
 const Container = styled.div`
-  background-color: #9DCBD7;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  background-color: #ffffffff;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
 `;
 
 const ContentWrapper = styled.div`

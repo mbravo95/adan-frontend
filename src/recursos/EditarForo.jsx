@@ -6,143 +6,172 @@ import axios from "axios";
 
 
 const Container = styled.div`
+  background-color: #ffffffff;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 70px;
+`;
+
+const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #a7d9ed;
-  padding: 20px;
+  width: 100%;
+  max-width: 500px;
 `;
 
-const Title = styled.h1`
-  font-size: 2.5em;
-  color: #333;
-  margin-bottom: 40px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
   width: 100%;
   max-width: 400px;
 `;
 
-const Input = styled.input`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  color: black;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+`;
 
+const FormGroup = styled.div`
+  margin-bottom: 10px;
+`;
+
+const Label = styled.label`
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+  margin-left: 5px;
+  display: block;
+  margin-bottom: 8px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+  
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #4C241D;
   }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const CheckboxGroup = styled.div`
+  margin-top: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1em;
+  color: #333;
+  font-weight: 500;
+`;
+
+const CheckboxInput = styled.input`
+  opacity: 0;
+  position: absolute;
+`;
+
+const CustomCheckbox = styled.span`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #5a2e2e;
+  margin-right: 10px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  position: relative;
+  background-color: white;
+
+  ${CheckboxInput}:checked + & {
+    background-color: #5a2e2e;
+    border-color: #5a2e2e;
+  }
+
+  ${CheckboxInput}:checked + &::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
+  ${CheckboxInput}:focus + & {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
 `;
 
 const Button = styled.button`
-  padding: 15px;
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 1.2em;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-weight: bold;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-  
-  &:hover {
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
-  }
-
-  &:active {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    transform: translateY(1px);
-  }
+  transition: all 0.3s ease;
 `;
 
 const CreateButton = styled(Button)`
-  background-color: #5a2e2e;
-  color: #fff;
-  margin-top: 10px;
-
+  background-color: #4C241D;
+  color: white;
+  
   &:hover {
-    background-color: #4b2525;
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
   }
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #e0e0e0;
+  background-color: white;
   color: #333;
-
+  border: 2px solid #ddd;
+  
   &:hover {
-    background-color: #d0d0d0;
+    background-color: #f8f8f8;
+    border-color: #bbb;
   }
-`;
-
-
-const CheckboxGroup = styled.div`
-    margin-top: 5px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-`;
-
-const CheckboxLabel = styled.label`
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1.1em;
-    color: #333;
-    font-weight: 500;
-`;
-
-const CheckboxInput = styled.input`
-    opacity: 0;
-    position: absolute;
-`;
-
-const CustomCheckbox = styled.span`
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 2px solid #5a2e2e;
-    margin-right: 10px;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    position: relative;
-    background-color: white;
-
-    ${CheckboxInput}:checked + & {
-        background-color: #60a5fa;
-        border-color: #60a5fa;
-    }
-
-    ${CheckboxInput}:checked + &::after {
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 5px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 3px 3px 0;
-        transform: rotate(45deg);
-    }
-    
-
-    ${CheckboxInput}:focus + & {
-        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
-    }
 `;
 
 
@@ -248,38 +277,51 @@ const EditarForo = () => {
   }
 
   return (
-    <>
-      <Container>
-        <Title>EDITAR FORO</Title>
-        <Form>
-          <Input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Nombre"
-          />
-          <CheckboxGroup>
-            <CheckboxLabel htmlFor="task-visible">
-              <CheckboxInput
-                type="checkbox"
-                id="task-visible"
-                checked={visible}
-                onChange={() => setVisible(!visible)}
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          {/*<Title>Editar Foro</Title>*/}
+
+          <form>
+            <FormGroup>
+              <Label htmlFor="nombre">Título</Label>
+              <Input
+                id="nombre"
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Título del foro"
               />
-              <CustomCheckbox />
-              Visible
-            </CheckboxLabel>
-          </CheckboxGroup>
-          <CreateButton type="button" onClick={() => editarForo()}>
-            Editar foro
-          </CreateButton>
-          <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>
-            Cancelar
-          </CancelButton>
-        </Form>
-      </Container>
-    </>
-  )
+            </FormGroup>
+
+            <FormGroup>
+              <CheckboxGroup>
+                <CheckboxLabel htmlFor="foro-visible">
+                  <CheckboxInput
+                    type="checkbox"
+                    id="foro-visible"
+                    checked={visible}
+                    onChange={() => setVisible(!visible)}
+                  />
+                  <CustomCheckbox />
+                  Visible
+                </CheckboxLabel>
+              </CheckboxGroup>
+            </FormGroup>
+
+            <ButtonGroup>
+              <CreateButton type="button" onClick={() => editarForo()}>
+                Actualizar
+              </CreateButton>
+              <CancelButton type="button" onClick={() => navigate(`/curso/${codigo}`)}>
+                Cancelar
+              </CancelButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
+    </Container>
+  );
 }
 
-export default EditarForo
+export default EditarForo;
