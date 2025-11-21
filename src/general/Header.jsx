@@ -35,6 +35,8 @@ function MensajesIcono() {
   );
 }
 
+const esRegular = esUsuarioRegular();
+
 
 const HeaderContainer = styled.header`
   background-color: ${props => props.bgcolor || 'white'};
@@ -96,14 +98,19 @@ const UserMenuContainer = styled.div`
 const UserContainer = styled.div`
   display: flex;
   align-items: center;
-  cursor: pointer;
+  cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
   gap: 12px;
   padding: 5px 10px;
   border-radius: 20px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
+  opacity: ${props => props.$disabled ? 0.5 : 1};
   
   &:hover {
-    background-color: ${props => props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5'};
+    background-color: ${props => 
+      props.$disabled 
+        ? 'transparent'
+        : (props.textcolor === 'white' ? 'rgba(255,255,255,0.1)' : '#f5f5f5')
+    };
   }
 `;
 
@@ -271,36 +278,11 @@ const Header = () => {
     navigate("/home");
   }
 
-  const irAltaCursos = () => {
-    navigate("/crear-curso");
-  }
-
-  const irAltaCursosCsv = () => {
-    navigate("/crear-curso-csv");
-  }
-
-  const irAltaUsuario = () => {
-    navigate("/crear-usuario");
-  }
-
-  const irAltaUsuarioCsv = () => {
-    navigate("/crear-usuario-csv");
-  }
-
-  const irAdminCursos = () => {
-    navigate("/admin-cursos");
-  }
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   }
 
   const handleClickOutside = () => {
-    setIsMenuOpen(false);
-  }
-
-  const irBusquedaUsuarios = () => {
-    navigate("/buscar-usuarios");
     setIsMenuOpen(false);
   }
 
@@ -325,32 +307,21 @@ const Header = () => {
             Cursos
           </UserContainer>
 
-          <UserContainer onClick={irMensajes}>
+          <UserContainer 
+            onClick={() => esRegular && irMensajes()}
+            $disabled={!esRegular}
+          >          
             <MensajesIcono />
             Mensajes
           </UserContainer>
 
-          <UserContainer onClick={irNotificacionBandeja}>
+          <UserContainer 
+            onClick={() => esRegular && irNotificacionBandeja()}
+            $disabled={!esRegular}
+          >
             <NotificacionesIcono />
             Notificaciones
           </UserContainer>
-
-          
-          {/*
-          {!esUsuarioRegular() ? null : (
-            <>
-              <UserContainer onClick={irMensajes}>
-                <MensajesIcono />
-                Mensajes
-              </UserContainer>
-
-              <UserContainer onClick={irNotificacionBandeja}>
-                <NotificacionesIcono />
-                Notificaciones
-              </UserContainer>
-            </>
-          )}
-          */}
 
           <UserContainer textcolor={textcolor} onClick={toggleMenu}>
             <UserName textcolor={textcolor}>{userName}</UserName>
