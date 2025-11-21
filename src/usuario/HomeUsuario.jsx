@@ -35,6 +35,7 @@ const LeftSection = styled.div`
   align-items: center;
   min-height: 400px;
   min-width: 300px;
+  margin-left: 50px;
 `;
 
 const RightSection = styled.div`
