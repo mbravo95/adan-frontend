@@ -285,7 +285,7 @@ const CalificarEntregaCsv = () => {
           'Authorization': `Bearer ${token}`,
         }
       };
-      const response = await axios.post(`${urlBase}/entregables/calificar-csv`, formData, config);
+      const response = await axios.post(`${urlBase}/entregables/calificar-csv?idTarea=${tareaId}`, formData, config);
       setResultado(response.data);
       const totalExitosos = response.data.exitosos || 0;
       const totalErrores = response.data.errores || 0;
