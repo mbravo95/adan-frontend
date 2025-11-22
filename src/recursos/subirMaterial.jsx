@@ -89,7 +89,7 @@ const SubirMaterial = () => {
       toast.success(successMsg);
       setFormData({ titulo: "", descripcion: "" });
       setSelectedFile(null);
-      navigate(`/curso/${cursoid}`);
+      navigate(`/curso/${codigo}`);
     } catch (error) {
       console.log("[SUBIR MATERIAL] Respuesta backend (error):", error?.response);
       console.log("[SUBIR MATERIAL] Error completo:", error);
