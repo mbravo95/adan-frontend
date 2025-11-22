@@ -67,12 +67,12 @@ const SubirMaterial = () => {
 
     setUploading(true);
     try {
-  const urlBase = import.meta.env.VITE_BACKEND_URL;
-  const token = localStorage.getItem("token");
-  const form = new FormData();
-  form.append("archivo", selectedFile);
-  form.append("nombre", formData.titulo);
-  form.append("descripcion", formData.descripcion);
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const form = new FormData();
+      form.append("archivo", selectedFile);
+      form.append("nombre", formData.titulo);
+      form.append("descripcion", formData.descripcion);
 
       const response = await axios.post(
         `${urlBase}/recursos/cursos/${codigo}/secciones/${seccion}/materiales`,
@@ -89,9 +89,10 @@ const SubirMaterial = () => {
       toast.success(successMsg);
       setFormData({ titulo: "", descripcion: "" });
       setSelectedFile(null);
+      navigate(`/curso/${cursoid}`);
     } catch (error) {
-  console.log("[SUBIR MATERIAL] Respuesta backend (error):", error?.response);
-  console.log("[SUBIR MATERIAL] Error completo:", error);
+      console.log("[SUBIR MATERIAL] Respuesta backend (error):", error?.response);
+      console.log("[SUBIR MATERIAL] Error completo:", error);
       const errorMsg = error?.response?.data?.message || "Error al subir el material";
       toast.error(errorMsg);
     } finally {
