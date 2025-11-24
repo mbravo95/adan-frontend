@@ -6,9 +6,9 @@ import { puedeAdministrarCursos } from '../utils/permisoCursos';
 
 const Container = styled.div`
   background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  min-height: 100vh;
+  width: 100%;
+  margin-top: 70px;
   padding: 40px;
   box-sizing: border-box;
 `;
@@ -250,7 +250,7 @@ const ParticipantesCurso = () => {
   }
 
   const volverAlCurso = () => {
-  navigate(`/curso/${codigo}`);
+    navigate(`/curso/${codigo}`);
   };
 
   return (
@@ -285,7 +285,7 @@ const ParticipantesCurso = () => {
       </Header>
 
       <ParticipantsSection>
-        <SectionTitle>Lista de Participantes</SectionTitle>
+        <SectionTitle>Participantes:</SectionTitle>
         
         {loading ? (
           <PlaceholderMessage>

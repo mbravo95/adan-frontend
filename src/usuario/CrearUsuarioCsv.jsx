@@ -331,11 +331,12 @@ const CrearUsuarioCsv = () => {
       <InfoBox>
         <InfoTitle>Formato del archivo CSV</InfoTitle>
         <InfoText>
-          El archivo debe contener las columnas: nombre, apellido, correo y cedula separados por coma(,).
+          El archivo debe contener las columnas: correo, tipo de usuario, nombres, apellidos y cédula separadas por coma(,).
           La primera fila debe contener el nombre de las columnas.<br /><br />
+          Tipos de usuarios válidos: USUARIO y ADMINISTRADOR.<br /><br />
           Ejemplo:<br />
-          nombre,apellido,correo,cedula<br />
-          Juan,Pérez,juan.perez@correo.com,12345678<br />
+          correo,tipoUsuario,nombres,apellidos,cedula<br />
+          juan.perez@correo.com,ADMINISTRADOR,Juan,Pérez,12345678<br />
         </InfoText>
       </InfoBox>
 

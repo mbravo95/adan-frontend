@@ -5,122 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { messaging, getToken } from '../../firebase';
 
-
-const FullScreenContainer = styled.div`
-  min-height: 100vh;
-  width: 100vw;
-  background-color: #9DCBD7;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10vw;
-`;
-
-const ColumnBase = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center; 
-  align-items: center; 
-  flex-grow: 1; 
-  padding: 20px;
-`;
-
-const LoginColumn = styled(ColumnBase)`
-  flex: 1;
-  max-width: 30vw;
-  margin-top: 8vh;
-`;
-
-const LogoColumn = styled(ColumnBase)`
-  flex: 1;
-  max-width: 22vw;
-  align-items: center;
-  justify-content: center;
-`;
-
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
-  max-width: 320px;
-`;
-
-const Input = styled.input`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  color: black;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
-  }
-`;
-
-const LoginButton = styled.button`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2em;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #5a2e2e;
-  color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    background-color: #4b2525;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
-  }
-`;
-
-const SeparatorContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  gap: 16px;
-  width: 100%;
-`;
-
-const SeparatorText = styled.span`
-  color: #5a2e2e;
-  font-size: 0.9em;
-  font-weight: 500;
-`;
-
-const SeparatorLine = styled.div`
-  height: 1px;
-  background-color: #E0E0E0;
-  flex: 1;
-`;
-
-const ForgotPasswordLink = styled.a`
-  color: #5a2e2e;
-  font-size: 0.9em;
-  text-decoration: none;
-  text-align: center;
-  margin-top: -10px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const LogoImage = styled.img`
-  width: 22vw;
-  height: auto;
-  object-fit: contain;
-`;
-
-
 const Login = () => {
-
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -228,27 +113,189 @@ const Login = () => {
   }
 
   return (
-    <>
-        <FullScreenContainer>
-          <LoginColumn>
-            <Form>
-              <Input type="email" placeholder="adan@email.com" onChange={(e) => setMail(e.target.value)} />
-              <Input type="password" placeholder="*******************" onChange={(e) => setPassword(e.target.value)} />
-              <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
-              <SeparatorContainer>
-                <SeparatorLine />
-                <SeparatorText>o</SeparatorText>
-                <SeparatorLine />
-              </SeparatorContainer>
-              <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
-            </Form>
-          </LoginColumn>
-          <LogoColumn>
-            <LogoImage src = "/logo- SinFondo.png" alt="Logo ADAN" />
-          </LogoColumn>
-        </FullScreenContainer>
-    </>
-  )
+    <FullScreenContainer>
+      <LoginColumn>
+        <Form>
+          <Input 
+            type="email" 
+            placeholder="adan@email.com" 
+            value={mail}
+            onChange={(e) => setMail(e.target.value)} 
+          />
+          <Input 
+            type="password" 
+            placeholder="*******************" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+          />
+          <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
+          <SeparatorContainer>
+            <SeparatorLine />
+            <SeparatorText>o</SeparatorText>
+            <SeparatorLine />
+          </SeparatorContainer>
+          <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
+        </Form>
+      </LoginColumn>
+      <LogoColumn>
+        <LogoImage src="/logo- SinFondo.png" alt="Logo ADAN" />
+      </LogoColumn>
+    </FullScreenContainer>
+  );
 }
 
 export default Login;
+
+const FullScreenContainer = styled.div`
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #9DCBD7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10vw;
+  padding: 20px;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+`;
+
+const ColumnBase = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  flex-grow: 1; 
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 0;
+    width: 100%;
+  }
+`;
+
+const LoginColumn = styled(ColumnBase)`
+  flex: 1;
+  max-width: 30vw;
+  margin-top: 8vh;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin-top: 0;
+    order: 2;
+  }
+`;
+
+const LogoColumn = styled(ColumnBase)`
+  flex: 1;
+  max-width: 22vw;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    max-width: 60vw;
+    order: 1;
+  }
+`;
+
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 320px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
+
+const Input = styled.input`
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  color: black;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #60a5fa;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    padding: 14px;
+  }
+`;
+
+const LoginButton = styled.button`
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #5a2e2e;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    background-color: #4b2525;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.1em;
+    padding: 14px;
+  }
+`;
+
+const SeparatorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  gap: 16px;
+  width: 100%;
+`;
+
+const SeparatorText = styled.span`
+  color: #5a2e2e;
+  font-size: 0.9em;
+  font-weight: 500;
+`;
+
+const SeparatorLine = styled.div`
+  height: 1px;
+  background-color: #E0E0E0;
+  flex: 1;
+`;
+
+const ForgotPasswordLink = styled.a`
+  color: #5a2e2e;
+  font-size: 0.9em;
+  text-decoration: none;
+  text-align: center;
+  margin-top: -10px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const LogoImage = styled.img`
+  width: 22vw;
+  height: auto;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 60vw;
+    max-width: 300px;
+  }
+`;

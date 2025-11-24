@@ -224,7 +224,7 @@ const CambiarContrasena = () => {
                 ) : (
                   <ButtonGroup>
                     <CreateButton onClick={resetearContrasena}>
-                      Cambiar Contraseña
+                      Aceptar
                     </CreateButton>
                   </ButtonGroup>
                 ) }
