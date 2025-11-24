@@ -288,9 +288,7 @@ const ButtonGroup = styled.div`
 `;
 
 const ActionButton = styled.button`
-  /*background-color: ${props => props.variant === 'danger' ? '#dc3545' : props.variant === 'warning' ? '#ffc107' : '#28a745'};*/
   background-color: '#dededeff';
-  /*color: ${props => props.variant === 'warning' ? '#000' : '#fff'};*/
   color: #000;
   border: 1px solid #4b4b4bff;
   padding: 8px 16px;

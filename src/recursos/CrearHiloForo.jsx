@@ -6,105 +6,155 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Container = styled.div`
-  background-color: white;
-  width: 100vw;
-  min-height: calc(100vh - 60px);
-  margin-top: 60px;
+  background-color: #ffffffff;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  box-sizing: border-box;
+  align-items: center;
+  padding-top: 70px;
 `;
 
-const Card = styled.div`
-  background: #f8f9fa;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  padding: 32px 40px;
-  margin-top: 40px;
-  min-width: 400px;
-  max-width: 600px;
+const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 500px;
 `;
 
-const Title = styled.h1`
-  font-size: 2em;
-  color: #222;
-  margin-bottom: 28px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
   width: 100%;
   max-width: 400px;
 `;
 
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 10px;
+`;
+
+const Label = styled.label`
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+  margin-left: 5px;
+  display: block;
+  margin-bottom: 8px;
+`;
+
 const Input = styled.input`
+  width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1.1em;
-  color: black;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
+  
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
   }
 `;
 
 const TextArea = styled.textarea`
+  width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1.1em;
-  color: black;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
-  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
   resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+  
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
   }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 16px;
-  margin-top: 10px;
+  gap: 15px;
+  margin-top: 20px;
 `;
 
 const Button = styled.button`
-  padding: 12px 28px;
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  font-weight: bold;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
 `;
 
 const CreateButton = styled(Button)`
-  background-color: #5a2e2e;
-  color: #fff;
+  background-color: #4C241D;
+  color: white;
+  
   &:hover {
-    background-color: #4b2525;
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
   }
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #e0e0e0;
+  background-color: white;
   color: #333;
+  border: 2px solid #ddd;
+  
   &:hover {
-    background-color: #d0d0d0;
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
@@ -140,13 +190,13 @@ const CrearHiloForo = () => {
       const hiloResponse = await axios.post(`${urlBase}/recursos/foro/hilo`, payload, config);
       toast.success("Hilo creado correctamente");
       console.log('Respuesta de creación de hilo:', hiloResponse.data);
-  const hiloId = hiloResponse.data.idHilo;
+      const hiloId = hiloResponse.data.idHilo;
       console.log('Valor de hiloId:', hiloId);
       try {
         let urlBaseMsg = import.meta.env.VITE_BACKEND_URL;
         if (urlBaseMsg.endsWith("/")) urlBaseMsg = urlBaseMsg.slice(0, -1);
         const apiUrl = `${urlBaseMsg}/mensajes/foro/publicarMensaje`;
-  const correoAutor = profile?.correo || "";
+        const correoAutor = profile?.correo || "";
         const msgPayload = {
           idForo: Number(recursoId),
           idHilo: Number(hiloId),
@@ -174,34 +224,44 @@ const CrearHiloForo = () => {
 
   return (
     <Container>
-      <Card>
-        <Title>Crear Hilo en Foro</Title>
-        <Form>
-          <Input
-            type="text"
-            placeholder="Título del hilo"
-            value={titulo}
-            onChange={e => setTitulo(e.target.value)}
-            disabled={loading}
-          />
-          <TextArea
-            placeholder="Cuerpo del mensaje"
-            value={cuerpo}
-            onChange={e => setCuerpo(e.target.value)}
-            disabled={loading}
-          />
-          <ButtonGroup>
-            <CreateButton type="button" onClick={handleCrearHilo} disabled={loading}>
-              Crear hilo
-            </CreateButton>
-            <CancelButton type="button" onClick={handleCancelar} disabled={loading}>
-              Cancelar
-            </CancelButton>
-          </ButtonGroup>
-        </Form>
-      </Card>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Crear Hilo en Foro</Title>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <FormGroup>
+              <Label htmlFor="titulo">Título</Label>
+              <Input
+                id="titulo"
+                type="text"
+                placeholder="Título del hilo"
+                value={titulo}
+                onChange={e => setTitulo(e.target.value)}
+                disabled={loading}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="cuerpo">Mensaje inicial</Label>
+              <TextArea
+                id="cuerpo"
+                placeholder="Cuerpo del mensaje"
+                value={cuerpo}
+                onChange={e => setCuerpo(e.target.value)}
+                disabled={loading}
+              />
+            </FormGroup>
+            <ButtonGroup>
+              <CancelButton type="button" onClick={handleCancelar} disabled={loading}>
+                Cancelar
+              </CancelButton>
+              <CreateButton type="button" onClick={handleCrearHilo} disabled={loading}>
+                {loading ? "Creando..." : "Crear hilo"}
+              </CreateButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
     </Container>
   );
 };
-export default CrearHiloForo;
 
+export default CrearHiloForo;
