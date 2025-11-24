@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #fff;
@@ -218,11 +218,29 @@ const NuevoCargaButton = styled.button`
   }
 `;
 
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;
+
 const CalificarEntregaCsv = () => {
-  const { tareaId } = useParams();
+  const { codigo, tareaId } = useParams();
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const navigate = useNavigate();
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -310,16 +328,25 @@ const CalificarEntregaCsv = () => {
     }
   };
 
+  const volverAEntregas = () => {
+    navigate(`/curso/${codigo}/tarea/${tareaId}/entregas`);
+  };
+
   return (
     <Container>
     <ContentWrapper>
+      <BackButton onClick={volverAEntregas}>
+        ← Volver a entregas
+      </BackButton>
       <Title>Calificar entregas vía CSV</Title>
       <InfoBox>
         <InfoTitle>Formato del archivo CSV</InfoTitle>
         <InfoText>
-          El archivo debe contener las columnas:.<br />
+          El archivo debe contener las columnas: correo del usuario y calificación separadas por comas(,).<br />
           La primera fila debe contener el nombre de las columnas.<br /><br />
           Ejemplo:<br />
+          correousuario,calificacion<br />
+          juan.perez@correo.com,10<br />
         </InfoText>
       </InfoBox>
       {!selectedFile ? (

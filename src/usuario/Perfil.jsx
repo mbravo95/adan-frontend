@@ -12,7 +12,7 @@ const Perfil = () => {
     correo: "Cargando...",
     cedula: "Cargando...",
     fechaNacimiento: "Cargando...",
-    fechaIngreso: "Cargando...",
+    fechaCreacion: "Cargando...",
     rol: "Cargando...",
     fotoPerfil: null
   });
@@ -37,7 +37,7 @@ const Perfil = () => {
             correo: "No hay token",
             cedula: "No disponible", 
             fechaNacimiento: "No disponible",
-            fechaIngreso: "No disponible",
+            fechaCreacion: "No disponible",
             rol: "No disponible"
           });
           setLoading(false);
@@ -59,7 +59,7 @@ const Perfil = () => {
         const data = response.data;
         
         // Función para formatear fecha a DD/MM/YYYY
-        const formatearFecha = (fechaString) => {
+        const formatearFechaNacimiento = (fechaString) => {
           if (!fechaString) return "No disponible";
           try {
             // viene como YYYY-MM-DD
@@ -70,14 +70,28 @@ const Perfil = () => {
             return fechaString;
           }
         };
+
+        const formatearFechaCreacion = (fechaString) => {
+          if (!fechaString) return "No disponible";
+
+          const fecha = new Date(fechaString.replace(" ", "T"));
+
+          if (isNaN(fecha.getTime())) return fechaString;
+
+          const dia = String(fecha.getDate()).padStart(2, "0");
+          const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+          const anio = fecha.getFullYear();
+
+          return `${dia}/${mes}/${anio}`;
+        };
         
         setUserData({
           nombres: data.nombres || "No disponible",
           apellidos: data.apellidos || "No disponible",
           correo: data.correo || "No disponible",
           cedula: data.cedula || "No disponible",
-          fechaNacimiento: formatearFecha(data.fechaNacimiento), 
-          fechaIngreso: formatearFecha(data.fechaInscripcion),
+          fechaNacimiento: formatearFechaNacimiento(data.fechaNacimiento), 
+          fechaCreacion: formatearFechaCreacion(data.fechaCreacion),
           rol: data.tipoUsuario || data.rol || localStorage.getItem("tipo") || "No disponible",
           fotoPerfil: data.fotoPerfil || null
         });
@@ -93,7 +107,7 @@ const Perfil = () => {
           correo: localStorage.getItem("mail") || "Error al cargar",
           cedula: "Error al cargar",
           fechaNacimiento: "Error al cargar", 
-          fechaIngreso: "Error al cargar",
+          fechaCreacion: "Error al cargar",
           rol: localStorage.getItem("tipo") || "Error al cargar"
         });
       } finally {
@@ -191,7 +205,7 @@ const Perfil = () => {
                 </DataRow>
                 <DataRow>
                   <Label>Fecha de Ingreso:</Label>
-                  <Value>{userData.fechaIngreso}</Value>
+                  <Value>{userData.fechaCreacion}</Value>
                 </DataRow>
               </UserCard>
               <ButtonContainer>

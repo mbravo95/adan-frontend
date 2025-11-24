@@ -187,7 +187,7 @@ const Busqueda = () => {
                                             <DetailValue>{user.correo}</DetailValue>
                                         </DetailRow>
                                         <DetailRow>
-                                            <DetailLabel>Fecha de creación:</DetailLabel>
+                                            <DetailLabel>Fecha de Ingreso:</DetailLabel>
                                             <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
                                         </DetailRow>
                                     </UserDetails>

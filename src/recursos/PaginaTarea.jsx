@@ -333,6 +333,7 @@ const Title = styled.h1`
   margin-bottom: 16px;
   text-align: center;
   font-weight: 600;
+  padding-top: 30px;
 `;
 
 const Description = styled.p`
@@ -357,7 +358,7 @@ const DateField = styled.div`
   padding: 12px 20px;
   border-radius: 4px;
   display: flex;
-  flex-direction: column;
+  /*flex-direction: column;*/
   gap: 4px;
 `;
 

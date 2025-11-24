@@ -1,13 +1,14 @@
-
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
 
 const PaginaTematica = () => {
     const [htmlContent, setHtmlContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { recursoId } = useParams();
+    const { codigo, recursoId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPaginaContent = async () => {
@@ -23,10 +24,7 @@ const PaginaTematica = () => {
                     }
                 };
 
-                // Endpoint correcto según tu API
                 const response = await axios.get(`${urlBase}/recursos/${recursoId}`, config);
-                
-                // Extraer el HTML del campo urlHtml
                 setHtmlContent(response.data.urlHtml || '');
                 
             } catch (err) {
@@ -42,42 +40,111 @@ const PaginaTematica = () => {
         }
     }, [recursoId]);
 
-    if (loading) return <div>Cargando...</div>;
-    if (error) return <div>Error: {error}</div>;
+    const volverAlCurso = () => {
+        navigate(`/curso/${codigo}`);
+    };
+
+    if (loading) return <LoadingMessage>Cargando...</LoadingMessage>;
+    if (error) return <ErrorMessage>Error: {error}</ErrorMessage>;
 
     return (
-        <div style={{ 
-            height: '100vh', 
-            overflow: 'hidden', 
-            display: 'flex', 
-            flexDirection: 'column',
-            paddingTop: '80px'
-        }}>
-            {/* Contenedor con scroll interno optimizado */}
-            <div 
-                style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    scrollBehavior: 'smooth',
-                    padding: '20px'
-                }}
-            >
-                <div 
-                    dangerouslySetInnerHTML={{ __html: htmlContent }}
-                    style={{ 
-                        width: '100%', 
-                        minHeight: '400px',
-                        padding: '20px',
-                        border: '1px solid #ddd',
-                        borderRadius: '8px',
-                        backgroundColor: '#ffffff',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}
-                />
-            </div>
-        </div>
+        <Container>
+            <BackButton onClick={volverAlCurso}>
+                ← Volver al curso
+            </BackButton>
+            <ScrollWrapper>
+                <ContentWrapper>
+                    <HtmlContent dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                </ContentWrapper>
+            </ScrollWrapper>
+        </Container>
     );
 };
 
 export default PaginaTematica;
+
+const Container = styled.div`
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 110px;
+    background-color: #ffffffff;
+    align-items: center;
+    justify-content: center;
+`;
+
+const ScrollWrapper = styled.div`
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+`;
+
+const ContentWrapper = styled.div`
+    width: 840px;
+    display: flex;
+    flex-direction: column;
+`;
+
+const HtmlContent = styled.div`
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    /* Asegurar que el contenido se ajuste correctamente */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    
+    /* Evitar que imágenes y otros elementos se salgan */
+    & img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    & p, & div {
+        margin: 0;
+    }
+`;
+
+const LoadingMessage = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 16px;
+    color: #666;
+`;
+
+const ErrorMessage = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 16px;
+    color: #d32f2f;
+`;
+
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  max-width: 840px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;

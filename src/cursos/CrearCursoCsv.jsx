@@ -333,11 +333,12 @@ const CrearCursoCsv = () => {
       <InfoBox>
         <InfoTitle>Formato del archivo CSV</InfoTitle>
         <InfoText>
-          El archivo debe contener las columnas: nombre, descripcion, turno, codigo y año separados por comas(,).
+          El archivo debe contener las columnas: nombre, descripcion, turno, codigo y año separadas por comas(,).
           La primera fila debe contener el nombre de las columnas.<br /><br />
+          Turnos válidos: Matutino, Vespertino y Nocturno.<br /><br />
           Ejemplo:<br />
           nombre,descripcion,turno,codigo,anio<br />
-          Matemáticas I,Curso básico de matemáticas,MAÑANA,MAT001,2025<br />
+          Matemáticas I,Curso básico de matemáticas,Matutino,MAT001,2025<br />
         </InfoText>
       </InfoBox>
 

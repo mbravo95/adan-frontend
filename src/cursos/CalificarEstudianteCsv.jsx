@@ -3,6 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #fff;
@@ -218,6 +219,23 @@ const NuevoCargaButton = styled.button`
   }
 `;
 
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;
+
 const CalificarEstudianteCsv = () => {
   const location = useLocation();
   const cursoActual = location.state?.cursoActual;
@@ -225,6 +243,7 @@ const CalificarEstudianteCsv = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const navigate = useNavigate();
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -320,77 +339,86 @@ const CalificarEstudianteCsv = () => {
     }
   };
 
+  const volverAParticipantes = () => {
+    navigate(`/curso/${cursoActual.codigo}/participantes`);
+  };
+
   return (
     <Container>
-    <ContentWrapper>
-      <Title>Calificar Estudiantes desde CSV</Title>
-      <InfoBox>
-        <InfoTitle>Formato del archivo CSV</InfoTitle>
-        <InfoText>
-          El archivo debe contener las columnas: .<br />
-          La primera fila debe contener el nombre de las columnas.<br /><br />
-          Ejemplo:<br />
+      <ContentWrapper>
+        <BackButton onClick={volverAParticipantes}>
+          ← Volver a participantes
+        </BackButton>
+        <Title>Calificar Estudiantes desde CSV</Title>
+        <InfoBox>
+          <InfoTitle>Formato del archivo CSV</InfoTitle>
+          <InfoText>
+            El archivo debe contener las columnas: correo del usuario, código del curso y calificación separadas por comas(,).<br />
+            La primera fila debe contener el nombre de las columnas.<br /><br />
+            Ejemplo:<br />
+            correousuario,codigocurso,calificacion<br />
+            juan.perez@correo.com,MAT001,10<br />
 
-        </InfoText>
-      </InfoBox>
-      {!selectedFile ? (
-        <FileInputContainer
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+          </InfoText>
+        </InfoBox>
+        {!selectedFile ? (
+          <FileInputContainer
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            <FileLabel htmlFor="csvFile">
+              <FileText>Haz clic aquí o arrastra un archivo CSV</FileText>
+              <FileSubtext>Solo archivos .csv son permitidos</FileSubtext>
+            </FileLabel>
+            <FileInput
+              id="csvFile"
+              type="file"
+              accept=".csv"
+              onChange={handleFileSelect}
+            />
+          </FileInputContainer>
+        ) : (
+          <SelectedFile>
+            <FileName>📄 {selectedFile.name}</FileName>
+            <RemoveButton onClick={removeFile}>Remover</RemoveButton>
+          </SelectedFile>
+        )}
+        <UploadButton
+          onClick={handleUpload}
+          disabled={!selectedFile || loading}
         >
-          <FileLabel htmlFor="csvFile">
-            <FileText>Haz clic aquí o arrastra un archivo CSV</FileText>
-            <FileSubtext>Solo archivos .csv son permitidos</FileSubtext>
-          </FileLabel>
-          <FileInput
-            id="csvFile"
-            type="file"
-            accept=".csv"
-            onChange={handleFileSelect}
-          />
-        </FileInputContainer>
-      ) : (
-        <SelectedFile>
-          <FileName>📄 {selectedFile.name}</FileName>
-          <RemoveButton onClick={removeFile}>Remover</RemoveButton>
-        </SelectedFile>
-      )}
-      <UploadButton
-        onClick={handleUpload}
-        disabled={!selectedFile || loading}
-      >
-        {loading ? "Procesando..." : "Calificar Estudiantes"}
-      </UploadButton>
-      {resultado && (
-        <ResultadoContainer>
-          <ResultadoTitulo>Resultados de la carga</ResultadoTitulo>
-          {resultado.detalle_exitos && resultado.detalle_exitos.length > 0 && (
-            <ListaExitosa>
-              <SubTitulo>✅ Calificaciones exitosas ({resultado.detalle_exitos.length}):</SubTitulo>
-              {resultado.detalle_exitos.map((item, index) => (
-                <ListaItem key={`success-${index}`}>
-                  👤 {item}
-                </ListaItem>
-              ))}
-            </ListaExitosa>
-          )}
-          {resultado.detalle_errores && resultado.detalle_errores.length > 0 && (
-            <ListaErrores>
-              <SubTituloError>❌ Errores encontrados ({resultado.detalle_errores.length}):</SubTituloError>
-              {resultado.detalle_errores.map((error, index) => (
-                <ErrorItem key={`error-${index}`}>
-                  ⚠️ {error}
-                </ErrorItem>
-              ))}
-            </ListaErrores>
-          )}
-          <NuevoCargaButton onClick={limpiarResultados}>
-            Nueva Carga
-          </NuevoCargaButton>
-        </ResultadoContainer>
-      )}
-    </ContentWrapper>
+          {loading ? "Procesando..." : "Calificar Estudiantes"}
+        </UploadButton>
+        {resultado && (
+          <ResultadoContainer>
+            <ResultadoTitulo>Resultados de la carga</ResultadoTitulo>
+            {resultado.detalle_exitos && resultado.detalle_exitos.length > 0 && (
+              <ListaExitosa>
+                <SubTitulo>✅ Calificaciones exitosas ({resultado.detalle_exitos.length}):</SubTitulo>
+                {resultado.detalle_exitos.map((item, index) => (
+                  <ListaItem key={`success-${index}`}>
+                    👤 {item}
+                  </ListaItem>
+                ))}
+              </ListaExitosa>
+            )}
+            {resultado.detalle_errores && resultado.detalle_errores.length > 0 && (
+              <ListaErrores>
+                <SubTituloError>❌ Errores encontrados ({resultado.detalle_errores.length}):</SubTituloError>
+                {resultado.detalle_errores.map((error, index) => (
+                  <ErrorItem key={`error-${index}`}>
+                    ⚠️ {error}
+                  </ErrorItem>
+                ))}
+              </ListaErrores>
+            )}
+            <NuevoCargaButton onClick={limpiarResultados}>
+              Nueva Carga
+            </NuevoCargaButton>
+          </ResultadoContainer>
+        )}
+      </ContentWrapper>
     </Container>
   );
 };

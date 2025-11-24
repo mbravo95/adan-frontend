@@ -7,8 +7,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #9DCBD7;
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

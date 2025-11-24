@@ -3,6 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #fff;
@@ -218,6 +219,23 @@ const NuevoCargaButton = styled.button`
   }
 `;
 
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;
+
 const DesmatricularEstudianteCursoCsv = () => {
   const location = useLocation();
   const cursoActual = location.state?.cursoActual;
@@ -225,6 +243,7 @@ const DesmatricularEstudianteCursoCsv = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const navigate = useNavigate();
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -320,17 +339,25 @@ const DesmatricularEstudianteCursoCsv = () => {
     }
   };
 
+  const volverAParticipantes = () => {
+    navigate(`/curso/${cursoActual.codigo}/participantes`);
+  };
+
   return (
     <Container>
     <ContentWrapper>
+      <BackButton onClick={volverAParticipantes}>
+        ← Volver a participantes
+      </BackButton>
       <Title>Desmatricular Estudiantes desde CSV</Title>
       <InfoBox>
         <InfoTitle>Formato del archivo CSV</InfoTitle>
         <InfoText>
-          El archivo debe contener la columna: .<br />
+          El archivo debe contener la columna: correo.<br />
           La primera fila debe contener el nombre de la columna.<br /><br />
           Ejemplo:<br />
-
+          correo<br />
+          juan.perez@correo.com<br />
         </InfoText>
       </InfoBox>
       {!selectedFile ? (
