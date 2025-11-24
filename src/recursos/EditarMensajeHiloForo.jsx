@@ -5,58 +5,148 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useAuth from "../hooks/useAuth";
 
-const FormContainer = styled.div`
+const Container = styled.div`
+  background-color: #ffffffff;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 70px;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   max-width: 500px;
-  margin: 32px auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  padding: 32px 28px;
+`;
+
+const FormWrapper = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 10px;
 `;
 
 const Label = styled.label`
-  display: block;
+  font-size: 1em;
   font-weight: 500;
+  color: #333;
+  margin-left: 5px;
+  display: block;
   margin-bottom: 8px;
 `;
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 90px;
-  font-size: 1rem;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-bottom: 18px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: white;
+  color: #333;
   resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+  
+  &:focus {
+    outline: none;
+    border-color: #4C241D;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+  }
 `;
 
-const ButtonRow = styled.div`
+const ButtonGroup = styled.div`
   display: flex;
-  gap: 16px;
-  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
 `;
 
-const Boton = styled.button`
-  padding: 10px 22px;
-  background: #3182ce;
-  color: #fff;
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+`;
+
+const SaveButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
   &:hover {
-    background: #2563eb;
+    background-color: #3a1b16;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
   }
 `;
 
-const BotonCancelar = styled(Boton)`
-  background: #aaa;
+const CancelButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  
   &:hover {
-    background: #888;
+    background-color: #f8f8f8;
+    border-color: #bbb;
   }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 4px;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  padding: 20px;
 `;
 
 const EditarMensajeHiloForo = ({ onCancelar }) => {
@@ -151,30 +241,45 @@ const EditarMensajeHiloForo = ({ onCancelar }) => {
 
   if (loadingData) {
     return (
-      <FormContainer>
-        <div style={{ textAlign: 'center', color: '#666' }}>Cargando datos del mensaje...</div>
-      </FormContainer>
+      <Container>
+        <ContentWrapper>
+          <FormWrapper>
+            <LoadingMessage>Cargando datos del mensaje...</LoadingMessage>
+          </FormWrapper>
+        </ContentWrapper>
+      </Container>
     );
   }
 
   return (
-    <FormContainer>
-      <Label htmlFor="cuerpo">Mensaje</Label>
-      <TextArea
-        id="cuerpo"
-        value={cuerpo}
-        onChange={e => setCuerpo(e.target.value)}
-        placeholder="Escribe tu mensaje aquí..."
-        disabled={loading}
-      />
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      <ButtonRow>
-        <BotonCancelar type="button" onClick={handleCancelar} disabled={loading}>Cancelar</BotonCancelar>
-        <Boton type="button" onClick={handleEditar} disabled={loading || !cuerpo}>
-          {loading ? "Guardando..." : "Guardar cambios"}
-        </Boton>
-      </ButtonRow>
-    </FormContainer>
+    <Container>
+      <ContentWrapper>
+        <FormWrapper>
+          <Title>Editar Mensaje</Title>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <FormGroup>
+              {/*<Label htmlFor="cuerpo">Mensaje</Label>*/}
+              <TextArea
+                id="cuerpo"
+                value={cuerpo}
+                onChange={e => setCuerpo(e.target.value)}
+                placeholder="Escribe tu mensaje aquí..."
+                disabled={loading}
+              />
+            </FormGroup>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <ButtonGroup>
+              <CancelButton type="button" onClick={handleCancelar} disabled={loading}>
+                Cancelar
+              </CancelButton>
+              <SaveButton type="button" onClick={handleEditar} disabled={loading || !cuerpo}>
+                {loading ? "Guardando..." : "Actualizar"}
+              </SaveButton>
+            </ButtonGroup>
+          </form>
+        </FormWrapper>
+      </ContentWrapper>
+    </Container>
   );
 };
 

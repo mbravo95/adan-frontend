@@ -10,112 +10,93 @@ const PaginaTarea = () => {
   const [entregaAlumno, setEntregaAlumno] = useState(null);
   const [loadingEntrega, setLoadingEntrega] = useState(true);
 
-    const { codigo, tareaId } = useParams();
+  const { codigo, tareaId } = useParams();
 
-    const [tarea, setTarea] = useState({});
-    const [mostrarDatos, setMostrarDatos] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedFileName, setSelectedFileName] = useState(null);
+  const [tarea, setTarea] = useState({});
+  const [mostrarDatos, setMostrarDatos] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState(null);
   const [fechaEntrega, setFechaEntrega] = useState("");
   const [fechaLimite, setFechaLimite] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const { profile } = useAuth();
-    const navigate = useNavigate();
+  const { profile } = useAuth();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      const obtenerTarea = async () => {
-        try {
-          setLoading(true);
-          const urlBase = import.meta.env.VITE_BACKEND_URL;
-          const token = localStorage.getItem("token");
-          const config = {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-          };
-          const response = await axios.get(`${urlBase}/recursos/${tareaId}`, config);
-          setTarea(response.data);
-          // Set formatted start/end dates if available
-          if (response.data.fechaInicio) {
-            const dateInicio = new Date(response.data.fechaInicio);
-            setFechaInicio(new Intl.DateTimeFormat('es-ES', {
-              year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
-            }).format(dateInicio));
-          }
-          if (response.data.fechaFin) {
-            const dateFin = new Date(response.data.fechaFin);
-            setFechaLimite(new Intl.DateTimeFormat('es-ES', {
-              year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
-            }).format(dateFin));
-          }
-        } catch (error) {
-          console.error("Error al obtener los datos de la tarea:", error);
-          toast.error("Error al cargar la tarea", {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-        } finally {
-          setLoading(false);
+  useEffect(() => {
+    const obtenerTarea = async () => {
+      try {
+        setLoading(true);
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/recursos/${tareaId}`, config);
+        setTarea(response.data);
+        // Set formatted start/end dates if available
+        if (response.data.fechaInicio) {
+          const dateInicio = new Date(response.data.fechaInicio);
+          setFechaInicio(new Intl.DateTimeFormat('es-ES', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
+          }).format(dateInicio));
         }
-      };
+        if (response.data.fechaFin) {
+          const dateFin = new Date(response.data.fechaFin);
+          setFechaLimite(new Intl.DateTimeFormat('es-ES', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
+          }).format(dateFin));
+        }
+      } catch (error) {
+        console.error("Error al obtener los datos de la tarea:", error);
+        toast.error("Error al cargar la tarea");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      obtenerTarea();
-      // Obtener entrega del alumno actual
-      const obtenerEntregaAlumno = async () => {
-        try {
-          const urlBase = import.meta.env.VITE_BACKEND_URL;
-          const token = localStorage.getItem("token");
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const response = await axios.get(`${urlBase}/entregables/tareas/${tareaId}/entregas`, config);
+    obtenerTarea();
+    // Obtener entrega del alumno actual
+    const obtenerEntregaAlumno = async () => {
+      try {
+        const urlBase = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get(`${urlBase}/entregables/tareas/${tareaId}/entregas`, config);
 
-          if (Array.isArray(response.data)) {
-            const entrega = response.data.find(e => e.idAlumno === profile.id);
-            setEntregaAlumno(entrega || null);
-          } else {
-            setEntregaAlumno(null);
-          }
-        } catch (error) {
+        if (Array.isArray(response.data)) {
+          const entrega = response.data.find(e => e.idAlumno === profile.id);
+          setEntregaAlumno(entrega || null);
+        } else {
           setEntregaAlumno(null);
-        } finally {
-          setLoadingEntrega(false);
         }
-      };
-      obtenerEntregaAlumno();
-    }, []);
+      } catch (error) {
+        setEntregaAlumno(null);
+      } finally {
+        setLoadingEntrega(false);
+      }
+    };
+    obtenerEntregaAlumno();
+  }, []);
 
-
-    const handleConfirmarEntrega = async () => {
-        
+  const handleConfirmarEntrega = async () => {
     if (!selectedFile) {
-      toast.error("Debes seleccionar un archivo", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error("Debes seleccionar un archivo");
       return;
     }
 
     const formData = new FormData();
     formData.append('archivo', selectedFile);
 
-    // LOG para subir entrega
     console.log('[SUBIR ENTREGA] idTarea:', tareaId, 'idAlumno:', profile.id, 'Archivo:', selectedFileName);
 
     try {
@@ -130,15 +111,7 @@ const PaginaTarea = () => {
       const response = await axios.post(`${urlBase}/entregables/subir?idTarea=${tareaId}&idAlumno=${profile.id}`, formData, config);
       console.log('Respuesta del servidor:', response);
 
-      toast.success("Archivo subido con éxito", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success("Archivo subido con éxito");
       setSelectedFile(null);
       setSelectedFileName("");
       navigate(`/curso/${codigo}`);
@@ -148,195 +121,172 @@ const PaginaTarea = () => {
       if (error.response && error.response.data) {
         mensaje = error.response.data;
       }
-      toast.error(mensaje, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error(mensaje);
     }
 
     setMostrarDatos(false);
-    }
+  }
 
-    const handleCancelarEntrega = () => {
-        setMostrarDatos(false);
-        setSelectedFile(null);
-        setSelectedFileName("");
-    }
+  const handleCancelarEntrega = () => {
+    setMostrarDatos(false);
+    setSelectedFile(null);
+    setSelectedFileName("");
+  }
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-        setSelectedFileName(event.target.files[0].name);
-        setMostrarDatos(true);
-        const date = new Date(tarea.fechaFin);
-        const options = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',  
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false,
-        };
-        setFechaLimite(new Intl.DateTimeFormat('es-ES', options).format(date));
-        setFechaEntrega(new Intl.DateTimeFormat('es-ES', options).format(new Date()));
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+    setSelectedFileName(event.target.files[0].name);
+    setMostrarDatos(true);
+    const date = new Date(tarea.fechaFin);
+    const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     };
+    setFechaLimite(new Intl.DateTimeFormat('es-ES', options).format(date));
+    setFechaEntrega(new Intl.DateTimeFormat('es-ES', options).format(new Date()));
+  };
 
+  const volverAlCurso = () => {
+    navigate(`/curso/${codigo}`);
+  };
 
   return (
-    <>
-      <CentralContainer>
-        <Container>
-          {loading && <Spinner />}
-          {!loading &&
-            <ContentWrapper>
-                <Title>{tarea.nombre}</Title>
-                <Description>
-                  {tarea.descripcion}
-                </Description>
-                <DatesRow>
-                  <DateField>
-                    <strong>Fecha de inicio:</strong> {fechaInicio || "-"}
-                  </DateField>
-                  <DateField>
-                    <strong>Fecha de fin:</strong> {fechaLimite || "-"}
-                  </DateField>
-                </DatesRow>
+    <Container>
+      <ContentWrapper>
+        <Card>
+          {loading ? (
+            <LoadingContainer>
+              <Spinner />
+            </LoadingContainer>
+          ) : (
+            <>
+              <BackButton onClick={volverAlCurso}>
+                ← Volver al curso
+              </BackButton>
+              <Title>{tarea.nombre}</Title>
+              <Description>{tarea.descripcion}</Description>
+              
+              <DatesRow>
+                <DateField>
+                  <DateLabel>Fecha de inicio:</DateLabel>
+                  <DateValue>{fechaInicio || "-"}</DateValue>
+                </DateField>
+                <DateField>
+                  <DateLabel>Fecha de fin:</DateLabel>
+                  <DateValue>{fechaLimite || "-"}</DateValue>
+                </DateField>
+              </DatesRow>
 
-
-                {/* Mostrar detalles de la entrega si existe */}
-                {loadingEntrega ? (
+              {/* Mostrar detalles de la entrega si existe */}
+              {loadingEntrega ? (
+                <LoadingContainer>
                   <Spinner />
-                ) : entregaAlumno ? (
-                  <CardWrapper isVisible={true}>
-                    <ActionCard>
-                      <CardTitle>Tu entrega</CardTitle>
-                      <InfoField>
-                        <strong>Fecha de entrega:</strong> {entregaAlumno.fechaEntrega ? new Date(entregaAlumno.fechaEntrega).toLocaleString('es-ES') : "-"}
-                      </InfoField>
-                      <InfoField>
-                        <strong>Archivo:</strong> {entregaAlumno.urlEntregable ? entregaAlumno.urlEntregable.split('\\').pop() : "-"}
-                      </InfoField>
-                      {entregaAlumno.urlEntregable && (
-                        <ButtonContainer>
-                          <ConfirmButton
-                            onClick={() => {
-                              // Descargar archivo
-                              const urlBase = import.meta.env.VITE_BACKEND_URL;
-                              const token = localStorage.getItem("token");
-                              const downloadUrl = `${urlBase}/entregables/${tareaId}/entregas/${entregaAlumno.id}/descargar`;
-                              fetch(downloadUrl, {
-                                method: "GET",
-                                headers: {
-                                  "Authorization": `Bearer ${token}`,
-                                },
-                              })
-                                .then(response => response.blob())
-                                .then(blob => {
-                                  const filename = entregaAlumno.urlEntregable.split('\\').pop();
-                                  const link = document.createElement('a');
-                                  link.href = window.URL.createObjectURL(blob);
-                                  link.download = filename;
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                });
-                            }}
-                          >
-                            Descargar entrega
-                          </ConfirmButton>
-                        </ButtonContainer>
-                      )}
-                    </ActionCard>
-                  </CardWrapper>
-                ) : (
-                  !mostrarDatos && (
-                    <>
-                      <ActionButton htmlFor="subir-archivo">
-                            Subir solución
-                        </ActionButton>
-                        <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
-                    </>
-                  )
-                )}
+                </LoadingContainer>
+              ) : entregaAlumno ? (
+                <EntregaCard>
+                  <CardTitle>Tu entrega</CardTitle>
+                  <InfoField>
+                    <InfoLabel>Fecha de entrega:</InfoLabel> {entregaAlumno.fechaEntrega ? new Date(entregaAlumno.fechaEntrega).toLocaleString('es-ES') : "-"}
+                  </InfoField>
+                  <InfoField>
+                    <InfoLabel>Archivo:</InfoLabel> {entregaAlumno.urlEntregable ? entregaAlumno.urlEntregable.split('\\').pop() : "-"}
+                  </InfoField>
+                  {entregaAlumno.calificacion && (
+                    <InfoField>
+                      <InfoLabel>Calificación:</InfoLabel> {entregaAlumno.calificacion}
+                    </InfoField>
+                  )}
+                  {entregaAlumno.urlEntregable && (
+                    <ButtonGroup>
+                      <DownloadButton
+                        onClick={() => {
+                          const urlBase = import.meta.env.VITE_BACKEND_URL;
+                          const token = localStorage.getItem("token");
+                          const downloadUrl = `${urlBase}/entregables/${tareaId}/entregas/${entregaAlumno.id}/descargar`;
+                          fetch(downloadUrl, {
+                            method: "GET",
+                            headers: {
+                              "Authorization": `Bearer ${token}`,
+                            },
+                          })
+                            .then(response => response.blob())
+                            .then(blob => {
+                              const filename = entregaAlumno.urlEntregable.split('\\').pop();
+                              const link = document.createElement('a');
+                              link.href = window.URL.createObjectURL(blob);
+                              link.download = filename;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            });
+                        }}
+                      >
+                        Descargar entrega
+                      </DownloadButton>
+                    </ButtonGroup>
+                  )}
+                </EntregaCard>
+              ) : (
+                !mostrarDatos && (
+                  <>
+                    <UploadButton htmlFor="subir-archivo">
+                      Subir solución
+                    </UploadButton>
+                    <HiddenFileInput id="subir-archivo" type="file" onChange={handleFileChange} />
+                  </>
+                )
+              )}
 
-                <CardWrapper isVisible={mostrarDatos}>
-                <ActionCard>
-                    <CardTitle>Confirmar Información</CardTitle>
-
-                    <InfoField>Nombre del Archivo: {selectedFileName}</InfoField>
-                    <InfoField>Fecha límite: {fechaLimite}</InfoField>
-                    <InfoField>Fecha subida: {fechaEntrega}</InfoField>
-
-                    <ButtonContainer>
-                    <ConfirmButton onClick={handleConfirmarEntrega}>Confirmar entrega</ConfirmButton>
-                    <CancelCardButton onClick={handleCancelarEntrega}>Cancelar entrega</CancelCardButton>
-                    </ButtonContainer>
-                </ActionCard>
-                </CardWrapper>
-
-            </ContentWrapper>
-          }
-        </Container>
-      </CentralContainer>
-    </>
-  )
+              {mostrarDatos && (
+                <ConfirmCard>
+                  <CardTitle>Confirmar Información</CardTitle>
+                  <InfoField>
+                    <InfoLabel>Nombre del Archivo:</InfoLabel> {selectedFileName}
+                  </InfoField>
+                  <InfoField>
+                    <InfoLabel>Fecha límite:</InfoLabel> {fechaLimite}
+                  </InfoField>
+                  <InfoField>
+                    <InfoLabel>Fecha subida:</InfoLabel> {fechaEntrega}
+                  </InfoField>
+                  <ButtonGroup>
+                    <CancelButton onClick={handleCancelarEntrega}>
+                      Cancelar
+                    </CancelButton>
+                    <ConfirmButton onClick={handleConfirmarEntrega}>
+                      Confirmar entrega
+                    </ConfirmButton>
+                  </ButtonGroup>
+                </ConfirmCard>
+              )}
+            </>
+          )}
+        </Card>
+      </ContentWrapper>
+    </Container>
+  );
 }
 
 export default PaginaTarea;
-
-
-const BackgroundColor = '#a7d9ed';
-const ButtonPrimaryColor = '#5a2e2e';
-const ButtonSecondaryColor = '#d0e0e0';
-const InputBackground = '#ffffff';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-
-
-const CentralContainer = styled.div`
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-`;
-
 const Container = styled.div`
+  background-color: #ffffffff;
+  min-height: 100vh;
   width: 100%;
-  max-width: 600px;
-  min-height: 500px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-`;
-const DatesRow = styled.div`
-  display: flex;
-  gap: 30px;
-  justify-content: center;
-  margin-bottom: 10px;
-`;
-
-const DateField = styled.div`
-  font-size: 1.1em;
-  color: #444;
-  background: #eaf6fa;
-  padding: 10px 18px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  padding-top: 70px;
 `;
 
 const ContentWrapper = styled.div`
@@ -344,123 +294,195 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 500px;
-  gap: 20px;
+  max-width: 700px;
+  padding: 0 20px;
+`;
+
+const Card = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  position: relative;
+`;
+
+const BackButton = styled.button`
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
 `;
 
 const Title = styled.h1`
-  font-size: 2.5em;
   color: #333;
-  letter-spacing: 1px;
-  font-weight: 800;
-  margin: 0;
+  font-size: 28px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-weight: 600;
 `;
 
 const Description = styled.p`
   text-align: center;
-  font-size: 1.1em;
-  color: #555;
-  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
   line-height: 1.5;
 `;
 
-const ActionButton = styled.label`
-  display: inline-block;
-  padding: 18px 35px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.5em;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: ${ButtonPrimaryColor};
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
-  text-align: center;
-
-  &:hover {
-    background-color: #4b2525;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-  }
+const DatesRow = styled.div`
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
 `;
 
-
-const CardWrapper = styled.div`
-  max-height: ${props => (props.isVisible ? '500px' : '0')}; 
-  opacity: ${props => (props.isVisible ? '1' : '0')};
-  overflow: hidden;
-  transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
-  width: 100%;
-
-  ${props => props.isVisible && css`
-    animation: ${fadeIn} 0.3s ease-out;
-  `}
-`;
-
-const ActionCard = styled.div`
-  background-color: ${InputBackground};
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+const DateField = styled.div`
+  background: #fafafa;
+  border: 1px solid #ddd;
+  padding: 12px 20px;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 4px;
 `;
+
+const DateLabel = styled.span`
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const DateValue = styled.span`
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+`;
+
+const EntregaCard = styled.div`
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 24px;
+  margin-top: 16px;
+  animation: ${fadeIn} 0.3s ease-out;
+`;
+
+const ConfirmCard = styled(EntregaCard)``;
 
 const CardTitle = styled.h2`
-  font-size: 1.5em;
+  font-size: 20px;
   color: #333;
-  margin: 0 0 10px 0;
-  text-align: center;
+  margin: 0 0 20px 0;
+  font-weight: 600;
 `;
-
 
 const InfoField = styled.div`
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  background-color: #f8f8f8;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f5f5f5;
   color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  word-wrap: break-word; 
-`;
-
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-`;
-
-const CardButtonBase = styled.button`
-  flex-grow: 1;
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1em;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s;
-`;
-
-const ConfirmButton = styled(CardButtonBase)`
-  background-color: ${ButtonPrimaryColor};
-  color: white;
-
-  &:hover {
-    background-color: #4b2525;
+  margin-bottom: 12px;
+  word-wrap: break-word;
+  
+  &:last-of-type {
+    margin-bottom: 0;
   }
 `;
 
-const CancelCardButton = styled(CardButtonBase)`
-  background-color: ${ButtonSecondaryColor};
+const InfoLabel = styled.strong`
+  font-weight: 600;
   color: #333;
+`;
 
+const UploadButton = styled.label`
+  display: block;
+  margin: 24px auto 0 auto;
+  padding: 14px 20px;
+  background-color: #4C241D;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  
   &:hover {
-    background-color: #c0d0d0;
+    background-color: #3a1b16;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+`;
+
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+`;
+
+const ConfirmButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  
+  &:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+  }
+`;
+
+const DownloadButton = styled(Button)`
+  background-color: #4C241D;
+  color: white;
+  
+  &:hover {
+    background-color: #3a1b16;
   }
 `;
 

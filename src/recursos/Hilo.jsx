@@ -7,59 +7,65 @@ import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const MainContainer = styled.div`
-	height: 100vh;
-	overflow: hidden;
+const Container = styled.div`
+	background-color: #ffffffff;
+	min-height: 100vh;
+	width: 100%;
+	box-sizing: border-box;
 	display: flex;
-	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	padding-top: 90px;
+	padding-bottom: 20px;
 `;
 
-const Container = styled.div`
-	flex: 1;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-	scroll-behavior: smooth;
-	padding: 20px 16px;
-	max-width: 1000px;
-	margin: 0 auto;
+const ContentWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	width: 100%;
+	max-width: 900px;
+	padding: 0 20px;
 `;
 
 const Card = styled.div`
-	background: #e2e2e2ff;
-	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-	padding: 32px 28px;
+	background-color: white;
+	border-radius: 10px;
+	padding: 40px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e0e0e0;
+	width: 100%;
 `;
 
 const Title = styled.h2`
-	font-size: 3rem;
+	color: #333;
+	font-size: 28px;
+	margin-bottom: 20px;
+	text-align: center;
 	font-weight: 600;
-	margin-bottom: 18px;
-	color: #2d3748;
 `;
 
 const MessageList = styled.div`
-	margin-top: 18px;
+	margin-top: 20px;
 `;
 
 const Meta = styled.div`
-  font-size: 0.85rem;
-  color: #888;
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid #e0e6ed;
-  z-index: 1;
+	font-size: 0.85rem;
+	color: #888;
+	position: absolute;
+	bottom: 8px;
+	right: 12px;
+	background: rgba(255, 255, 255, 0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	border: 1px solid #e0e6ed;
+	z-index: 1;
 `;
 
 const MessageItem = styled.div`
 	background: #fafafa;
-	border: 1px solid #e0e6ed;
-	border-radius: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
 	padding: 24px;
 	margin-bottom: 16px;
 	display: flex;
@@ -68,100 +74,124 @@ const MessageItem = styled.div`
 	transform: translateZ(0);
 	contain: layout;
 	min-height: 80px;
-`;const ContenidoMensaje = styled.div`
-  flex: 1;
-  min-width: 0; /* Evitar flex shrink issues */
-  padding-bottom: 25px; /* Espacio para la fecha */
+	transition: all 0.3s ease;
+	
+	&:hover {
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+	}
+`;
+
+const ContenidoMensaje = styled.div`
+	flex: 1;
+	min-width: 0;
+	padding-bottom: 25px;
 `;
 
 const MensajeOriginal = styled.div`
-  background: #f0f0f0;
-  border-left: 3px solid #ccc;
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-  color: #666;
-  border-radius: 4px;
-  
-  &::before {
-    content: "En respuesta a:";
-    display: block;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #999;
-    margin-bottom: 4px;
-  }
+	background: #f0f0f0;
+	border-left: 3px solid #ccc;
+	padding: 8px 12px;
+	margin-bottom: 12px;
+	font-size: 0.9rem;
+	color: #666;
+	border-radius: 4px;
+	
+	&::before {
+		content: "En respuesta a:";
+		display: block;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: #999;
+		margin-bottom: 4px;
+	}
 `;
 
 const BotonesAccion = styled.div`
-  display: flex;
-  gap: 8px;
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  
-  span {
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    
-    &:hover {
-      background-color: rgba(0,0,0,0.1);
-    }
-  }
+	display: flex;
+	gap: 8px;
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	
+	span {
+		font-size: 16px;
+		cursor: pointer;
+		padding: 4px;
+		border-radius: 4px;
+		transition: background-color 0.2s;
+		
+		&:hover {
+			background-color: rgba(0,0,0,0.1);
+		}
+	}
 `;
-
-
 
 const BotonPublicar = styled.button`
 	display: block;
-	margin: 28px auto 0 auto;
-	padding: 10px 22px;
-	background: #3182ce;
-	color: #fff;
+	margin: 0 auto 28px auto;
+	padding: 14px 20px;
+	background-color: #4C241D;
+	color: white;
 	border: none;
-	border-radius: 6px;
-	font-size: 1rem;
-	font-weight: 500;
+	border-radius: 4px;
+	font-size: 16px;
+	font-weight: 600;
 	cursor: pointer;
-	transition: background 0.2s;
+	transition: all 0.3s ease;
+	
 	&:hover {
-		background: #2563eb;
+		background-color: #3a1b16;
 	}
 `;
 
 const CuerpoMensaje = styled.div`
 	font-size: 1rem;
+	color: #333;
 `;
 
 const FotoPerfil = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-bottom: 8px;
-  background-color: #f0f0f0;
-  border: 2px solid #e2e8f0;
+	width: 64px;
+	height: 64px;
+	border-radius: 8px;
+	object-fit: cover;
+	margin-bottom: 8px;
+	background-color: #f0f0f0;
+	border: 2px solid #e2e8f0;
 `;
 
 const InfoAutor = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: 16px;
-  width: 120px;
-  min-width: 120px;
-  flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-right: 16px;
+	width: 120px;
+	min-width: 120px;
+	flex-shrink: 0;
 `;
 
 const SeparadorAutor = styled.div`
-  width: 1px;
-  background: #e2e8f0;
-  align-self: stretch;
-  margin: 0 24px;
+	width: 1px;
+	background: #e2e8f0;
+	align-self: stretch;
+	margin: 0 24px;
+`;
+
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
 `;
 
 const Hilo = () => {
@@ -311,6 +341,10 @@ const Hilo = () => {
 		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoId}/hilo/${hiloId}/editar-mensaje/${idMensaje}`);
 	}
 
+	const volverAlForo = () => {
+		navigate(`/curso/${codigo}/foro/${recursoId}`);
+	};
+
 	function renderMensaje(msg) {
 		let fotoPerfil = fotosAutores[msg.idAutor] || null;
 		let finalUrl = '/default-profile.png';
@@ -325,10 +359,9 @@ const Hilo = () => {
 		return (
 			<MessageItem key={msg.id}>
 				<InfoAutor>
-					<img
+					<FotoPerfil
 						src={finalUrl}
 						alt="Foto de perfil"
-						style={{ width: "64px", height: "64px", objectFit: "cover", marginBottom: "8px" }}
 					/>
 					<span style={{ 
 						fontWeight: 600, 
@@ -341,15 +374,15 @@ const Hilo = () => {
 					</span>
 				</InfoAutor>
 				<SeparadorAutor />
-			<ContenidoMensaje>
-				{msg.mensajeOriginal && (
-					<MensajeOriginal>
-						{msg.mensajeOriginal}
-					</MensajeOriginal>
-				)}
-				<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
-			</ContenidoMensaje>
-			<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
+				<ContenidoMensaje>
+					{msg.mensajeOriginal && (
+						<MensajeOriginal>
+							{msg.mensajeOriginal}
+						</MensajeOriginal>
+					)}
+					<CuerpoMensaje>{msg.cuerpo}</CuerpoMensaje>
+				</ContenidoMensaje>
+				<Meta>{formatFecha(msg.fechaMensaje)}</Meta>
 				<BotonesAccion>
 					{msg.cuerpo !== "{Mensaje Eliminado}" && (
 						<span
@@ -393,44 +426,47 @@ const Hilo = () => {
 	}
 
 	return (
-		<MainContainer>
-			<Container>
+		<Container>
+			<ContentWrapper>
 				<Card>
-				<Title>{titulo}</Title>
-				<BotonPublicar onClick={() => irAPublicarMensaje(recursoId, hiloId)}>
-					Publicar nuevo mensaje
-				</BotonPublicar>
-				{loading ? (
-					<div style={{ textAlign: 'center', color: '#666', fontSize: '16px', margin: '30px 0' }}>Cargando mensajes...</div>
-				) : error ? (
-					<div style={{ color: 'red', textAlign: 'center', margin: '30px 0' }}>{error}</div>
-				) : (
-					<MessageList 
-						onScroll={(e) => {
-							const { scrollTop, scrollHeight, clientHeight } = e.target;
-							// Cargar más mensajes cuando se acerca al final
-							if (scrollHeight - scrollTop <= clientHeight + 100 && mensajesVisibles < mensajes.length) {
-								setMensajesVisibles(prev => Math.min(prev + 5, mensajes.length));
-							}
-						}}
-					>
-						{mensajes.length === 0 ? (
-							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay mensajes en este hilo.</div>
-						) : (
-							<>
-								{mensajes.slice(0, mensajesVisibles).map((msg) => renderMensaje(msg))}
-								{mensajesVisibles < mensajes.length && (
-									<div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-										Cargando más mensajes... ({mensajesVisibles} de {mensajes.length})
-									</div>
-								)}
-							</>
-						)}
-					</MessageList>
-				)}
-			</Card>
+					<BackButton onClick={volverAlForo}>
+						← Volver al foro
+					</BackButton>
+					<Title>{titulo}</Title>
+					<BotonPublicar onClick={() => irAPublicarMensaje(recursoId, hiloId)}>
+						Publicar nuevo mensaje
+					</BotonPublicar>
+					{loading ? (
+						<div style={{ textAlign: 'center', color: '#666', fontSize: '16px', margin: '30px 0' }}>Cargando mensajes...</div>
+					) : error ? (
+						<div style={{ color: 'red', textAlign: 'center', margin: '30px 0' }}>{error}</div>
+					) : (
+						<MessageList 
+							onScroll={(e) => {
+								const { scrollTop, scrollHeight, clientHeight } = e.target;
+								// Cargar más mensajes cuando se acerca al final
+								if (scrollHeight - scrollTop <= clientHeight + 100 && mensajesVisibles < mensajes.length) {
+									setMensajesVisibles(prev => Math.min(prev + 5, mensajes.length));
+								}
+							}}
+						>
+							{mensajes.length === 0 ? (
+								<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay mensajes en este hilo.</div>
+							) : (
+								<>
+									{mensajes.slice(0, mensajesVisibles).map((msg) => renderMensaje(msg))}
+									{mensajesVisibles < mensajes.length && (
+										<div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+											Cargando más mensajes... ({mensajesVisibles} de {mensajes.length})
+										</div>
+									)}
+								</>
+							)}
+						</MessageList>
+					)}
+				</Card>
+			</ContentWrapper>
 		</Container>
-		</MainContainer>
 	);
 }
 

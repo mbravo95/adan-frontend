@@ -7,78 +7,153 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const Container = styled.div`
-		background-color: white;
-		width: 100vw;
-		min-height: calc(100vh - 60px);
-		margin-top: 60px;
-		display: flex;
-		justify-content: center;
-		align-items: flex-start;
-		box-sizing: border-box;
-		max-width: 1400px;
-		margin-left: auto;
-		margin-right: auto;
+	background-color: #ffffffff;
+	min-height: 100vh;
+	width: 100%;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding-top: 90px;
+	padding-bottom: 20px;
+`;
+
+const ContentWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 900px;
+	padding: 0 20px;
 `;
 
 const Card = styled.div`
-		background: #f8f9fa;
-		border-radius: 12px;
-		box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-		padding: 32px 40px;
-		margin-top: 40px;
-		min-width: 400px;
-		max-width: 1000px;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+	background-color: white;
+	border-radius: 10px;
+	padding: 40px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e0e0e0;
+	width: 100%;
 `;
 
 const Title = styled.h1`
-	font-size: 2.2em;
-	color: #222;
-	margin-bottom: 32px;
-	font-family: 'Inter', sans-serif;
-	font-weight: 800;
+	color: #333;
+	font-size: 28px;
+	margin-bottom: 24px;
+	text-align: center;
+	font-weight: 600;
+`;
+
+const NewThreadButton = styled.button`
+	display: block;
+	margin: 0 auto 28px auto;
+	padding: 14px 20px;
+	background-color: #4C241D;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	
+	&:hover {
+		background-color: #3a1b16;
+	}
 `;
 
 const ThreadsList = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: 16px;
 	width: 100%;
-	margin-bottom: 32px;
 `;
 
 const ThreadCard = styled.div`
-	background: #fff;
-	border-radius: 10px;
-	padding: 18px 24px;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-	color: #222;
-	font-size: 1.1em;
+	background: #fafafa;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 20px 24px;
 	display: flex;
 	flex-direction: column;
-	border: 1px solid #e0e0e0;
-`;
-
-const NewThreadButton = styled.button`
-	background: #5a2e2e;
-	color: #fff;
-	border: none;
-	border-radius: 8px;
-	padding: 14px 32px;
-	font-size: 1.1em;
-	font-weight: bold;
+	position: relative;
 	cursor: pointer;
-	margin-bottom: 10px;
-	margin-top: 10px;
-	transition: background 0.2s;
+	transition: all 0.3s ease;
+	
 	&:hover {
-		background: #4b2525;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 	}
 `;
 
+const ThreadTitle = styled.strong`
+	font-size: 1.1em;
+	color: #333;
+	margin-bottom: 8px;
+	font-weight: 600;
+`;
+
+const ThreadMeta = styled.span`
+	color: #888;
+	font-size: 0.9em;
+	display: block;
+`;
+
+const DeleteButton = styled.span`
+	position: absolute;
+	right: 12px;
+	top: 12px;
+	color: #ff0000;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	transition: background-color 0.2s;
+	
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+`;
+
+const LoadingMessage = styled.div`
+	text-align: center;
+	color: #666;
+	font-size: 16px;
+	margin: 30px 0;
+`;
+
+const ErrorMessage = styled.div`
+	color: #e53e3e;
+	text-align: center;
+	margin: 30px 0;
+	padding: 12px;
+	background-color: #fff5f5;
+	border: 1px solid #feb2b2;
+	border-radius: 4px;
+`;
+
+const EmptyMessage = styled.div`
+	color: #999;
+	text-align: center;
+	font-size: 15px;
+	margin: 20px 0;
+`;
+
+const BackButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  
+  &:hover {
+    background-color: #d0d0d0;
+  }
+`;
 
 const Foro = () => {
 	// Cuenta mensajes y respuestas anidadas
@@ -93,6 +168,7 @@ const Foro = () => {
 		}
 		return total;
 	}
+	
 	const { seccion, codigo } = useParams();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -132,7 +208,12 @@ const Foro = () => {
 	const irAHilo = (hiloId) => {
 		navigate(`/curso/${codigo}/seccion/${seccion}/foro/${recursoid}/hilo/${hiloId}`);
 	}
+	
 	const eliminarHilo = async (hiloId) => {
+		if (!confirm('¿Estás seguro de que deseas eliminar este hilo?')) {
+			return;
+		}
+		
 		try {
 			const urlBase = import.meta.env.VITE_BACKEND_URL;
 			const token = localStorage.getItem("token");
@@ -155,53 +236,64 @@ const Foro = () => {
 		}
 	};
 
+	const volverAlCurso = () => {
+		navigate(`/curso/${codigo}`);
+	};
+
 	return (
 		<Container>
-			<Card>
-				<Title>{nombreForo}</Title>
-				<NewThreadButton onClick={handleCrearNuevoHilo}>Crear nuevo hilo</NewThreadButton>
-				{loading ? (
-					<div style={{ textAlign: 'center', color: '#666', fontSize: '16px', margin: '30px 0' }}>Cargando hilos...</div>
-				) : error ? (
-					<div style={{ color: 'red', textAlign: 'center', margin: '30px 0' }}>{error}</div>
-				) : (
-					<ThreadsList>
-						{hilos.length === 0 ? (
-							<div style={{ color: '#999', textAlign: 'center', fontSize: '15px', margin: '20px 0' }}>No hay hilos en este foro.</div>
-						) : (
-											hilos.map((hilo) => (
-																<ThreadCard key={hilo.id} style={{ cursor: 'pointer', position: 'relative' }}>
-																	<strong style={{ fontSize: '1.15em', color: '#222', marginBottom: '6px' }} onClick={() => irAHilo(hilo.id)}>{hilo.titulo}</strong>
-																						{hilo.mensajes && hilo.mensajes.length > 0 && (
-																							<span style={{ color: '#888', fontSize: '0.95em', marginBottom: '6px', display: 'block' }}>
-																								{(() => {
-																									const d = new Date(hilo.mensajes[0].fechaMensaje);
-																									const fecha = isNaN(d) ? '' : d.toLocaleString('es-ES', {
-																										day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-																									});
-																									const cantidad = contarMensajesRecursivo(hilo.mensajes);
-																									return `${fecha} · ${cantidad} mensaje${cantidad === 1 ? '' : 's'}`;
-																								})()}
-																							</span>
-																						)}
-																	{puedeAdministrarCursos(location.pathname) && (
-																		<span
-																			title="Eliminar hilo"
-																			style={{ position: 'absolute', right: 12, top: 12, color: '#ff0000', fontSize: '18px', cursor: 'pointer' }}
-																			onClick={e => {
-																				e.stopPropagation();
-																				eliminarHilo(hilo.id);
-																			}}
-																		>
-																			❌
-																		</span>
-																	)}
-																</ThreadCard>
-											))
-						)}
-					</ThreadsList>
-				)}
-			</Card>
+
+			<ContentWrapper>
+				<Card>
+					<BackButton onClick={volverAlCurso}>
+						← Volver al curso
+					</BackButton>
+					<Title>{nombreForo}</Title>
+					<NewThreadButton onClick={handleCrearNuevoHilo}>
+						Crear nuevo hilo
+					</NewThreadButton>
+					{loading ? (
+						<LoadingMessage>Cargando hilos...</LoadingMessage>
+					) : error ? (
+						<ErrorMessage>{error}</ErrorMessage>
+					) : (
+						<ThreadsList>
+							{hilos.length === 0 ? (
+								<EmptyMessage>No hay hilos en este foro.</EmptyMessage>
+							) : (
+								hilos.map((hilo) => (
+									<ThreadCard key={hilo.id} onClick={() => irAHilo(hilo.id)}>
+										<ThreadTitle>{hilo.titulo}</ThreadTitle>
+										{hilo.mensajes && hilo.mensajes.length > 0 && (
+											<ThreadMeta>
+												{(() => {
+													const d = new Date(hilo.mensajes[0].fechaMensaje);
+													const fecha = isNaN(d) ? '' : d.toLocaleString('es-ES', {
+														day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+													});
+													const cantidad = contarMensajesRecursivo(hilo.mensajes);
+													return `${fecha} · ${cantidad} mensaje${cantidad === 1 ? '' : 's'}`;
+												})()}
+											</ThreadMeta>
+										)}
+										{puedeAdministrarCursos(location.pathname) && (
+											<DeleteButton
+												title="Eliminar hilo"
+												onClick={e => {
+													e.stopPropagation();
+													eliminarHilo(hilo.id);
+												}}
+											>
+												❌
+											</DeleteButton>
+										)}
+									</ThreadCard>
+								))
+							)}
+						</ThreadsList>
+					)}
+				</Card>
+			</ContentWrapper>
 		</Container>
 	);
 };
