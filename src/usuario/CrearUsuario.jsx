@@ -113,7 +113,7 @@ const CrearUsuario = () => {
               <CreateButton onClick={() => crear()}>
                 Crear Usuario
               </CreateButton>
-              <CancelButton onClick={() => navigate('/curso')}>
+              <CancelButton onClick={() => navigate('/home')}>
                 Cancelar
               </CancelButton>
             </ButtonGroup>
