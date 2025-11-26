@@ -55,7 +55,7 @@ const HomeCurso = () => {
   }, [rol]);
 
   const irCrearCurso = () => {
-    navigate('/cursos/crear');
+    navigate('/crear-curso');
   };
 
   const irEditarCurso = (curso) => {

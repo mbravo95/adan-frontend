@@ -79,7 +79,7 @@ const CrearCurso = () => {
   };
 
   const cancelar = () => {
-    navigate('/admin-cursos');
+    navigate('/home');
   };
 
   if (rol !== "ADMINISTRADOR") {
