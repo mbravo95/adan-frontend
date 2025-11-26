@@ -28,23 +28,30 @@ const CalificacionPerfilEstudiante = () => {
           }
         });
         setEstudiante(estudianteResp.data);
-        // el get de calificaciones
-        /*const calificacionResp = await axios.get(`${urlBase}`, {
+
+        // calificaciones del estudiante
+        const calificacionResp = await axios.get(
+          `${urlBase}/calificaciones/usuario/${estudianteId}/cursos`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const cursoResp = await axios.get(`${urlBase}/cursos/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
-        setCalificacion(calificacionResp.data);*/
 
-          const cursoResp = await axios.get(`${urlBase}/cursos/${id}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
+        setCodigoCurso(cursoResp.data.codigo);
 
-          setCodigoCurso(cursoResp.data.codigo);
+        // filtrar calificación del curso actual
+        const calCurso = calificacionResp.data.find(
+          c => String(c.curso) === String(cursoResp.data.codigo)
+        );
+
+        setCalificacion(calCurso || null);
+
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -141,7 +148,12 @@ const CalificacionPerfilEstudiante = () => {
 
           {puedeAdministrarCursos(location.pathname) && (
             <CalificacionContainer>
-              <Subtitle>Calificación en el curso:</Subtitle>
+              <Subtitle>
+                Calificación en el curso: 
+                <CalificacionValue $disponible={calificacion?.calificacionFinal !== null && calificacion?.calificacionFinal !== undefined}>
+                  {calificacion?.calificacionFinal ?? "Sin calificar"}
+                </CalificacionValue>
+              </Subtitle>
             </CalificacionContainer>
           )}
           
@@ -205,6 +217,15 @@ const Subtitle = styled.h3`
   font-size: 18px;
   margin: 0;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const CalificacionValue = styled.span`
+  font-weight: 700;
+  color: #4C241D;
+  font-size: ${props => props.$disponible ? '22px' : '18px'};
 `;
 
 const CalificacionContainer = styled.div`
