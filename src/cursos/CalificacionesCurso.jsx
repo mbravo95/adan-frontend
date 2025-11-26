@@ -69,7 +69,7 @@ const CalificacionesCurso = () => {
                     
                     return {
                         id: index,
-                        nombreCurso: curso.curso,
+                        nombreCurso: curso.nombreCurso,
                         calificacionCurso: curso.calificacionFinal,
                         fechaCalificado: curso.fechaCalificacion,
                         entregables: entregablesPorCurso[cursoId] || [] 
@@ -105,7 +105,7 @@ const CalificacionesCurso = () => {
                         <Tabla>
                             <TablaHeader>
                                 <tr>
-                                    <th style={{ width: '60%' }}>Ítem de Calificación</th>
+                                    <th style={{ width: '60%' }}>Curso</th>
                                     <th style={{ width: '20%' }}>Calificación</th>
                                     <th style={{ width: '20%' }}>Fecha de Calificación</th>
                                 </tr>
