@@ -138,7 +138,12 @@ const ListadoCursos = () => {
         <FilterWrapper $isvisible={isFilterVisible}>
           <SecondaryControls>
             <FilterInputWrapper>
-              <FilterInput placeholder="Filtrar cursos..." onChange={(e) => setBusqueda(e.target.value)} value={busqueda} />
+              <FilterInput 
+                placeholder="Filtrar cursos..." 
+                onChange={(e) => setBusqueda(e.target.value)} 
+                value={busqueda}
+                onKeyDown={(e) => e.key === 'Enter' && filtrarCursos()}
+              />
             </FilterInputWrapper>
             <SearchButton onClick={() => filtrarCursos()}> 
               <SearchIconSVGBlanco /> Buscar

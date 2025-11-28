@@ -120,13 +120,15 @@ const Login = () => {
             type="email" 
             placeholder="adan@email.com" 
             value={mail}
-            onChange={(e) => setMail(e.target.value)} 
+            onChange={(e) => setMail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
           />
           <Input 
             type="password" 
             placeholder="*******************" 
             value={password}
-            onChange={(e) => setPassword(e.target.value)} 
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
           />
           <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
           <SeparatorContainer>
