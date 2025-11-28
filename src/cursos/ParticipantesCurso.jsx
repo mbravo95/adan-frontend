@@ -156,6 +156,7 @@ const ParticipantesCurso = () => {
     }
   );
   const [participantes, setParticipantes] = useState([]);
+  const [profesores, setProfesores] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -204,9 +205,12 @@ const ParticipantesCurso = () => {
             }
           });
           const estudiantes = participantesResponse.data.estudiantes || [];
+          const profesores = participantesResponse.data.profesores || [];
           setParticipantes(estudiantes);
+          setProfesores(profesores);
         } else {
           setParticipantes([]);
+          setProfesores([]);
         }
       } catch (error) {
         console.error("Error al obtener datos:", error);
@@ -285,7 +289,33 @@ const ParticipantesCurso = () => {
       </Header>
 
       <ParticipantsSection>
-        <SectionTitle>Participantes:</SectionTitle>
+
+        <SectionTitle>Profesores:</SectionTitle>
+        
+        {loading ? (
+          <PlaceholderMessage>
+            Cargando profesores...
+          </PlaceholderMessage>
+        ) : profesores.length > 0 ? (
+          <ParticipantsGrid>
+            {profesores.map((profesor) => (
+              <ParticipantCard key={profesor.id}>
+                <ParticipantName
+                  style={{ cursor: 'default', textDecoration: 'underline' }}
+                >
+                  {profesor.nombres} {profesor.apellidos}
+                </ParticipantName>
+                <ParticipantEmail>{profesor.correo}</ParticipantEmail>
+              </ParticipantCard>
+            ))}
+          </ParticipantsGrid>
+        ) : (
+          <PlaceholderMessage>
+            <h3>No hay profesores</h3>
+          </PlaceholderMessage>
+        )}
+
+        <SectionTitle>Estudiantes:</SectionTitle>
         
         {loading ? (
           <PlaceholderMessage>
@@ -296,8 +326,14 @@ const ParticipantesCurso = () => {
             {participantes.map((participante) => (
               <ParticipantCard key={participante.id}>
                 <ParticipantName
-                  style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => navigate(`/curso/${cursoActual.id}/estudiante/${participante.id}/calificacion`)}
+                  style={{
+                    cursor: puedeAdministrarCursos(location.pathname) ? "pointer" : "default",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => {
+                    if (!puedeAdministrarCursos(location.pathname)) return;
+                    navigate(`/curso/${cursoActual.id}/estudiante/${participante.id}/calificacion`);
+                  }}
                 >
                   {participante.nombres} {participante.apellidos}
                 </ParticipantName>
