@@ -142,6 +142,7 @@ const Busqueda = () => {
                         placeholder="Filtrar usuarios..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
                     />
                     <SearchButton onClick={handleSearchClick}>
                         <SearchIconSVG /> Buscar

@@ -81,6 +81,7 @@ const ScrollWrapper = styled.div`
     display: flex;
     justify-content: center;
     padding: 20px;
+    margin-bottom: 10px;
 `;
 
 const ContentWrapper = styled.div`

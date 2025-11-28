@@ -12,6 +12,8 @@ const HomeCurso = () => {
   const navigate = useNavigate();
   
   const [cursos, setCursos] = useState([]);
+  const [cursosFiltrados, setCursosFiltrados] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
@@ -40,6 +42,7 @@ const HomeCurso = () => {
 
         console.log("Cursos obtenidos:", response.data);
         setCursos(response.data || []);
+        setCursosFiltrados(response.data || []);
         
       } catch (error) {
         console.error("Error al obtener cursos:", error);
@@ -53,6 +56,38 @@ const HomeCurso = () => {
       obtenerCursos();
     }
   }, [rol]);
+
+  const filtrarCursos = async () => {
+    if(busqueda === ""){
+      setCursosFiltrados(cursos);
+      return;
+    }
+    const texto = busqueda.toLowerCase();
+    const urlBase = import.meta.env.VITE_BACKEND_URL;
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    try {
+      setLoading(true);
+      const response = await axios.get(`${urlBase}/cursos/buscar?texto=${texto}`, config);
+      const cursosRetornados = response.data;
+      setCursosFiltrados(cursos.filter(curso => cursosRetornados.some(cursoRet => cursoRet.id === curso.id))); 
+    } catch (error) {
+      console.log(error);
+      setCursosFiltrados([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const resetearBusqueda = () => {
+    setBusqueda("");
+    setCursosFiltrados(cursos);
+  }
 
   const irCrearCurso = () => {
     navigate('/crear-curso');
@@ -124,6 +159,7 @@ const HomeCurso = () => {
             progress: undefined,
         });
         setCursos(cursos.filter(curso => curso.id !== cursoSeleccionado));
+        setCursosFiltrados(cursosFiltrados.filter(curso => curso.id !== cursoSeleccionado));
         handleCancelar();
       } catch (error) {
         console.error("Error al eliminar el curso:", error);
@@ -158,21 +194,31 @@ const HomeCurso = () => {
   return (
     <Container>
       <ContentWrapper>
-        {/*<Title>Administración de Cursos</Title>*/}
-
         <ModalConfirmacion
-                isOpen={isModalOpen}
-                message={`¿Estás seguro de que quieres eliminar este curso?`}
-                onConfirm={handleBorrarPagina}
-                onCancel={handleCancelar}
-                isLoading={loading}
-              />
-        
-        {loading && (
-          <Spinner />
-        )}
+          isOpen={isModalOpen}
+          message={`¿Estás seguro de que quieres eliminar este curso?`}
+          onConfirm={handleBorrarPagina}
+          onCancel={handleCancelar}
+          isLoading={loading}
+        />
 
+        {/* Controles de búsqueda */}
+        <SearchControls>
+          <FilterInput 
+            placeholder="Buscar cursos..." 
+            onChange={(e) => setBusqueda(e.target.value)} 
+            value={busqueda}
+            onKeyDown={(e) => e.key === 'Enter' && filtrarCursos()}
+          />
+          <SearchButton onClick={filtrarCursos}> 
+            <SearchIconSVG /> Buscar
+          </SearchButton>
+          <ResetButton onClick={resetearBusqueda}>
+            <ResetIconSVG /> Restablecer resultados
+          </ResetButton>
+        </SearchControls>
         
+        {loading && <Spinner />}
         
         {error && (
           <ErrorMessage>
@@ -182,9 +228,9 @@ const HomeCurso = () => {
         
         {!loading && !error && (
           <>
-            {cursos.length > 0 ? (
+            {cursosFiltrados.length > 0 ? (
               <CoursesGrid>
-                {cursos.map((curso) => (
+                {cursosFiltrados.map((curso) => (
                   <CourseCard key={curso.id}>
                     <CourseTitle>{curso.nombre || "Curso sin nombre"}</CourseTitle>
                     <CourseDescription>
@@ -226,9 +272,9 @@ const HomeCurso = () => {
                 ))}
               </CoursesGrid>
             ) : (
-              <ErrorMessage>
-                No hay cursos disponibles
-              </ErrorMessage>
+              <NoResultsMessage>
+                No se encontraron cursos que coincidan con la búsqueda
+              </NoResultsMessage>
             )}
             
             <AddButton onClick={irCrearCurso}>
@@ -267,11 +313,65 @@ const ContentWrapper = styled.div`
   max-width: 1200px;
 `;
 
-const Title = styled.h1`
-  color: #333;
-  font-size: 32px;
-  margin-bottom: 30px;
-  text-align: center;
+const SearchControls = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 40px;
+`;
+
+const FilterInput = styled.input`
+  flex-grow: 1;
+  max-width: 450px;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #f4f4f4;
+`;
+
+const BaseFilterButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s, transform 0.2s;
+  flex-shrink: 0;
+  
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+`;
+
+const SearchButton = styled(BaseFilterButton)`
+  background-color: #2a2a2a;
+  color: white;
+
+  &:hover {
+    background-color: #171717ff;
+    transform: translateY(-1px);
+  }
+`;
+
+const ResetButton = styled(BaseFilterButton)`
+  background-color: #2a2a2a;
+  color: white;
+
+  &:hover {
+    background-color: #171717ff;
+    transform: translateY(-1px);
+  }
 `;
 
 const CoursesGrid = styled.div`
@@ -336,15 +436,6 @@ const DetailValue = styled.span`
   font-weight: 500;
 `;
 
-const LoadingMessage = styled.div`
-  background-color: white;
-  border-radius: 10px;
-  padding: 40px;
-  text-align: center;
-  color: #666;
-  font-size: 16px;
-`;
-
 const ErrorMessage = styled.div`
   background-color: #f8f8f8;
   border: 1px solid #ddd;
@@ -353,6 +444,18 @@ const ErrorMessage = styled.div`
   text-align: center;
   color: #666;
   font-size: 16px;
+`;
+
+const NoResultsMessage = styled.div`
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: #555;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  margin-bottom: 30px;
 `;
 
 const AddButton = styled.button`
@@ -458,3 +561,15 @@ const CourseActions = styled.div`
   margin-top: 20px;
   width: 100%;
 `;
+
+const SearchIconSVG = () => (
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M39.2 42L26.6 29.4C25.6 30.2 24.45 30.8333 23.15 31.3C21.85 31.7667 20.4667 32 19 32C15.3667 32 12.2917 30.7417 9.775 28.225C7.25833 25.7083 6 22.6333 6 19C6 15.3667 7.25833 12.2917 9.775 9.775C12.2917 7.25833 15.3667 6 19 6C22.6333 6 25.7083 7.25833 28.225 9.775C30.7417 12.2917 32 15.3667 32 19C32 20.4667 31.7667 21.85 31.3 23.15C30.8333 24.45 30.2 25.6 29.4 26.6L42 39.2L39.2 42ZM19 28C21.5 28 23.625 27.125 25.375 25.375C27.125 23.625 28 21.5 28 19C28 16.5 27.125 14.375 25.375 12.625C23.625 10.875 21.5 10 19 10C16.5 10 14.375 10.875 12.625 12.625C10.875 14.375 10 16.5 10 19C10 21.5 10.875 23.625 12.625 25.375C14.375 27.125 16.5 28 19 28Z" fill="white"/>
+  </svg>
+);
+
+const ResetIconSVG = () => (
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M46 8.00015V20.0002M46 20.0002H34M46 20.0002L36.72 11.2802C34.5705 9.12958 31.9113 7.55856 28.9904 6.7137C26.0695 5.86883 22.9822 5.77765 20.0166 6.44867C17.0509 7.11968 14.3036 8.53102 12.0309 10.551C9.75827 12.571 8.03434 15.1337 7.02 18.0002M2 40.0002V28.0002M2 28.0002H14M2 28.0002L11.28 36.7202C13.4295 38.8707 16.0887 40.4417 19.0096 41.2866C21.9305 42.1315 25.0178 42.2226 27.9834 41.5516C30.9491 40.8806 33.6964 39.4693 35.9691 37.4493C38.2417 35.4293 39.9657 32.8666 40.98 30.0002" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
