@@ -139,7 +139,7 @@ const ListadoCursos = () => {
           <SecondaryControls>
             <FilterInputWrapper>
               <FilterInput 
-                placeholder="Filtrar cursos..." 
+                placeholder="Buscar cursos..." 
                 onChange={(e) => setBusqueda(e.target.value)} 
                 value={busqueda}
                 onKeyDown={(e) => e.key === 'Enter' && filtrarCursos()}

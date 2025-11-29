@@ -48,12 +48,13 @@ const Busqueda = () => {
     };
 
     const handleSearchClick = async() => {
-        if (busqueda.trim() === '') {
-            setUsuariosFiltrados(usuarios);
-            return;
-        }
+    if (busqueda.trim() === '') {
+        setUsuariosFiltrados(usuarios);
+        return;
+    }
 
-        const filtro = busqueda.toLowerCase();
+    const filtro = busqueda.toLowerCase();
+        setLoading(true);
         try {
             const urlBase = import.meta.env.VITE_BACKEND_URL;
             const token = localStorage.getItem("token");
@@ -64,19 +65,27 @@ const Busqueda = () => {
                 },
             };
             const response = await axios.get(`${urlBase}/usuarios/buscar?texto=${filtro}`, config);
-            setUsuariosFiltrados(response.data);
+
+            setUsuariosFiltrados(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.log(error);
-            toast.error("Error al buscar los usuarios", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        } 
+
+            setUsuariosFiltrados([]);
+            
+            if (error.response?.status !== 404) {
+                toast.error("Error al buscar los usuarios", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDeleteUser = async (userId) => {
@@ -139,7 +148,7 @@ const Busqueda = () => {
                 <FilterBar>
                     <FilterInput
                         type="text"
-                        placeholder="Filtrar usuarios..."
+                        placeholder="Buscar usuarios..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
@@ -201,7 +210,7 @@ const Busqueda = () => {
                                 </UserCard>
                             ))
                         ) : (
-                            <NoResults>No se encontraron usuarios que coincidan con el filtro.</NoResults>
+                            <NoResults>No se encontraron usuarios que coincidan con la búsqueda</NoResults>
                         )}
                     </UserGrid>
                 }
