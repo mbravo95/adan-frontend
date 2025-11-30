@@ -1,41 +1,3 @@
-
-  const handleBorrarPagina = async () => {
-    if (!paginaEliminarId) return;
-    setLoadingSecciones(true);
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, config);
-      toast.success("Página eliminada exitosamente", {
-        position: "top-center", autoClose: 3000,
-      });
-      setRecursosPorSeccion(prevRecursos => {
-        const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
-          return (prevRecursos[seccionId] || []).some(recurso => recurso.id === paginaEliminarId);
-        });
-        if (seccionIdConRecurso) {
-          return {
-            ...prevRecursos,
-            [seccionIdConRecurso]: prevRecursos[seccionIdConRecurso].filter(recurso => recurso.id !== paginaEliminarId)
-          };
-        }
-        return prevRecursos;
-      });
-      handleCancelar();
-    } catch (error) {
-      toast.error("Ocurrió un error al eliminar la página", {
-        position: "top-center", autoClose: 3000,
-      });
-    } finally {
-      setLoadingSecciones(false);
-    }
-  };
 import { useParams, useNavigate, Navigate, useLocation } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
@@ -269,69 +231,106 @@ const PaginaCurso = () => {
     setIsModalOpen(true);
   };
 
-    const handleCancelar = () => {
-        setIsModalOpen(false);
-        setIdEliminar(null);
-        setTipoEliminar(null);
-    };
+  const handleCancelar = () => {
+    setIsModalOpen(false);
+    setIdEliminar(null);
+    setTipoEliminar(null);
+  };
 
     
-    const handleBorrar = async () => {
-        if (!idEliminar || !tipoEliminar) return;
-
-        setLoadingSecciones(true);
-
-        try {    
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            
-            let deleteUrl = '';
-            if (tipoEliminar === 'pagina') {
-                deleteUrl = `${urlBase}/recursos/paginas-tematicas/${idEliminar}`;
-            } else if (tipoEliminar === 'seccion') {
-                deleteUrl = `${urlBase}/secciones/eliminar/${codigo}/${idEliminar}`;
-            }
-
-            await axios.delete(deleteUrl, config);
-            
-            toast.success(`${tipoEliminar === 'pagina' ? 'Página' : 'Sección'} eliminada exitosamente`, {
-                position: "top-center", autoClose: 3000,
-            });
-            
-            if (tipoEliminar === 'seccion') {
-                setSecciones(prev => prev.filter(s => s.id !== idEliminar));
-            } else if (tipoEliminar === 'pagina') {
-                setRecursosPorSeccion(prevRecursos => {
-                    const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
-                        return (prevRecursos[seccionId] || []).some(recurso => recurso.id === idEliminar);
-                    });
-            
-                    if (seccionIdConRecurso) {
-                        return {
-                            ...prevRecursos,
-                            [seccionIdConRecurso]: prevRecursos[seccionIdConRecurso].filter(recurso => recurso.id !== idEliminar)
-                        };
-                    }
-                    return prevRecursos;
-                });
-            }
-
-            handleCancelar();
-        } catch (error) {
-            console.error("Error al eliminar:", error);
-            toast.error(`Ocurrió un error al eliminar la ${tipoEliminar}`, {
-                position: "top-center", autoClose: 3000,
-            });
-        } finally {
-            setLoadingSecciones(false);
+  const handleBorrarPagina = async () => {
+    if (!paginaEliminarId) return;
+    setLoadingSecciones(true);
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      await axios.delete(`${urlBase}/recursos/paginas-tematicas/${paginaEliminarId}`, config);
+      toast.success("Página eliminada exitosamente", {
+        position: "top-center", autoClose: 3000,
+      });
+      setRecursosPorSeccion(prevRecursos => {
+        const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
+          return (prevRecursos[seccionId] || []).some(recurso => recurso.id === paginaEliminarId);
+        });
+        if (seccionIdConRecurso) {
+          return {
+            ...prevRecursos,
+            [seccionIdConRecurso]: prevRecursos[seccionIdConRecurso].filter(recurso => recurso.id !== paginaEliminarId)
+          };
         }
+        return prevRecursos;
+      });
+      handleCancelar();
+    } catch (error) {
+      console.error("Error al eliminar la página", error);
+      
+    } finally {
+      setLoadingSecciones(false);
     }
+  };
+  
+  const handleBorrar = async () => {
+      if (!idEliminar || !tipoEliminar) return;
+
+      setLoadingSecciones(true);
+
+      try {    
+          const urlBase = import.meta.env.VITE_BACKEND_URL;
+          const token = localStorage.getItem("token");
+          const config = {
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+              },
+          };
+          
+          let deleteUrl = '';
+          if (tipoEliminar === 'pagina') {
+              deleteUrl = `${urlBase}/recursos/paginas-tematicas/${idEliminar}`;
+          } else if (tipoEliminar === 'seccion') {
+              deleteUrl = `${urlBase}/secciones/eliminar/${codigo}/${idEliminar}`;
+          }
+
+          await axios.delete(deleteUrl, config);
+          
+          toast.success(`${tipoEliminar === 'pagina' ? 'Página' : 'Sección'} eliminada exitosamente`, {
+              position: "top-center", autoClose: 3000,
+          });
+          
+          if (tipoEliminar === 'seccion') {
+              setSecciones(prev => prev.filter(s => s.id !== idEliminar));
+          } else if (tipoEliminar === 'pagina') {
+              setRecursosPorSeccion(prevRecursos => {
+                  const seccionIdConRecurso = Object.keys(prevRecursos).find(seccionId => {
+                      return (prevRecursos[seccionId] || []).some(recurso => recurso.id === idEliminar);
+                  });
+          
+                  if (seccionIdConRecurso) {
+                      return {
+                          ...prevRecursos,
+                          [seccionIdConRecurso]: prevRecursos[seccionIdConRecurso].filter(recurso => recurso.id !== idEliminar)
+                      };
+                  }
+                  return prevRecursos;
+              });
+          }
+
+          handleCancelar();
+      } catch (error) {
+          console.error("Error al eliminar:", error);
+          toast.error(`Ocurrió un error al eliminar la ${tipoEliminar}`, {
+              position: "top-center", autoClose: 3000,
+          });
+      } finally {
+          setLoadingSecciones(false);
+      }
+  }
 
 
   const agregarPagina = (seccionId) => {
@@ -347,7 +346,7 @@ const PaginaCurso = () => {
   }
 
   const modificarSeccion = (seccionId) => {
-    // ???????????????????????
+    navigate(`/curso/${codigo}/seccion/${seccionId}/editar`);
   };
 
   const eliminarSeccion = (seccionId) => {
@@ -557,15 +556,6 @@ const PaginaCurso = () => {
       handleCancelar();
     } catch (error) {
       console.error("Error al eliminar la sección:", error);
-      toast.error("Ocurrió un error al eliminar la sección", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-      });
     } finally {
       setLoadingSecciones(false);
     }
