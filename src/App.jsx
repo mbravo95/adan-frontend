@@ -10,6 +10,7 @@ import CrearUsuario from "./usuario/CrearUsuario";
 import PaginaCurso from "./cursos/PaginaCurso";
 import Perfil from "./usuario/Perfil";
 import CrearSeccion from "./seccion/CrearSeccion";
+import EditarSeccion from "./seccion/EditarSeccion";
 import ParticipantesCurso from "./cursos/ParticipantesCurso";
 import MatricularEstudianteCurso from "./cursos/MatricularEstudianteCurso";
 import SubirMaterial from "./recursos/subirMaterial"; 
@@ -93,7 +94,7 @@ function App() {
               <Route path="/crear-curso" element={<CrearCurso />} />
               <Route path="/curso/:codigo" element={<PaginaCurso />} />
               <Route path="/curso/:codigo/alta-seccion" element={<CrearSeccion />} />
-              <Route path="/curso/:codigo/seccion/:idseccion/editar" element={<CrearSeccion />} />
+              <Route path="/curso/:codigo/seccion/:seccionId/editar" element={<EditarSeccion />} />
               <Route path="/curso/:codigo/participantes" element={<ParticipantesCurso />} />
               <Route path="/curso/:codigo/participantes/matricular" element={<MatricularEstudianteCurso />} />
               <Route path="/curso/:codigo/:seccion/crear-tarea" element={<CrearTarea />} />
