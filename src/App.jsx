@@ -52,6 +52,7 @@ import CalificarEntregaCsv from "./recursos/CalificarEntregaCsv";
 import NotificacionBandeja from "./notificaciones/NotificacionBandeja";
 import { useContext } from "react";
 import AuthContext from "./context/AuthProvider";
+import EditarCurso from "./cursos/EditarCurso";
 
 function App() {
 
@@ -84,6 +85,7 @@ function App() {
               <Route path="/mensajes" element={<HomeMensajes />} />
               <Route path="/calificaciones" element={<CalificacionesCurso />} />
               <Route path="/admin-cursos" element={<HomeCurso />} />
+              <Route path="/editar-curso/:id" element={<EditarCurso />} />
               <Route path="/admin-cursos/asignar-profesor" element={<AsignarDocente />} />
               <Route path="/admin-cursos/desasignar-profesor" element={<DesasignarDocente />} />
               <Route path="/buscar-usuarios" element={<Busqueda />} />

@@ -185,7 +185,7 @@ const EditarForo = () => {
   const seccion = params.seccion;
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
 
 
@@ -292,21 +292,6 @@ const EditarForo = () => {
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Título del foro"
               />
-            </FormGroup>
-
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="foro-visible">
-                  <CheckboxInput
-                    type="checkbox"
-                    id="foro-visible"
-                    checked={visible}
-                    onChange={() => setVisible(!visible)}
-                  />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
             </FormGroup>
 
             <ButtonGroup>

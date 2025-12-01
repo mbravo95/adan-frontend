@@ -93,7 +93,7 @@ const PaginaCurso = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paginaEliminarId, setPaginaEliminarId] = useState(null);
   const [seccionEliminarId, setSeccionEliminarId] = useState(null);
-  
+  const [cursoNoEncontrado, setCursoNoEncontrado] = useState(false);
 
   useEffect(() => {
     if (secciones.length > 0) {
@@ -127,51 +127,52 @@ const PaginaCurso = () => {
         
         if (!token) {
           console.error("no hay token");
+          setCursoNoEncontrado(true);
           return;
         }
         
         console.log("Buscando curso con código:", codigo);
-        console.log("URL de búsqueda:", `${urlBase}/cursos/buscar?texto=${codigo}`);
+        console.log("URL de búsqueda:", `${urlBase}/cursos/codigo/${codigo}`);
         
-        const response = await axios.get(`${urlBase}/cursos/buscar?texto=${codigo}`, {
+        const response = await axios.get(`${urlBase}/cursos/codigo/${codigo}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        console.log("Respuesta de búsqueda:", response.data);
+        console.log("Respuesta del backend:", response.data);
         
-        const cursoEncontrado = Array.isArray(response.data) ? response.data[0] : response.data;
+        const cursoEncontrado = response.data;
         
-        if (cursoEncontrado) {
-          console.log("Curso encontrado:", cursoEncontrado);
-          setCursoActual({
-            id: cursoEncontrado.id,
-            nombre: cursoEncontrado.nombre || "Curso sin nombre",
-            codigo: cursoEncontrado.codigo || "Sin código",
-            ...cursoEncontrado
-          });
-        } else {
-          console.log("No se encontró curso con código:", codigo);
-          setCursoActual({
-            id: null,
-            nombre: "Curso no encontrado",
-            codigo: codigo
-          });
+        console.log("Curso encontrado:", cursoEncontrado);
+        console.log("Activo:", cursoEncontrado.activo);
+        
+        if (cursoEncontrado.activo === false) {
+          console.log("Curso inactivo - redirigiendo a NotFound");
+          setCursoNoEncontrado(true);
+          return;
         }
+        
+        console.log("Curso válido y activo");
+        setCursoActual({
+          id: cursoEncontrado.id,
+          nombre: cursoEncontrado.nombre || "Curso sin nombre",
+          codigo: cursoEncontrado.codigo || "Sin código",
+          ...cursoEncontrado
+        });
         
       } catch (error) {
         console.error("Error al buscar curso:", error);
-        setCursoActual({
-          id: null,
-          nombre: "Error al cargar",
-          codigo: "---"
-        });
+        if (error.response?.status === 404) {
+          console.log("Curso no encontrado (404)");
+        }
+        setCursoNoEncontrado(true);
       } finally {
         setLoading(false);
       }
     };
+
     // HAY QUE HACER UN ENDPOINT QUE DE SECCIONES DE UN CURSO POR CODIGO
     const obtenerSecciones = async () => {
       try {
@@ -576,6 +577,10 @@ const PaginaCurso = () => {
     return colores[index];
   }
 
+  if (cursoNoEncontrado) {
+    return <Navigate to="/not-found" replace />;
+  }
+
   if (!cursoActual || !cursoActual.id) {
     return (
       <S.Container> 
@@ -676,12 +681,12 @@ const PaginaCurso = () => {
             {/*<InfoLabel>Turno:</InfoLabel>*/}
             <InfoValue>{cursoActual.turno + " - " + cursoActual.anio|| "Sin turno"}</InfoValue>
           </InfoSection>
-          
+
           <InfoSection className="inline">
             <InfoValue>{"Profesores: "}</InfoValue>
             <InfoValue>
               {cursoActual.profesores?.length > 0
-                ? cursoActual.profesores.join(", ")
+                ? cursoActual.profesores.map(p => `${p.nombres} ${p.apellidos}`).join(", ")
                 : "Sin profesores"}
             </InfoValue>
           </InfoSection>

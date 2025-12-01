@@ -181,7 +181,7 @@ const CancelButton = styled(Button)`
 const CrearForo = () => {
 
   const [nombre, setNombre] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   const { codigo, seccion } = useParams();
   const navigate = useNavigate();
@@ -251,16 +251,6 @@ const CrearForo = () => {
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Título del foro"
               />
-            </FormGroup>
-
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="foro-visible">
-                  <CheckboxInput type="checkbox" id="foro-visible" checked={visible} onChange={() => setVisible(!visible)} />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
             </FormGroup>
 
             <ButtonGroup>

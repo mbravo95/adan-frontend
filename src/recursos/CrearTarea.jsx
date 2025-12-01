@@ -9,7 +9,7 @@ const CrearTarea = () => {
 
     const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
 
@@ -72,7 +72,6 @@ const CrearTarea = () => {
         }
         const datosTarea = {
           nombre: String(nombre),
-          visible: Boolean(visible),
           fechaInicio: fechaInicioISO,
           fechaFin: fechaFinISO,
           descripcion: String(descripcion),
@@ -127,15 +126,6 @@ const CrearTarea = () => {
             <FormGroup>
               <Label htmlFor="fin">Fecha de fin</Label>
               <Input id="fin" type="datetime-local" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                  <CheckboxInput type="checkbox" id="task-visible" checked={visible} onChange={() => setVisible(!visible)} />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
             </FormGroup>
             <ButtonGroup>
               <CreateButton type="button" onClick={crearTarea}>Aceptar</CreateButton>

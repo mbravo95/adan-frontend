@@ -43,6 +43,10 @@ const HomeCurso = () => {
         console.log("Cursos obtenidos:", response.data);
         setCursos(response.data || []);
         setCursosFiltrados(response.data || []);
+
+        const cursosActivos = (response.data || []).filter(curso => curso.activo !== false);
+        setCursos(cursosActivos);
+        setCursosFiltrados(cursosActivos);
         
       } catch (error) {
         console.error("Error al obtener cursos:", error);
@@ -94,7 +98,7 @@ const HomeCurso = () => {
   };
 
   const irEditarCurso = (curso) => {
-    console.log("Ir a editar curso", curso);
+    navigate(`/editar-curso/${curso.id}`);
   };
 
   const irAsignarCursoDocente = (curso) => {

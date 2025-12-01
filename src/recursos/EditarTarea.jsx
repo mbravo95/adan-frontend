@@ -200,7 +200,6 @@ const EditarTarea = () => {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [visible, setVisible] = useState(false);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(true);
@@ -220,7 +219,6 @@ const EditarTarea = () => {
         const tarea = response.data;
         setNombre(tarea.nombre || "");
         setDescripcion(tarea.descripcion || "");
-        setVisible(Boolean(tarea.visible));
         setFechaInicio(tarea.fechaInicio ? tarea.fechaInicio.slice(0, 16) : "");
         setFechaFin(tarea.fechaFin ? tarea.fechaFin.slice(0, 16) : "");
       } catch (error) {
@@ -271,7 +269,6 @@ const EditarTarea = () => {
       await axios.put(`${urlBase}/recursos/tareas/${recursoId}`, {
         nombre,
         descripcion,
-        visible,
         fechaInicio: new Date(fechaInicio).toISOString(),
         fechaFin: new Date(fechaFin).toISOString(),
       }, config);
@@ -313,15 +310,6 @@ const EditarTarea = () => {
             <FormGroup>
               <Label htmlFor="fin">Fecha de fin</Label>
               <Input id="fin" type="datetime-local" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                  <CheckboxInput type="checkbox" id="task-visible" checked={visible} onChange={() => setVisible(!visible)} />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
             </FormGroup>
             <ButtonGroup>
               <CreateButton type="button" onClick={modificarTarea}>Actualizar</CreateButton>

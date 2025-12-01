@@ -172,7 +172,7 @@ const EditarSeccion = () => {
   const navigate = useNavigate();
   
   const [titulo, setTitulo] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     console.log("EditarSeccion MOUNTED");
@@ -309,21 +309,6 @@ const EditarSeccion = () => {
                 onChange={(e) => setTitulo(e.target.value)}
                 placeholder="Título de la sección"
               />
-            </FormGroup>
-
-            <FormGroup>
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="seccion-visible">
-                  <CheckboxInput
-                    type="checkbox"
-                    id="seccion-visible"
-                    checked={visible}
-                    onChange={() => setVisible(!visible)}
-                  />
-                  <CustomCheckbox />
-                  Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
             </FormGroup>
 
             <ButtonGroup>
