@@ -203,15 +203,6 @@ const CrearSeccion = () => {
               />
             </FormGroup>
 
-            {idseccion &&
-              <CheckboxGroup>
-                <CheckboxLabel htmlFor="task-visible">
-                    <CheckboxInput type="checkbox" id="task-visible" onChange={() => setVisible(!visible)} checked={visible} />
-                    <CustomCheckbox />
-                    Visible
-                </CheckboxLabel>
-              </CheckboxGroup>
-            }
 
             <ButtonGroup>
               {!idseccion && 

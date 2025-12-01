@@ -13,7 +13,7 @@ const CrearPagina = () => {
 
     const [pagina, setPagina] = useState("");
     const [nombre, setNombre] = useState("");
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
     const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
@@ -45,10 +45,9 @@ const CrearPagina = () => {
                 const response = await axios.get(`${urlBase}/recursos/${idpagina}`, config);
                 console.log(response);
                 const {data} = response;
-                const {nombre, urlHtml, visible} = data;
+                const {nombre, urlHtml} = data;
                 setNombre(nombre);
                 setPagina(urlHtml);
-                setVisible(visible);
             } catch (error) {
                 console.error("Error al obtener los datos de la página:", error);
                 toast.error("No se pudieron cargar los datos de la página.");
@@ -64,7 +63,6 @@ const CrearPagina = () => {
       console.log('[CREAR_PAGINA] Variables antes del envío:', {
         nombre,
         pagina: pagina ? pagina.substring(0, 100) + '...' : pagina, // Solo primeros 100 caracteres para evitar spam
-        visible,
         seccion,
         codigo
       });
@@ -92,7 +90,7 @@ const CrearPagina = () => {
                 Authorization: `Bearer ${token}`,
                 },
             };
-            const payload = {nombre, visible, idSeccion: Number(seccion), urlHtml: pagina};
+            const payload = {nombre, idSeccion: Number(seccion), urlHtml: pagina};
             console.log('[CREAR_PAGINA] URL:', `${urlBase}/recursos/paginas-tematicas`);
             console.log('[CREAR_PAGINA] Payload enviado:', payload);
             console.log('[CREAR_PAGINA] Config:', config);
@@ -147,7 +145,7 @@ const CrearPagina = () => {
             Authorization: `Bearer ${token}`,
             },
         };
-        const response = await axios.put(`${urlBase}/recursos/paginas-tematicas/${idpagina}`, {nombre, visible, urlHtml: pagina}, config);
+        const response = await axios.put(`${urlBase}/recursos/paginas-tematicas/${idpagina}`, {nombre, urlHtml: pagina}, config);
         console.log(response);
         toast.success("Página actualizada exitosamente", {
             position: "top-center",
@@ -215,16 +213,6 @@ const CrearPagina = () => {
                         }}
                       />
                     </DivEditor>
-                  </FormGroup>
-
-                  <FormGroup>
-                    <CheckboxGroup>
-                      <CheckboxLabel htmlFor="pagina-visible">
-                        <CheckboxInput type="checkbox" id="pagina-visible" onChange={() => setVisible(!visible)} checked={visible} />
-                        <CustomCheckbox />
-                        Visible
-                      </CheckboxLabel>
-                    </CheckboxGroup>
                   </FormGroup>
 
                   <ButtonGroup>

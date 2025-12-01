@@ -37,15 +37,21 @@ const ListadoCursos = () => {
         };
         const response = await axios.get(`${urlBase}/cursos`, config);
         const tipo = localStorage.getItem("tipo");
+
+        const cursosActivos = response.data.filter(curso => curso.activo !== false);
+
         if(tipo == "USUARIO"){
           if(profile.id) {
-            const filtrados = response.data.filter(curso => curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id) || curso.estudiantes.some(cursoEstudiante => cursoEstudiante.id == profile.id));
-            setCursos(filtrados);
-            setCursosFiltrados(filtrados); 
+          const filtrados = cursosActivos.filter(curso => 
+            curso.profesores.some(cursoProfesor => cursoProfesor.id == profile.id) || 
+            curso.estudiantes.some(cursoEstudiante => cursoEstudiante.id == profile.id)
+          );
+          setCursos(filtrados);
+          setCursosFiltrados(filtrados); 
           }
         } else {
-          setCursos(response.data);
-          setCursosFiltrados(response.data);
+          setCursos(cursosActivos);
+          setCursosFiltrados(cursosActivos);
         }
       } catch (error) {
         console.log(error);
