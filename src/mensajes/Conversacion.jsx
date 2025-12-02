@@ -1,15 +1,14 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import styled, {css} from "styled-components";
 import axios from "axios";
 import Spinner from '../general/Spinner';
 
 const DEFAULT_AVATAR_URL = "/header/avatar.png";
 
-
 const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat, onHandleCerrarConversacion, perfil }) => {
 
     const [mensajes, setMensajes] = useState([]);
-    const [participanteNombre, setParticipanteNombre] = useState('Nombre Apellido');
+    const [participanteNombre, setParticipanteNombre] = useState('Cargando...');
     const [participanteAvatar, setParticipanteAvatar] = useState(null);
     const [cargando, setCargando] = useState(false);
     const [mensajeNuevo, setMensajeNuevo] = useState('');
@@ -31,7 +30,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
                 const response1 = await axios.get(`${urlBase}/usuarios/${conversacionId}`, config);
                 const destinatario = response1.data;
                 setParticipanteNombre(`${destinatario.nombres || ''} ${destinatario.apellidos || ''}`.trim());
-                setParticipanteAvatar(destinatario.fotoPerfil || null); // Usar null si no hay foto para el fallback en CSS
+                setParticipanteAvatar(destinatario.fotoPerfil || null);
                 
                 // Obtener mensajes
                 const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
@@ -45,7 +44,6 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
 
         fetchConversacion();
     }, [conversacionId, idUsuarioActual]);
-
 
     const handleEnviarMensaje = async () => {
         if (mensajeNuevo.trim() === '') return;
@@ -74,16 +72,19 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
         }
     }
 
-
     return (
-        <>
+        <ConversacionContainer>
             <HeaderChat>
-                <BackButton onClick={onHandleCerrarConversacion}>←</BackButton>
+                <BackButton onClick={onHandleCerrarConversacion}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z" fill="#1D1B20"/>
+                    </svg>
+                </BackButton>
                 <TitleChat>{participanteNombre}</TitleChat>
                 <ProfileIcon fotoUrl={participanteAvatar || DEFAULT_AVATAR_URL} />
             </HeaderChat>
             
-            {cargando && <Spinner />}
+            {cargando && <SpinnerContainer><Spinner /></SpinnerContainer>}
             {!cargando &&
                 <MensajesScrollable>
                     {mensajes.map((msg) => {
@@ -95,11 +96,12 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
                                 key={msg.id} 
                                 $propio={esMensajePropio}
                             >
-                                <AvatarChat 
-                                    $propio={esMensajePropio} 
-                                    fotoUrl={avatarParaMensaje} 
-                                />
-                                <ContenidoMensaje propio={esMensajePropio}>
+                                {!esMensajePropio && (
+                                    <AvatarChat 
+                                        fotoUrl={avatarParaMensaje} 
+                                    />
+                                )}
+                                <ContenidoMensaje $propio={esMensajePropio}>
                                     {msg.cuerpoMensaje}
                                 </ContenidoMensaje>
                             </MensajeBubble>
@@ -110,7 +112,9 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
             
             {!cargando &&
                 <InputArea>
-                    <InputMensaje placeholder="Mensaje..." value={mensajeNuevo} 
+                    <InputMensaje 
+                        placeholder="Mensaje..." 
+                        value={mensajeNuevo} 
                         onChange={(e) => setMensajeNuevo(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
@@ -119,23 +123,33 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
                         }} 
                     />
                     <BotonEnviar onClick={handleEnviarMensaje}>
-                        ▶
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 20V4L22 12L3 20ZM5 17L16.85 12L5 7V10.5L11 12L5 13.5V17ZM5 17V12V7V10.5V13.5V17Z" fill="#1D1B20"/>
+                        </svg>
                     </BotonEnviar>
                 </InputArea>
             }
-        </>
+        </ConversacionContainer>
     )
 }
 
 export default Conversacion;
 
+const ConversacionContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+`;
+
 const HeaderChat = styled.div`
     padding: 15px;
-    background-color: #fff;
+    background-color: #E0E0E0;
     border-bottom: 1px solid #ddd;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
 `;
 
 const BackButton = styled.button`
@@ -160,20 +174,7 @@ const ProfileIcon = styled.div`
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    
     background-image: ${props => props.fotoUrl && props.fotoUrl !== DEFAULT_AVATAR_URL ? `url(${props.fotoUrl})` : `url(${DEFAULT_AVATAR_URL})`};
-
-    ${props =>
-        props.$propio
-            ? css`
-                  align-self: flex-end;
-                  flex-direction: row-reverse; 
-              `
-            : css`
-                  align-self: flex-start;
-                  flex-direction: row; 
-              `}
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -181,14 +182,20 @@ const ProfileIcon = styled.div`
     font-size: 1.5em;
 `;
 
+const SpinnerContainer = styled.div`
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
 const MensajesScrollable = styled.div`
-    flex-grow: 1;
+    flex: 1;
     padding: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
 `;
-
 
 const MensajeBubble = styled.div`
     display: flex;
@@ -215,13 +222,10 @@ const AvatarChat = styled.div`
     border-radius: 50%;
     background-color: #bdbdbd;
     flex-shrink: 0; 
-    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
     background-image: ${props => props.fotoUrl && props.fotoUrl !== DEFAULT_AVATAR_URL ? `url(${props.fotoUrl})` : `url(${DEFAULT_AVATAR_URL})`};
-    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,11 +241,10 @@ const ContenidoMensaje = styled.div`
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     color: #333;
 
-
     ${props =>
-        props.propio
+        props.$propio
             ? css`
-                  background-color: #8ce1e5;
+                  background-color: #9DCBD7;
                   border-bottom-right-radius: 3px;
               `
             : css`
@@ -256,6 +259,7 @@ const InputArea = styled.div`
     padding: 15px;
     background-color: #fff;
     border-top: 1px solid #ddd;
+    flex-shrink: 0;
 `;
 
 const InputMensaje = styled.input`
@@ -267,10 +271,10 @@ const InputMensaje = styled.input`
 `;
 
 const BotonEnviar = styled.button`
-    background-color: #3b5998;
+    background-color: #9DCBD7;
     color: white;
-    border-radius: 50%;
-    width: 40px;
+    border-radius: 20px;
+    width: 45px;
     height: 40px;
     margin-left: 10px;
     border: none;
@@ -278,10 +282,13 @@ const BotonEnviar = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2em;
-    transform: translateX(1px);
+    transition: background-color 0.2s;
 
     &:hover {
-        background-color: #2b4480;
+        background-color: #8bbac6;
+    }
+
+    svg {
+        display: block;
     }
 `;
