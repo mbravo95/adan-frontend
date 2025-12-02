@@ -8,6 +8,21 @@ import ModalNuevaConversacion from "./ModalNuevaConversacion";
 import Spinner from '../general/Spinner';
 import useAuth from "../hooks/useAuth";
 
+
+const construirUrlFoto = (fotoPerfil) => {
+  if (!fotoPerfil) return "/header/avatar.png";
+  
+  if (fotoPerfil.startsWith('http')) {
+    return fotoPerfil;
+  }
+  
+  const baseUrl = import.meta.env.VITE_BACKEND_URL
+    .replace(/\/api$/, '')
+    .replace(/\/api\/$/, '');
+  
+  return `${baseUrl}${fotoPerfil}`;
+};
+
 const HomeMensajes = () => {
   const [conversaciones, setConversaciones] = useState([]);
   const [nuevaConversacionModal, setNuevaConversacionModal] = useState(false);
@@ -57,7 +72,7 @@ const HomeMensajes = () => {
         participanteNombre: `${interlocutor.nombres || ''} ${interlocutor.apellidos || ''}`.trim(),
         ultimoMensaje: interlocutor.ultimoMensaje || "",
         tiempoTranscurrido: calcularTiempoTranscurrido(interlocutor.fechaUltimoMensaje),
-        fotoPerfil: interlocutor.fotoPerfil || "/header/avatar.png",
+        fotoPerfil: construirUrlFoto(interlocutor.fotoPerfil),
         esPropioUltimo: interlocutor.esPropioUltimo
       }));
 
@@ -100,7 +115,6 @@ const HomeMensajes = () => {
     cargarConversaciones();
     setNuevoChat(false);
   }
-
 
   const conversacionesFiltradas = conversaciones.filter(conv => 
     conv.participanteNombre.toLowerCase().includes(busquedaConversacion.toLowerCase())
