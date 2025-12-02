@@ -5,6 +5,21 @@ import Spinner from '../general/Spinner';
 
 const DEFAULT_AVATAR_URL = "/header/avatar.png";
 
+
+const construirUrlFoto = (fotoPerfil) => {
+  if (!fotoPerfil) return DEFAULT_AVATAR_URL;
+  
+  if (fotoPerfil.startsWith('http')) {
+    return fotoPerfil;
+  }
+  
+  const baseUrl = import.meta.env.VITE_BACKEND_URL
+    .replace(/\/api$/, '')
+    .replace(/\/api\/$/, '');
+  
+  return `${baseUrl}${fotoPerfil}`;
+};
+
 const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, onHandleNuevoChat, onHandleCerrarConversacion, perfil }) => {
 
     const [mensajes, setMensajes] = useState([]);
@@ -30,7 +45,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
                 const response1 = await axios.get(`${urlBase}/usuarios/${conversacionId}`, config);
                 const destinatario = response1.data;
                 setParticipanteNombre(`${destinatario.nombres || ''} ${destinatario.apellidos || ''}`.trim());
-                setParticipanteAvatar(destinatario.fotoPerfil || null);
+                setParticipanteAvatar(construirUrlFoto(destinatario.fotoPerfil));
                 
                 // Obtener mensajes
                 const response2 = await axios.get(`${urlBase}/mensajes-privados/conversacion/${conversacionId}`, config);
@@ -89,7 +104,9 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
                 <MensajesScrollable>
                     {mensajes.map((msg) => {
                         const esMensajePropio = idUsuarioActual === msg.idRemitente;
-                        const avatarParaMensaje = esMensajePropio ? perfil.fotoPerfil : (participanteAvatar || DEFAULT_AVATAR_URL);
+                        const avatarParaMensaje = esMensajePropio 
+                            ? construirUrlFoto(perfil.fotoPerfil) 
+                            : (participanteAvatar || DEFAULT_AVATAR_URL);
 
                         return (
                             <MensajeBubble 

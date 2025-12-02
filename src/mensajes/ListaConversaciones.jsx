@@ -2,6 +2,21 @@ import styled, {css} from "styled-components";
 
 const DEFAULT_AVATAR_URL = "/header/avatar.png";
 
+
+const construirUrlFoto = (fotoPerfil) => {
+  if (!fotoPerfil) return DEFAULT_AVATAR_URL;
+  
+  if (fotoPerfil.startsWith('http')) {
+    return fotoPerfil;
+  }
+  
+  const baseUrl = import.meta.env.VITE_BACKEND_URL
+    .replace(/\/api$/, '')
+    .replace(/\/api\/$/, '');
+  
+  return `${baseUrl}${fotoPerfil}`;
+};
+
 const ListaConversaciones = ({ conversaciones, onSelect, selectedId }) => {
   return (
     <div>
@@ -11,7 +26,7 @@ const ListaConversaciones = ({ conversaciones, onSelect, selectedId }) => {
           selected={conv.id === selectedId}
           onClick={() => onSelect(conv.id)}
         >
-          <AvatarLista fotoUrl={conv.fotoPerfil} />
+          <AvatarLista fotoUrl={construirUrlFoto(conv.fotoPerfil)} />
           <InfoConversacion>
             <ParticipanteNombre>{conv.participanteNombre}</ParticipanteNombre>
             <UltimoMensaje>
