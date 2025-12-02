@@ -97,6 +97,7 @@ const CrearCurso = () => {
             <Input
               type="text"
               value={nombre}
+              name="nombre"
               onChange={(e) => setNombre(e.target.value)}
               placeholder="Ingrese el nombre del curso"
               disabled={loading}
@@ -107,6 +108,7 @@ const CrearCurso = () => {
             <Label>Turno</Label>
             <Select
               value={turno}
+              name="turno"
               onChange={(e) => setTurno(e.target.value)}
               disabled={loading}
             >
@@ -122,6 +124,7 @@ const CrearCurso = () => {
             <Input
               type="text"
               value={codigo}
+              name="codigo"
               onChange={(e) => setCodigo(e.target.value)}
               placeholder="Ingrese el código del curso"
               disabled={loading}
@@ -133,6 +136,7 @@ const CrearCurso = () => {
             <Input
               type="number"
               value={anio}
+              name="anio"
               onChange={(e) => setAnio(e.target.value)}
               placeholder="Ingrese el año"
               min="2020"
