@@ -235,7 +235,7 @@ const HomeCurso = () => {
             {cursosFiltrados.length > 0 ? (
               <CoursesGrid>
                 {cursosFiltrados.map((curso) => (
-                  <CourseCard key={curso.id}>
+                  <CourseCard key={curso.id} data-testid={`course-card-${curso.id}`}>
                     <CourseTitle>{curso.nombre || "Curso sin nombre"}</CourseTitle>
                     <CourseDescription>
                       {curso.descripcion || "Sin descripción disponible"}
