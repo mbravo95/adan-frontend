@@ -95,6 +95,10 @@ const MensajeOriginal = styled.div`
 	font-size: 0.9rem;
 	color: #666;
 	border-radius: 4px;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: pre-wrap;
 	
 	&::before {
 		content: "En respuesta a:";
@@ -148,6 +152,12 @@ const BotonPublicar = styled.button`
 const CuerpoMensaje = styled.div`
 	font-size: 1rem;
 	color: #333;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: pre-wrap;
+	max-width: 100%;
+	margin-top: 13px;
 `;
 
 const FotoPerfil = styled.img`

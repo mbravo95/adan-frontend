@@ -18,8 +18,7 @@ const SubirMaterial = () => {
   }
   
   const [formData, setFormData] = useState({
-    titulo: "",
-    descripcion: ""
+    titulo: ""
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -35,7 +34,6 @@ const SubirMaterial = () => {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-    
       setSelectedFile(file);
       toast.success(`Archivo "${file.name}" seleccionado correctamente`);
     }
@@ -55,11 +53,6 @@ const SubirMaterial = () => {
       return;
     }
 
-    if (!formData.descripcion.trim()) {
-      toast.error("la descripcion es obligatoria");
-      return;
-    }
-
     if (!selectedFile) {
       toast.error("debe seleccionar un archivo");
       return;
@@ -72,7 +65,7 @@ const SubirMaterial = () => {
       const form = new FormData();
       form.append("archivo", selectedFile);
       form.append("nombre", formData.titulo);
-      form.append("descripcion", formData.descripcion);
+      form.append("descripcion", "descripcion");
 
       const response = await axios.post(
         `${urlBase}/recursos/cursos/${codigo}/secciones/${seccion}/materiales`,
@@ -87,7 +80,7 @@ const SubirMaterial = () => {
       console.log("[SUBIR MATERIAL] Respuesta backend (success):", response);
       const successMsg = response.data?.message || "Material subido exitosamente";
       toast.success(successMsg);
-      setFormData({ titulo: "", descripcion: "" });
+      setFormData({ titulo: "" });
       setSelectedFile(null);
       navigate(`/curso/${codigo}`);
     } catch (error) {
@@ -108,8 +101,6 @@ const SubirMaterial = () => {
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          {/*<Title>Subir Material</Title>*/}
-
           <form>
             <FormGroup>
               <Label htmlFor="titulo">Titulo</Label>
@@ -121,19 +112,6 @@ const SubirMaterial = () => {
                 onChange={handleInputChange}
                 maxLength="100"
                 placeholder="Título del material"
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="descripcion">Descripcion</Label>
-              <TextArea
-                id="descripcion"
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleInputChange}
-                maxLength="500"
-                placeholder="Descripción del material"
-                rows="4"
               />
             </FormGroup>
 

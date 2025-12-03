@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styled, {css} from "styled-components";
 import axios from "axios";
 import Spinner from '../general/Spinner';
@@ -27,6 +27,14 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
     const [participanteAvatar, setParticipanteAvatar] = useState(null);
     const [cargando, setCargando] = useState(false);
     const [mensajeNuevo, setMensajeNuevo] = useState('');
+    const mensajesScrollRef = useRef(null);
+
+    
+    useEffect(() => {
+        if (mensajesScrollRef.current) {
+            mensajesScrollRef.current.scrollTop = mensajesScrollRef.current.scrollHeight;
+        }
+    }, [mensajes]);
 
     useEffect(() => {
         const fetchConversacion = async () => {
@@ -101,7 +109,7 @@ const Conversacion = ({ conversacionId, idUsuarioActual, esNuevaConversacion, on
             
             {cargando && <SpinnerContainer><Spinner /></SpinnerContainer>}
             {!cargando &&
-                <MensajesScrollable>
+                <MensajesScrollable ref={mensajesScrollRef}>
                     {mensajes.map((msg) => {
                         const esMensajePropio = idUsuarioActual === msg.idRemitente;
                         const avatarParaMensaje = esMensajePropio 
@@ -255,8 +263,12 @@ const ContenidoMensaje = styled.div`
     border-radius: 18px;
     line-height: 1.4;
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     color: #333;
+    max-width: 100%;
+    white-space: pre-wrap;
 
     ${props =>
         props.$propio

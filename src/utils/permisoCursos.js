@@ -9,6 +9,13 @@ export function esProfesorCurso(pathname) {
   return !!(codigoCurso && codigosCursosProfesor.includes(codigoCurso));
 }
 
-export function puedeAdministrarCursos(pathname) {
-  return !esUsuarioRegular() || esProfesorCurso(pathname) ;
+export function puedeAdministrarCursos(pathname, codigoCursoDirecto = null) {
+  if (!esUsuarioRegular()) return true;
+  
+  if (codigoCursoDirecto) {
+    const codigosCursosProfesor = JSON.parse(localStorage.getItem("codigosCursosProfesor")) || [];
+    return codigosCursosProfesor.includes(codigoCursoDirecto);
+  }
+  
+  return esProfesorCurso(pathname);
 }

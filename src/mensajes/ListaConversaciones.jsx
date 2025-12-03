@@ -53,6 +53,7 @@ export const ItemConversacion = styled.div`
   margin-bottom: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
+  gap: 10px;
   
   &:hover {
     background-color: #f0f0f0;
@@ -71,9 +72,11 @@ export const ItemConversacion = styled.div`
 export const AvatarLista = styled.div`
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
   border-radius: 50%;
   background-color: #bdbdbd; 
-  margin-right: 10px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -86,7 +89,8 @@ export const AvatarLista = styled.div`
 `;
 
 export const InfoConversacion = styled.div`
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
 `;
 
@@ -94,6 +98,9 @@ export const ParticipanteNombre = styled.div`
   font-weight: bold;
   font-size: 1em;
   color: #333;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 export const UltimoMensaje = styled.div`
@@ -102,10 +109,13 @@ export const UltimoMensaje = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 export const TiempoTranscurrido = styled.div`
   font-size: 0.8em;
   color: #555;
   white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
 `;
