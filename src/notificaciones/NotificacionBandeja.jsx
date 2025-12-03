@@ -24,6 +24,23 @@ const NotificacionBandeja = ({ idUsuario }) => {
     }
   };
 
+  const eliminarNotificacion = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      await axios.delete(`${urlBase}/notificaciones/eliminar/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      });
+      setNotificaciones(prev => prev.filter(n => n.id !== id));
+    } catch (err) {
+      alert('Error al eliminar la notificación');
+    }
+  };
+
   useEffect(() => {
     const fetchNotificaciones = async () => {
       try {
@@ -83,6 +100,19 @@ const NotificacionBandeja = ({ idUsuario }) => {
           >
             <NotificationHeader>
               <NotificationTitle>{n.titulo}</NotificationTitle>
+              <DeleteButton
+                onClick={(e) => eliminarNotificacion(n.id, e)}
+                title="Eliminar notificación"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </DeleteButton>
+            </NotificationHeader>
+            <BadgeAndDateContainer>
+              <StatusBadge $isRead={n.leida}>
+                {n.leida ? 'Leída' : 'No leída'}
+              </StatusBadge>
               <NotificationDate>
                 {new Date(n.fechaNotificacion).toLocaleString('es-ES', {
                   day: '2-digit',
@@ -92,10 +122,7 @@ const NotificacionBandeja = ({ idUsuario }) => {
                   minute: '2-digit'
                 })}
               </NotificationDate>
-            </NotificationHeader>
-            <StatusBadge $isRead={n.leida}>
-              {n.leida ? 'Leída' : 'No leída'}
-            </StatusBadge>
+            </BadgeAndDateContainer>
             {openId === n.id && (
               <NotificationContent>
                 {n.notificacion}
@@ -132,7 +159,7 @@ const NotificationList = styled.ul`
 `;
 
 const NotificationItem = styled.li`
-  background: ${props => props.$isRead ? '#fafafa' : '#fff3cd'};
+  background: ${props => props.$isRead ? '#fafafa' : '#9dcbd799'};
   border: 2px solid ${props => props.$isOpen ? '#4C241D' : '#ddd'};
   border-radius: 4px;
   padding: 16px;
@@ -149,16 +176,23 @@ const NotificationItem = styled.li`
 const NotificationHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8px;
   gap: 12px;
-  flex-wrap: wrap;
 `;
 
 const NotificationTitle = styled.span`
   font-weight: 600;
   font-size: 15px;
   color: #333;
+  flex: 1;
+`;
+
+const BadgeAndDateContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 `;
 
 const NotificationDate = styled.span`
@@ -167,13 +201,34 @@ const NotificationDate = styled.span`
   white-space: nowrap;
 `;
 
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+  border-radius: 4px;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    opacity: 0.6;
+  }
+  
+  &:active {
+    opacity: 0.4;
+  }
+`;
+
 const StatusBadge = styled.div`
   display: inline-block;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 12px;
   font-weight: 500;
-  background-color: ${props => props.$isRead ? '#e0e0e0' : '#ffc107'};
+  background-color: ${props => props.$isRead ? '#e0e0e0' : '#99ccd8ff'};
   color: ${props => props.$isRead ? '#666' : '#000'};
   margin-bottom: 8px;
 `;

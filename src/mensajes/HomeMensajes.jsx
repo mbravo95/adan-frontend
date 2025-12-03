@@ -199,7 +199,7 @@ const MensajesLayout = styled.div`
 
 const PanelIzquierdo = styled.div`
   width: 350px;
-  min-width: 300px;
+  min-width: 350px;
   background-color: #9dcbd7dd;
   border-right: 1px solid #ddd;
   padding: 15px;
