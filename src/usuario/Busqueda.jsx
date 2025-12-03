@@ -48,12 +48,12 @@ const Busqueda = () => {
     };
 
     const handleSearchClick = async() => {
-    if (busqueda.trim() === '') {
-        setUsuariosFiltrados(usuarios);
-        return;
-    }
+        if (busqueda.trim() === '') {
+            setUsuariosFiltrados(usuarios);
+            return;
+        }
 
-    const filtro = busqueda.toLowerCase();
+        const filtro = busqueda.toLowerCase();
         setLoading(true);
         try {
             const urlBase = import.meta.env.VITE_BACKEND_URL;
@@ -88,8 +88,8 @@ const Busqueda = () => {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        if (!confirm('¿Estás seguro de que deseas bloquear o desbloquear este usuario?')) {
+    const handleToggleBloqueo = async (user) => {
+        if (!confirm(`¿Estás seguro de que deseas ${user.bloqueado ? 'desbloquear' : 'bloquear'} este usuario?`)) {
             return;
         }
         
@@ -103,14 +103,26 @@ const Busqueda = () => {
                 },
             };
             
-            await axios.put(`${urlBase}/usuarios/baja/${userId}`, {}, config);
+
+            const endpoint = user.bloqueado 
+                ? `${urlBase}/usuarios/${user.id}/desbloquear`
+                : `${urlBase}/usuarios/baja/${user.id}`;
             
-            // Actualizar la lista de usuarios eliminando el usuario borrado
-            const nuevosUsuarios = usuarios.filter(user => user.id !== userId);
-            setUsuarios(nuevosUsuarios);
-            setUsuariosFiltrados(usuariosFiltrados.filter(user => user.id !== userId));
+            console.log('Llamando a endpoint:', endpoint);
+            console.log('Token:', token ? 'Presente' : 'No presente');
             
-            toast.success("Usuario bloqueado/desbloqueado exitosamente", {
+            await axios.put(endpoint, {}, config);
+            
+
+            const usuariosActualizados = usuarios.map(u => 
+                u.id === user.id ? { ...u, bloqueado: !u.bloqueado } : u
+            );
+            setUsuarios(usuariosActualizados);
+            setUsuariosFiltrados(usuariosFiltrados.map(u => 
+                u.id === user.id ? { ...u, bloqueado: !u.bloqueado } : u
+            ));
+            
+            toast.success(`Usuario ${user.bloqueado ? 'desbloqueado' : 'bloqueado'} exitosamente`, {
                 position: "top-center",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -120,10 +132,23 @@ const Busqueda = () => {
                 progress: undefined,
             });
         } catch (error) {
-            console.log(error);
-            toast.error("Error al bloquear/desbloquear el usuario", {
+            console.error('Error completo:', error);
+            console.error('Respuesta del servidor:', error.response?.data);
+            console.error('Status:', error.response?.status);
+            
+            let mensajeError = `Error al ${user.bloqueado ? 'desbloquear' : 'bloquear'} el usuario`;
+            
+            if (error.response?.status === 403) {
+                mensajeError = "No tienes permisos para realizar esta acción. Verifica que seas administrador.";
+            } else if (error.response?.status === 401) {
+                mensajeError = "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.";
+            } else if (error.response?.data?.mensaje) {
+                mensajeError = error.response.data.mensaje;
+            }
+            
+            toast.error(mensajeError, {
                 position: "top-center",
-                autoClose: 3000,
+                autoClose: 4000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -131,7 +156,7 @@ const Busqueda = () => {
                 progress: undefined,
             });
         }
-    }
+    };
 
     const formatearFecha = (fechaString) => {
         const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -139,87 +164,91 @@ const Busqueda = () => {
         return fecha.toLocaleDateString('es-ES', opciones);
     };
 
-  return (
-    <>
-        <Container>
-            <ContentWrapper>
-                {/*<Title>Gestión de Usuarios</Title>*/}
-                
-                <FilterBar>
-                    <FilterInput
-                        type="text"
-                        placeholder="Buscar usuarios..."
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
-                    />
-                    <SearchButton onClick={handleSearchClick}>
-                        <SearchIconSVG /> Buscar
-                    </SearchButton>
-                    <ResetButton onClick={handleReset}>
-                        <ResetIconSVG /> Restablecer resultados
-                    </ResetButton>
-                </FilterBar>
+    return (
+        <>
+            <Container>
+                <ContentWrapper>
+                    {/*<Title>Gestión de Usuarios</Title>*/}
+                    
+                    <FilterBar>
+                        <FilterInput
+                            type="text"
+                            placeholder="Buscar usuarios..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
+                        />
+                        <SearchButton onClick={handleSearchClick}>
+                            <SearchIconSVG /> Buscar
+                        </SearchButton>
+                        <ResetButton onClick={handleReset}>
+                            <ResetIconSVG /> Restablecer resultados
+                        </ResetButton>
+                    </FilterBar>
 
-                {loading && <Spinner />}
-                {!loading &&
-                    <UserGrid>
-                        {usuariosFiltrados.length > 0 ? (
-                            usuariosFiltrados.map((user) => (
-                                <UserCard key={user.id}>
-                                    <UserIcon role={user.tipoUsuario}>
-                                        {user.fotoPerfil ? (
-                                            <img 
-                                                src={`${import.meta.env.VITE_BACKEND_URL.replace('/api', '')}${user.fotoPerfil}`} 
-                                                alt={`${user.nombres} ${user.apellidos}`} 
-                                                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            <img 
-                                                src="/header/avatar.png"
-                                                alt={`${user.nombres} ${user.apellidos}`} 
-                                                style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                                            />
-                                        )}
-                                    </UserIcon>
-                                    <UserDetails>
-                                        <UserName>{user.nombres} {user.apellidos}</UserName>
-                                        <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
-                                        <UserStatus blocked={user.bloqueado}>
-                                            {user.bloqueado ? 'Bloqueado' : 'Activo'}
-                                        </UserStatus>
-                                        <DetailRow>
-                                            <DetailLabel>Cédula:</DetailLabel>
-                                            <DetailValue>{user.cedula ? user.cedula : "No disponible"}</DetailValue>
-                                        </DetailRow>
-                                        <DetailRow>
-                                            <DetailLabel>Correo:</DetailLabel>
-                                            <DetailValue>{user.correo}</DetailValue>
-                                        </DetailRow>
-                                        <DetailRow>
-                                            <DetailLabel>Fecha de Ingreso:</DetailLabel>
-                                            <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
-                                        </DetailRow>
-                                    </UserDetails>
-                                    
-                                    <ActionGroup>
-                                        <ActionButton onClick={() => handleDeleteUser(user.id)} danger>
-                                            {user.bloqueado ? 'Desbloquear' : 'Bloquear'}
-                                        </ActionButton>
-                                    </ActionGroup>
-                                </UserCard>
-                            ))
-                        ) : (
-                            <NoResults>No se encontraron usuarios que coincidan con la búsqueda</NoResults>
-                        )}
-                    </UserGrid>
-                }
-                
-            </ContentWrapper>
-        </Container>
-    </>
-  )
-}
+                    {loading && <Spinner />}
+                    {!loading &&
+                        <UserGrid>
+                            {usuariosFiltrados.length > 0 ? (
+                                usuariosFiltrados.map((user) => (
+                                    <UserCard key={user.id}>
+                                        <UserIcon role={user.tipoUsuario}>
+                                            {user.fotoPerfil ? (
+                                                <img 
+                                                    src={`${import.meta.env.VITE_BACKEND_URL.replace('/api', '')}${user.fotoPerfil}`} 
+                                                    alt={`${user.nombres} ${user.apellidos}`} 
+                                                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                                />
+                                            ) : (
+                                                <img 
+                                                    src="/header/avatar.png"
+                                                    alt={`${user.nombres} ${user.apellidos}`} 
+                                                    style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                                                />
+                                            )}
+                                        </UserIcon>
+                                        <UserDetails>
+                                            <UserName>{user.nombres} {user.apellidos}</UserName>
+                                            <UserRol role={user.tipoUsuario}>{user.tipoUsuario}</UserRol>
+                                            <UserStatus blocked={user.bloqueado}>
+                                                {user.bloqueado ? 'Bloqueado' : 'Activo'}
+                                            </UserStatus>
+                                            <DetailRow>
+                                                <DetailLabel>Cédula:</DetailLabel>
+                                                <DetailValue>{user.cedula ? user.cedula : "No disponible"}</DetailValue>
+                                            </DetailRow>
+                                            <DetailRow>
+                                                <DetailLabel>Correo:</DetailLabel>
+                                                <DetailValue>{user.correo}</DetailValue>
+                                            </DetailRow>
+                                            <DetailRow>
+                                                <DetailLabel>Fecha de Ingreso:</DetailLabel>
+                                                <DetailValue>{formatearFecha(user.fechaCreacion)}</DetailValue>
+                                            </DetailRow>
+                                        </UserDetails>
+                                        
+                                        <ActionGroup>
+                                            <ActionButton 
+                                                onClick={() => handleToggleBloqueo(user)} 
+                                                danger={!user.bloqueado}
+                                                success={user.bloqueado}
+                                            >
+                                                {user.bloqueado ? 'Desbloquear' : 'Bloquear'}
+                                            </ActionButton>
+                                        </ActionGroup>
+                                    </UserCard>
+                                ))
+                            ) : (
+                                <NoResults>No se encontraron usuarios que coincidan con la búsqueda</NoResults>
+                            )}
+                        </UserGrid>
+                    }
+                    
+                </ContentWrapper>
+            </Container>
+        </>
+    );
+};
 
 export default Busqueda;
 
@@ -436,11 +465,19 @@ const ActionButton = styled.button`
     cursor: pointer;
     transition: background-color 0.2s;
     
-    background-color: ${props => props.primary ? '#007bff' : (props.danger ? '#d72d3eff' : '#ccc')};
-    color: ${props => props.primary || props.danger ? 'white' : '#333'};
+    background-color: ${props => 
+        props.success ? '#4caf50' : 
+        props.danger ? '#d72d3eff' : 
+        props.primary ? '#007bff' : '#ccc'
+    };
+    color: ${props => props.primary || props.danger || props.success ? 'white' : '#333'};
 
     &:hover {
-        background-color: ${props => props.primary ? '#0056b3' : (props.danger ? '#c82333' : '#bbb')};
+        background-color: ${props => 
+            props.success ? '#45a049' : 
+            props.danger ? '#c82333' : 
+            props.primary ? '#0056b3' : '#bbb'
+        };
     }
 `;
 
