@@ -146,7 +146,7 @@ const CalificacionPerfilEstudiante = () => {
             </InfoField>
           </InfoSection>
 
-          {puedeAdministrarCursos(location.pathname) && (
+          {puedeAdministrarCursos(location.pathname, codigoCurso) && (
             <CalificacionContainer>
               <Subtitle>
                 Calificación en el curso: 
@@ -157,7 +157,7 @@ const CalificacionPerfilEstudiante = () => {
             </CalificacionContainer>
           )}
           
-          {puedeAdministrarCursos(location.pathname) && (
+          {puedeAdministrarCursos(location.pathname, codigoCurso) && (
             <ButtonGroup>
               <CalificarButton onClick={() => navigate(`/curso/${id}/estudiante/${estudianteId}/calificar`)}>
                 Calificar estudiante
