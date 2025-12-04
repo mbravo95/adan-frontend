@@ -36,7 +36,7 @@ const EntregasTarea = () => {
     fetchEntregas();
   }, [tareaId]);
   
-  const descargarEntrega = async (tareaId, entregaId, nombreArchivo) => {
+  const descargarEntrega = async (tareaId, entregaId) => {
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
@@ -48,8 +48,18 @@ const EntregasTarea = () => {
         },
       });
       if (!response.ok) throw new Error("Error al descargar el archivo");
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `entrega_${entregaId}.zip`;
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/"/g, '');
+        }
+      }
+      
       const blob = await response.blob();
-      const filename = nombreArchivo || `entrega_${entregaId}.zip`;
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = filename;
@@ -164,7 +174,7 @@ const EntregasTarea = () => {
                     </EntregaInfo>
                     <ActionButtons>
                       <DownloadButton
-                        onClick={() => descargarEntrega(entrega.idTarea || tareaId, entrega.id, entrega.urlEntregable ? entrega.urlEntregable.split('\\').pop() : undefined)}
+                        onClick={() => descargarEntrega(entrega.idTarea || tareaId, entrega.id)}
                       >
                         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M13.125 9.375V11.875C13.125 12.2065 12.9933 12.5245 12.7589 12.7589C12.5245 12.9933 12.2065 13.125 11.875 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V9.375M4.375 6.25L7.5 9.375M7.5 9.375L10.625 6.25M7.5 9.375V1.875" stroke="#1E1E1E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
