@@ -185,7 +185,7 @@ const MatricularEstudianteCurso = () => {
             ) : usuariosFiltrados.length > 0 ? (
               <UsersList>
                 {usuariosFiltrados.map((usuario) => (
-                  <UserCard key={usuario.id}>
+                  <UserCard key={usuario.id} data-testid={`user-card-${usuario.id}`}>
                     <UserInfo>
                       <UserName>
                         {usuario.nombres} {usuario.apellidos}
