@@ -191,7 +191,7 @@ const Busqueda = () => {
                         <UserGrid>
                             {usuariosFiltrados.length > 0 ? (
                                 usuariosFiltrados.map((user) => (
-                                    <UserCard key={user.id}>
+                                    <UserCard key={user.id} data-testid={`user-card-${user.id}`}>
                                         <UserIcon role={user.tipoUsuario}>
                                             {user.fotoPerfil ? (
                                                 <img 
