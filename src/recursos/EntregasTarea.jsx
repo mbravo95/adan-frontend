@@ -93,6 +93,32 @@ const EntregasTarea = () => {
     navigate(`/curso/${codigo}/tarea/${tareaId}/entregas/calificar-csv`);
   }
 
+  const descargarTodasLasEntregas = async () => {
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      const downloadUrl = `${urlBase}/entregables/${tareaId}/entregas/descargar-todas`;
+      const response = await fetch(downloadUrl, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error("Error al descargar las entregas");
+      const blob = await response.blob();
+      const filename = `entregas_tarea_${tareaId}.zip`;
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      //toast.success("Descarga iniciada correctamente");
+    } catch (err) {
+      toast.error("Error al descargar todas las entregas");
+    }
+  };
+
   const volverAlCurso = () => {
   navigate(`/curso/${codigo}`);
   };
@@ -106,7 +132,16 @@ const EntregasTarea = () => {
           </BackButton>
           <Title>Entregas de la tarea</Title>
           <ButtonContainer>
+            <CsvButton onClick={() => descargarTodasLasEntregas()}>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.125 9.375V11.875C13.125 12.2065 12.9933 12.5245 12.7589 12.7589C12.5245 12.9933 12.2065 13.125 11.875 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V9.375M4.375 6.25L7.5 9.375M7.5 9.375L10.625 6.25M7.5 9.375V1.875" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Descargar todas las entregas
+            </CsvButton>
             <CsvButton onClick={() => irCalificarEntregasCsv()}>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.625 6.875L7.5 8.75L13.75 2.5M13.125 7.5V11.875C13.125 12.2065 12.9933 12.5245 12.7589 12.7589C12.5245 12.9933 12.2065 13.125 11.875 13.125H3.125C2.79348 13.125 2.47554 12.9933 2.24112 12.7589C2.0067 12.5245 1.875 12.2065 1.875 11.875V3.125C1.875 2.79348 2.0067 2.47554 2.24112 2.24112C2.47554 2.0067 2.79348 1.875 3.125 1.875H10" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               Calificar entregas vía CSV
             </CsvButton>
           </ButtonContainer>
@@ -224,11 +259,12 @@ const Title = styled.h2`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   margin-bottom: 24px;
 `;
 
 const CsvButton = styled.button`
-  background-color: #4C241D;
+  background-color: #2a2a2a;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -237,9 +273,12 @@ const CsvButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   
   &:hover {
-    background-color: #3a1b16;
+    background-color: #171717ff;
   }
 `;
 
