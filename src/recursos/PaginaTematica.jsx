@@ -64,28 +64,43 @@ const PaginaTematica = () => {
 export default PaginaTematica;
 
 const Container = styled.div`
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding-top: 110px;
     background-color: #ffffffff;
-    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
     justify-content: center;
+    align-items: flex-start;
+    padding-top: 90px;
+    padding-bottom: 20px;
+    position: relative;
+`;
+
+const BackButton = styled.button`
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    left: 20px;
+    top: 90px;
+    
+    &:hover {
+        background-color: #d0d0d0;
+    }
 `;
 
 const ScrollWrapper = styled.div`
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    margin-bottom: 10px;
+    width: 840px;
 `;
 
 const ContentWrapper = styled.div`
-    width: 840px;
+    width: 100%;
     display: flex;
     flex-direction: column;
 `;
@@ -130,22 +145,4 @@ const ErrorMessage = styled.div`
     height: 100%;
     font-size: 16px;
     color: #d32f2f;
-`;
-
-const BackButton = styled.button`
-  background-color: #e0e0e0;
-  color: #333;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-  max-width: 840px;
-  
-  &:hover {
-    background-color: #d0d0d0;
-  }
 `;

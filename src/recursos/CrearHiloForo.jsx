@@ -226,7 +226,7 @@ const CrearHiloForo = () => {
     <Container>
       <ContentWrapper>
         <FormWrapper>
-          <Title>Crear Hilo en Foro</Title>
+          <Title>Crear Hilo</Title>
           <form onSubmit={(e) => e.preventDefault()}>
             <FormGroup>
               <Label htmlFor="titulo">Título</Label>
