@@ -53,6 +53,7 @@ import NotificacionBandeja from "./notificaciones/NotificacionBandeja";
 import { useContext } from "react";
 import AuthContext from "./context/AuthProvider";
 import EditarCurso from "./cursos/EditarCurso";
+import ActividadUsuario from './usuario/ActividadUsuario';
 
 function App() {
 
@@ -124,6 +125,7 @@ function App() {
               <Route path="/curso/:codigo/participantes/calificar-csv" element={<CalificarEstudianteCsv />} />
               <Route path="/curso/:codigo/tarea/:tareaId/entregas/calificar-csv" element={<CalificarEntregaCsv />} />
               <Route path="/usuario/notificacion-bandeja" element={<NotificacionBandejaWrapper />} />
+              <Route path="/actividad-usuario/:userId" element={<ActividadUsuario />} />
               
 
             </Route>
