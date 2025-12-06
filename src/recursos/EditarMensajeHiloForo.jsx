@@ -181,7 +181,26 @@ const EditarMensajeHiloForo = ({ onCancelar }) => {
         const hilo = hilos.find(h => String(h.id) === String(hiloId));
         
         if (hilo) {
-          const mensaje = hilo.mensajes?.find(m => String(m.id) === String(idMensaje));
+          
+          const aplanarMensajes = (mensajes) => {
+            let todosLosMensajes = [];
+            
+            mensajes.forEach(mensaje => {
+              todosLosMensajes.push(mensaje);
+              
+              if (mensaje.respuestas && mensaje.respuestas.length > 0) {
+                todosLosMensajes = todosLosMensajes.concat(
+                  aplanarMensajes(mensaje.respuestas)
+                );
+              }
+            });
+            
+            return todosLosMensajes;
+          };
+          
+          const mensajesAplanados = aplanarMensajes(hilo.mensajes || []);
+          const mensaje = mensajesAplanados.find(m => String(m.id) === String(idMensaje));
+          
           if (mensaje) {
             setCuerpo(mensaje.cuerpo);
           } else {
