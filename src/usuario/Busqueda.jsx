@@ -4,6 +4,7 @@ import useAuth from '../hooks/useAuth';
 import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from '../general/Spinner';
+import { useNavigate } from 'react-router-dom';
 
 const Busqueda = () => {
 
@@ -13,6 +14,7 @@ const Busqueda = () => {
     const [loading, setLoading] = useState(false);
 
     const {profile} = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const cargarUsuarios = async () => {
@@ -158,6 +160,15 @@ const Busqueda = () => {
         }
     };
 
+    const handleVerActividad = (user) => {
+        navigate(`/actividad-usuario/${user.id}`, { 
+            state: { 
+                userName: `${user.nombres} ${user.apellidos}`,
+                userEmail: user.correo 
+            } 
+        });
+    };
+
     const formatearFecha = (fechaString) => {
         const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
         const fecha = new Date(fechaString);
@@ -228,6 +239,12 @@ const Busqueda = () => {
                                         </UserDetails>
                                         
                                         <ActionGroup>
+                                            <ActionButton 
+                                                onClick={() => handleVerActividad(user)} 
+                                                primary
+                                            >
+                                                Ver Actividad
+                                            </ActionButton>
                                             <ActionButton 
                                                 onClick={() => handleToggleBloqueo(user)} 
                                                 danger={!user.bloqueado}
@@ -468,7 +485,7 @@ const ActionButton = styled.button`
     background-color: ${props => 
         props.success ? '#4caf50' : 
         props.danger ? '#d72d3eff' : 
-        props.primary ? '#007bff' : '#ccc'
+        props.primary ? '#667eea' : '#ccc'
     };
     color: ${props => props.primary || props.danger || props.success ? 'white' : '#333'};
 
