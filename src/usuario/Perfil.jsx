@@ -65,7 +65,7 @@ const Perfil = () => {
             // viene como YYYY-MM-DD
             const [year, month, day] = fechaString.split("-");
 
-            return `${day}/${month}/${year}`;
+            return `${day} | ${month} | ${year}`;
           } catch (error) {
             return fechaString;
           }
@@ -82,7 +82,7 @@ const Perfil = () => {
           const mes = String(fecha.getMonth() + 1).padStart(2, "0");
           const anio = fecha.getFullYear();
 
-          return `${dia}/${mes}/${anio}`;
+          return `${dia} | ${mes} | ${anio}`;
         };
         
         setUserData({
@@ -236,7 +236,8 @@ const Container = styled.div`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
+  padding-top: 60px;
 `;
 
 const ContentWrapper = styled.div`
