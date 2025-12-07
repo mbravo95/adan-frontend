@@ -116,7 +116,7 @@ const CalificacionesCurso = () => {
             <ContentWrapper>
                 <CardContainer>
                     <PerfilHeader>
-                        <AvatarPerfil src={profile.fotoPerfil || "/header/avatar.png"} alt="Avatar" />
+                        <AvatarPerfil fotoUrl={construirUrlFoto(profile.fotoPerfil)} />
                         <PerfilInfo>
                             <NombreCompleto>
                                 {profile.nombres} {profile.apellidos}
@@ -262,6 +262,18 @@ const AvatarPerfil = styled.img`
     border: 3px solid white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+
+    
+
+    background-color: #bdbdbd; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: ${props => 
+        props.fotoUrl && props.fotoUrl !== DEFAULT_AVATAR_URL 
+        ? `url(${props.fotoUrl})` 
+        : `url(${DEFAULT_AVATAR_URL})`
+    };
 `;
 
 const PerfilInfo = styled.div`
