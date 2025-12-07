@@ -48,7 +48,7 @@ const NewThreadButton = styled.button`
 	display: block;
 	margin: 0 auto 28px auto;
 	padding: 14px 20px;
-	background-color: #4C241D;
+	background-color: #2a2a2a;
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -58,7 +58,7 @@ const NewThreadButton = styled.button`
 	transition: all 0.3s ease;
 	
 	&:hover {
-		background-color: #3a1b16;
+		background-color: #171717ff;
 	}
 `;
 
@@ -102,12 +102,15 @@ const DeleteButton = styled.span`
 	position: absolute;
 	right: 12px;
 	top: 12px;
-	color: #ff0000;
-	font-size: 18px;
+	/*font-size: 18px;*/
 	cursor: pointer;
 	padding: 4px;
 	border-radius: 4px;
 	transition: background-color 0.2s;
+	
+	svg {
+		display: block;
+	}
 	
 	&:hover {
 		background-color: rgba(0, 0, 0, 0.1);
@@ -284,7 +287,9 @@ const Foro = () => {
 													eliminarHilo(hilo.id);
 												}}
 											>
-												❌
+												<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M18.75 6.25L6.25 18.75M6.25 6.25L18.75 18.75" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+												</svg>
 											</DeleteButton>
 										)}
 									</ThreadCard>

@@ -4,6 +4,22 @@ import styled, { css } from 'styled-components';
 import useAuth from "../hooks/useAuth";
 import Spinner from '../general/Spinner';
 
+const DEFAULT_AVATAR_URL = "/header/avatar.png";
+
+const construirUrlFoto = (fotoPerfil) => {
+    if (!fotoPerfil) return DEFAULT_AVATAR_URL;
+    
+    if (fotoPerfil.startsWith('http')) {
+        return fotoPerfil;
+    }
+    
+    const baseUrl = import.meta.env.VITE_BACKEND_URL
+        .replace(/\/api$/, '')
+        .replace(/\/api\/$/, '');
+    
+    return `${baseUrl}${fotoPerfil}`;
+};
+
 const CalificacionesCurso = () => {
 
     const [cargando, setCargando] = useState(false);
@@ -16,7 +32,7 @@ const CalificacionesCurso = () => {
         setExpandedCourse(prevId => prevId === cursoId ? null : cursoId);
     };
 
-      const formatearFecha = (fechaString) => {
+    const formatearFecha = (fechaString) => {
         if (!fechaString) return "No disponible";
         try {
             const date = new Date(fechaString);
@@ -33,6 +49,13 @@ const CalificacionesCurso = () => {
             console.log(error);
             return fechaString;
         }
+    };
+
+    const calcularPromedio = () => {
+        const calificacionesValidas = calificacionesData.filter(c => c.calificacionCurso !== null);
+        if (calificacionesValidas.length === 0) return null;
+        const suma = calificacionesValidas.reduce((acc, c) => acc + parseFloat(c.calificacionCurso), 0);
+        return (suma / calificacionesValidas.length).toFixed(1);
     };
 
     useEffect(() => {
@@ -63,7 +86,6 @@ const CalificacionesCurso = () => {
                     return acc;
                 }, {});
 
-                
                 const calificacionesNormalizadas = datosCursos.map((curso, index) => {
                     const cursoId = curso.curso;
                     
@@ -87,245 +109,372 @@ const CalificacionesCurso = () => {
         cargarListados();
     }, [profile]);
 
-  return (
-    <>
+    const promedio = calcularPromedio();
+
+    return (
         <CalificacionesContainer>
-            <CardContainer>
-                <PerfilHeader>
-                    <AvatarPerfil fotoUrl={profile.fotoPerfil} />
-                    <div>
-                        <NombreCompleto>
-                            {profile.nombres} {profile.apellidos} 
-                        </NombreCompleto>
-                    </div>
-                </PerfilHeader>
-                <CalificacionesTitulo>Calificaciones</CalificacionesTitulo>
-                <TablaContenedor>
-                    {cargando ? <Spinner /> : 
-                        <Tabla>
-                            <TablaHeader>
-                                <tr>
-                                    <th style={{ width: '60%' }}>Curso</th>
-                                    <th style={{ width: '20%' }}>Calificación</th>
-                                    <th style={{ width: '20%' }}>Fecha de Calificación</th>
-                                </tr>
-                            </TablaHeader>
-                            <tbody>
+            <ContentWrapper>
+                <CardContainer>
+                    <PerfilHeader>
+                        <AvatarPerfil src={profile.fotoPerfil || "/header/avatar.png"} alt="Avatar" />
+                        <PerfilInfo>
+                            <NombreCompleto>
+                                {profile.nombres} {profile.apellidos}
+                            </NombreCompleto>
+                            <PerfilSubtitulo>{profile.correo}</PerfilSubtitulo>
+                        </PerfilInfo>
+                        {promedio && (
+                            <PromedioCard>
+                                <PromedioLabel>Promedio General</PromedioLabel>
+                                <PromedioValor $valor={parseFloat(promedio)}>
+                                    {promedio}
+                                </PromedioValor>
+                            </PromedioCard>
+                        )}
+                    </PerfilHeader>
+
+                    <CalificacionesSection>
+                        <CalificacionesTitulo>Mis calificaciones</CalificacionesTitulo>
+                        
+                        {cargando ? (
+                            <SpinnerContainer>
+                                <Spinner />
+                            </SpinnerContainer>
+                        ) : calificacionesData.length === 0 ? (
+                            <EmptyState>
+                                <EmptyText>No hay calificaciones disponibles</EmptyText>
+                            </EmptyState>
+                        ) : (
+                            <CursosLista>
                                 {calificacionesData.map(curso => (
-                                    <>
-                                        <TablaFilaCurso 
-                                            key={curso.id} 
+                                    <CursoItem key={curso.id}>
+                                        <CursoHeader 
                                             onClick={() => handleToggle(curso.id)}
+                                            $expandido={expandedCourse === curso.id}
                                         >
-                                            <td>
+                                            <CursoNombre>
                                                 <ChevronIcono $expandido={expandedCourse === curso.id}>
                                                     ▶
                                                 </ChevronIcono>
-                                                {curso.nombreCurso}
-                                            </td>
-                                            <td>
-                                                <TextoCalificacion 
-                                                    $estado={curso.calificacionCurso === null ? 'Sin calificar' : curso.calificacionCurso}
-                                                >
+                                                <span>{curso.nombreCurso}</span>
+                                            </CursoNombre>
+                                            <CursoDetalles>
+                                                <CalificacionTexto $valor={curso.calificacionCurso}>
                                                     {curso.calificacionCurso !== null ? curso.calificacionCurso : 'Sin calificar'}
-                                                </TextoCalificacion>
-                                            </td>
-                                            <td>{formatearFecha(curso.fechaCalificado) || '-'}</td>
-                                        </TablaFilaCurso>
+                                                </CalificacionTexto>
+                                                <FechaTexto>
+                                                    {curso.fechaCalificado ? formatearFecha(curso.fechaCalificado) : '-'}
+                                                </FechaTexto>
+                                            </CursoDetalles>
+                                        </CursoHeader>
 
-                                        {expandedCourse === curso.id &&
-                                            <TablaFilaEntregableHeader>
-                                                <td style={{ paddingLeft: '40px' }}>Nombre de la Tarea</td>
-                                                <td>Calificación</td>
-                                                <td>Fecha de Entrega</td> {/* Titulo ajustado */}
-                                            </TablaFilaEntregableHeader>
-                                        }
-                                        
-                                        
-                                        {expandedCourse === curso.id && curso.entregables.map(entregable => (
-                                            <TablaFilaEntregable key={entregable.tarea}>
-                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 {entregable.tarea}</td>
-                                                <td>
-                                                    <TextoCalificacion 
-                                                        $estado={entregable.calificacionEntregable === null ? 'Sin calificar' : entregable.calificacionEntregable}
-                                                    >
-                                                        {entregable.calificacionEntregable !== null ? entregable.calificacionEntregable : 'Sin calificar'}
-                                                    </TextoCalificacion>
-                                                </td>
-                                                <td>{formatearFecha(entregable.fechaEntrega) || '-'}</td>
-                                            </TablaFilaEntregable>
-                                        ))}
-                                    </>
+                                        {expandedCourse === curso.id && (
+                                            <EntregablesContainer>
+                                                {curso.entregables.length > 0 ? (
+                                                    <>
+                                                        <EntregablesHeader>
+                                                            <HeaderCol width="50%">Nombre de la Tarea</HeaderCol>
+                                                            <HeaderCol width="30%">Calificación</HeaderCol>
+                                                            <HeaderCol width="20%">Fecha de Entrega</HeaderCol>
+                                                        </EntregablesHeader>
+                                                        {curso.entregables.map((entregable, idx) => (
+                                                            <EntregableItem key={idx}>
+                                                                <EntregableCol width="50%">
+                                                                    <TareaIcono>
+                                                                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M8.75 1.25H3.75C3.41848 1.25 3.10054 1.3817 2.86612 1.61612C2.6317 1.85054 2.5 2.16848 2.5 2.5V12.5C2.5 12.8315 2.6317 13.1495 2.86612 13.3839C3.10054 13.6183 3.41848 13.75 3.75 13.75H11.25C11.5815 13.75 11.8995 13.6183 12.1339 13.3839C12.3683 13.1495 12.5 12.8315 12.5 12.5V5M8.75 1.25L12.5 5M8.75 1.25L8.75 5H12.5M10 8.125H5M10 10.625H5M6.25 5.625H5" stroke="#1E1E1E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                        </svg>
+                                                                    </TareaIcono>
+                                                                    {entregable.tarea}
+                                                                </EntregableCol>
+                                                                <EntregableCol width="30%">
+                                                                    <CalificacionTexto $valor={entregable.calificacionEntregable}>
+                                                                        {entregable.calificacionEntregable !== null ? entregable.calificacionEntregable : 'Sin calificar'}
+                                                                    </CalificacionTexto>
+                                                                </EntregableCol>
+                                                                <EntregableCol width="20%">
+                                                                    {entregable.fechaEntrega ? formatearFecha(entregable.fechaEntrega) : '-'}
+                                                                </EntregableCol>
+                                                            </EntregableItem>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <EmptyEntregables>
+                                                        No hay tareas registradas para este curso
+                                                    </EmptyEntregables>
+                                                )}
+                                            </EntregablesContainer>
+                                        )}
+                                    </CursoItem>
                                 ))}
-                            </tbody>
-                        </Tabla>
-                    }
-                </TablaContenedor>
-            </CardContainer>
+                            </CursosLista>
+                        )}
+                    </CalificacionesSection>
+                </CardContainer>
+            </ContentWrapper>
         </CalificacionesContainer>
-    </>
-  )
+    );
 }
 
 export default CalificacionesCurso;
 
 
-
-const DEFAULT_AVATAR_URL = "/header/avatar.png";
-
 const CalificacionesContainer = styled.div`
     background-color: #9DCBD7;
     min-height: 100vh;
     width: 100%;
-    /*margin-top: 70px;*/
-    display: flex;
+    padding: 90px 20px 40px;
     box-sizing: border-box;
 `;
 
-const CardContainer = styled.div`
+const ContentWrapper = styled.div`
     max-width: 1000px;
-    width: 100%;
-    height: 100%;
     margin: 0 auto;
+`;
+
+const CardContainer = styled.div`
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-top: 90px;
-    margin-bottom: 20px;
 `;
-
 
 const PerfilHeader = styled.div`
     display: flex;
     align-items: center;
-    padding: 20px 30px;
-    background-color: #fcfcfc;
-    border-bottom: 1px solid #eee;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+    }
 `;
 
-const AvatarPerfil = styled.div`
-    width: 60px;
-    height: 60px;
+const AvatarPerfil = styled.img`
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background-color: #ccc;
-    margin-right: 20px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+`;
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    
-    background-image: ${props => props.fotoUrl && props.fotoUrl !== DEFAULT_AVATAR_URL 
-        ? `url(${props.fotoUrl})` 
-        : `url(${DEFAULT_AVATAR_URL})`
-    };
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #3b5998;
-    font-size: 2.5em; 
+const PerfilInfo = styled.div`
+    flex: 1;
+    min-width: 200px;
 `;
 
 const NombreCompleto = styled.h1`
     font-size: 1.8em;
     color: #333;
+    margin: 0 0 5px 0;
+    font-weight: 600;
+`;
+
+const PerfilSubtitulo = styled.p`
+    font-size: 1em;
+    color: #6c757d;
     margin: 0;
+`;
+
+const PromedioCard = styled.div`
+    background: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 2px solid #e9ecef;
+    min-width: 140px;
+`;
+
+const PromedioLabel = styled.div`
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+`;
+
+const PromedioValor = styled.div`
+    font-size: 2em;
+    font-weight: 700;
+    color: ${props => {
+        const val = props.$valor;
+        if (val >= 6) return '#28a745';
+        return '#d9534f';
+    }};
+`;
+
+const CalificacionesSection = styled.div`
+    padding: 30px;
 `;
 
 const CalificacionesTitulo = styled.h2`
     font-size: 1.5em;
     color: #333;
-    padding: 20px 30px 10px;
-    margin: 0;
+    margin: 0 0 25px 0;
+    font-weight: 600;
 `;
 
-const TablaContenedor = styled.div`
-    padding: 0 30px 30px;
+const SpinnerContainer = styled.div`
+    padding: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
-const Tabla = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95em;
+const EmptyState = styled.div`
+    padding: 60px;
+    text-align: center;
 `;
 
-const TablaHeader = styled.thead`
-    border-bottom: 2px solid #ddd;
-    th {
-        font-weight: 600;
-        color: #555;
-        text-align: left;
-        padding: 12px 10px;
-    }
+const EmptyText = styled.p`
+    font-size: 1.1em;
+    color: #6c757d;
 `;
 
-const TablaFilaCurso = styled.tr`
-    background-color: #fafafa;
-    border-top: 1px solid #eee;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    
+const CursosLista = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+
+const CursoItem = styled.div`
+    background: #fafafa;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+
     &:hover {
-        background-color: #f0f0f0;
-    }
-    
-    td {
-        padding: 12px 10px;
-        font-weight: bold;
-        color: #333;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 `;
 
-const TablaFilaEntregable = styled.tr`
-    background-color: #fff;
-    border-bottom: 1px dashed #eee;
-    
-    td {
-        padding: 8px 10px;
-        color: #666;
+const CursoHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    cursor: pointer;
+    background: ${props => props.$expandido ? 'white' : '#fafafa'};
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: white;
     }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+`;
+
+const CursoNombre = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05em;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+`;
+
+const ChevronIcono = styled.span`
+    font-size: 0.7em;
+    color: #6c757d;
+    transition: transform 0.2s ease;
+    transform: ${props => props.$expandido ? 'rotate(90deg)' : 'rotate(0deg)'};
+`;
+
+const CursoDetalles = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 30px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        justify-content: space-between;
+        padding-left: 25px;
+    }
+`;
+
+const CalificacionTexto = styled.span`
+    font-weight: 700;
+    font-size: 1.05em;
+    min-width: 90px;
+    text-align: left;
+    color: ${props => {
+        if (props.$valor === null) return '#aaa';
+        const val = parseFloat(props.$valor);
+        if (val >= 6) return '#28a745';
+        return '#d9534f';
+    }};
+`;
+
+const FechaTexto = styled.span`
+    font-size: 0.9em;
+    color: #6c757d;
+    min-width: 140px;
+`;
+
+const EntregablesContainer = styled.div`
+    background: white;
+    padding: 15px 20px;
+    border-top: 1px solid #e9ecef;
+`;
+
+const EntregablesHeader = styled.div`
+    display: flex;
+    padding: 10px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+    font-size: 0.85em;
+    color: #6c757d;
+    text-transform: uppercase;
+`;
+
+const HeaderCol = styled.div`
+    width: ${props => props.width};
+`;
+
+const EntregableItem = styled.div`
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px dashed #e9ecef;
+
     &:last-child {
         border-bottom: none;
     }
 `;
 
-const ChevronIcono = styled.span`
+const EntregableCol = styled.div`
+    width: ${props => props.width};
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    color: #555;
+
+    svg {
+		display: block;
+	}
+`;
+
+const TareaIcono = styled.span`
     margin-right: 8px;
-    font-size: 0.8em;
-    display: inline-block;
-    transition: transform 0.2s;
     
-    ${props => 
-        props.$expandido && 
-        css`
-            transform: rotate(90deg);
-        `
-    }
 `;
 
-const TextoCalificacion = styled.span`
-    font-weight: bold;
-    color: ${props => 
-        props.$estado === 'Sin calificar' 
-            ? '#aaa' 
-            : (props.$estado !== null && !isNaN(props.$estado) && props.$estado < 6 
-                ? '#d9534f' 
-                : (props.$estado !== null && !isNaN(props.$estado) && props.$estado >= 6 
-                    ? '#28a745' 
-                    : '#333'))
-    };
-`;
-
-const TablaFilaEntregableHeader = styled.tr`
-    background-color: #f5f5f5;
-    border-top: 1px solid #ddd;
-    
-    td {
-        padding: 8px 10px;
-        font-weight: 600;
-        color: #777;
-        font-size: 0.85em;
-    }
+const EmptyEntregables = styled.div`
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
 `;

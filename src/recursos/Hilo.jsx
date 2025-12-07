@@ -117,6 +117,10 @@ const BotonesAccion = styled.div`
 	position: absolute;
 	top: 12px;
 	right: 12px;
+
+	svg {
+		display: block;
+	}
 	
 	span {
 		font-size: 16px;
@@ -135,7 +139,7 @@ const BotonPublicar = styled.button`
 	display: block;
 	margin: 0 auto 28px auto;
 	padding: 14px 20px;
-	background-color: #4C241D;
+	background-color: #2a2a2a;
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -145,7 +149,7 @@ const BotonPublicar = styled.button`
 	transition: all 0.3s ease;
 	
 	&:hover {
-		background-color: #3a1b16;
+		background-color: #171717ff;
 	}
 `;
 
@@ -403,7 +407,9 @@ const Hilo = () => {
 								irAResponderMensaje(recursoId, hiloId, msg.id);
 							}}
 						>
-							↩️
+							<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M14.6882 5.2085C16.3722 5.2085 17.8175 5.75537 19.0241 6.84912C20.2307 7.94287 20.834 9.30572 20.834 10.9377C20.834 12.5696 20.2307 13.9325 19.0241 15.0262C17.8175 16.12 16.3722 16.6668 14.6882 16.6668H8.12565L10.834 19.3752L9.37565 20.8335L4.16732 15.6252L9.37565 10.4168L10.834 11.8752L8.12565 14.5835H14.6882C15.7819 14.5835 16.7324 14.2363 17.5397 13.5418C18.347 12.8474 18.7507 11.9793 18.7507 10.9377C18.7507 9.896 18.347 9.02794 17.5397 8.3335C16.7324 7.63905 15.7819 7.29183 14.6882 7.29183H7.29232V5.2085H14.6882Z" fill="#1D1B20"/>
+							</svg>
 						</span>
 					)}
 					{(puedeAdministrarCursos(location.pathname) || msg.idAutor === profile?.id) && msg.cuerpo !== "{Mensaje Eliminado}" && (
@@ -416,7 +422,9 @@ const Hilo = () => {
 									irAEditarMensaje(msg.id);
 								}}
 							>
-								✏️
+								<svg width="24" height="24" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M5.20833 19.7917H6.69271L16.875 9.60937L15.3906 8.125L5.20833 18.3073V19.7917ZM3.125 21.875V17.4479L16.875 3.72396C17.0833 3.53299 17.3134 3.38542 17.5651 3.28125C17.8168 3.17708 18.0816 3.125 18.3594 3.125C18.6372 3.125 18.9062 3.17708 19.1667 3.28125C19.4271 3.38542 19.6528 3.54167 19.8438 3.75L21.276 5.20833C21.4844 5.39931 21.6363 5.625 21.7318 5.88542C21.8273 6.14583 21.875 6.40625 21.875 6.66667C21.875 6.94444 21.8273 7.2092 21.7318 7.46094C21.6363 7.71267 21.4844 7.94271 21.276 8.15104L7.55208 21.875H3.125ZM16.1198 8.88021L15.3906 8.125L16.875 9.60937L16.1198 8.88021Z" fill="#1D1B20"/>
+								</svg>
 							</span>
 							<span
 								title="Eliminar mensaje"
@@ -426,7 +434,9 @@ const Hilo = () => {
 									eliminarMensaje(msg.id);
 								}}
 							>
-								❌
+								<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M6.66732 19.7918L5.20898 18.3335L11.0423 12.5002L5.20898 6.66683L6.66732 5.2085L12.5007 11.0418L18.334 5.2085L19.7923 6.66683L13.959 12.5002L19.7923 18.3335L18.334 19.7918L12.5007 13.9585L6.66732 19.7918Z" fill="#1D1B20"/>
+								</svg>
 							</span>
 						</>
 					)}
