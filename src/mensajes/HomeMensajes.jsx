@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import styled from "styled-components";
@@ -7,6 +8,7 @@ import Conversacion from "./Conversacion";
 import ModalNuevaConversacion from "./ModalNuevaConversacion";
 import Spinner from '../general/Spinner';
 import useAuth from "../hooks/useAuth";
+import { esUsuarioRegular } from '../utils/permisoCursos';
 
 
 const construirUrlFoto = (fotoPerfil) => {
@@ -33,6 +35,13 @@ const HomeMensajes = () => {
   const [busquedaConversacion, setBusquedaConversacion] = useState('');
 
   const { profile } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!esUsuarioRegular()) {
+      navigate("/not-found");
+    }
+  }, [navigate]);
 
   const calcularTiempoTranscurrido = (fecha) => {
     const ahora = new Date();
@@ -135,7 +144,7 @@ const HomeMensajes = () => {
         <PanelIzquierdo>
           <BotonNuevaConversacion onClick={handleModal}>
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.5 3.125V11.875M3.125 7.5H11.875" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Nueva conversación
           </BotonNuevaConversacion>

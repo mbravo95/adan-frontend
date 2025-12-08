@@ -5,9 +5,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from '../general/Spinner';
 import { useNavigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
 const Busqueda = () => {
 
+    const rol = localStorage.getItem("tipo");
     const [busqueda, setBusqueda] = useState('');
     const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
@@ -174,6 +176,10 @@ const Busqueda = () => {
         const fecha = new Date(fechaString);
         return fecha.toLocaleDateString('es-ES', opciones);
     };
+
+    if (rol !== "ADMINISTRADOR") {
+        return <Navigate to="/home" />;
+    }
 
     return (
         <>

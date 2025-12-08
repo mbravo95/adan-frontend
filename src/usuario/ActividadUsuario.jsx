@@ -127,19 +127,6 @@ const ActividadUsuario = () => {
 
   const tiposActividad = ['TODOS', 'CALIF_CURSO', 'ALTA_ENTREGA', 'CALIF_ENTREGA', 'ALTA_MENSAJE', 'MOD_MENSAJE'];
 
-  const obtenerEstadisticas = () => {
-    const stats = {
-      total: actividades.length,
-      mensajes: actividades.filter(a => a.tipo === 'ALTA_MENSAJE').length,
-      modificaciones: actividades.filter(a => a.tipo === 'MOD_MENSAJE').length,
-      entregas: actividades.filter(a => a.tipo === 'ALTA_ENTREGA').length,
-      califCursos: actividades.filter(a => a.tipo === 'CALIF_CURSO').length,
-      califEntregas: actividades.filter(a => a.tipo === 'CALIF_ENTREGA').length,
-    };
-    return stats;
-  };
-
-  const stats = obtenerEstadisticas();
 
   return (
     <Container>
@@ -161,33 +148,6 @@ const ActividadUsuario = () => {
             </UserInfo>
           </HeaderContent>
         </Header>
-
-        <StatsContainer>
-          <StatCard>
-            <StatNumber>{stats.total}</StatNumber>
-            <StatLabel>Total de Actividades</StatLabel>
-          </StatCard>
-          <StatCard color="#9C27B0">
-            <StatNumber>{stats.califCursos}</StatNumber>
-            <StatLabel>Calificaciones de Cursos</StatLabel>
-          </StatCard>
-          <StatCard color="#00BCD4">
-            <StatNumber>{stats.entregas}</StatNumber>
-            <StatLabel>Entregas</StatLabel>
-          </StatCard>
-          <StatCard color="#4CAF50">
-            <StatNumber>{stats.califEntregas}</StatNumber>
-            <StatLabel>Calificaciones de Entregas</StatLabel>
-          </StatCard>
-          <StatCard color="#2196F3">
-            <StatNumber>{stats.mensajes}</StatNumber>
-            <StatLabel>Mensajes en Foro</StatLabel>
-          </StatCard>
-          <StatCard color="#FF9800">
-            <StatNumber>{stats.modificaciones}</StatNumber>
-            <StatLabel>Mensajes en Foro Modificados</StatLabel>
-          </StatCard>
-        </StatsContainer>
 
         <FilterSection>
           <FilterLabel>Filtrar por tipo:</FilterLabel>
@@ -229,8 +189,10 @@ const ActividadUsuario = () => {
               <ActividadItem key={index} color={obtenerColorActividad(actividad.tipo)}>
                 <ActividadIcono>{obtenerIconoActividad(actividad.tipo)}</ActividadIcono>
                 <ActividadContent>
-                  <ActividadTitulo>{obtenerTituloActividad(actividad.tipo)}</ActividadTitulo>
-                  <ActividadFecha>{formatearFecha(actividad.fecha)}</ActividadFecha>
+                  <ActividadInfo>
+                    <ActividadTitulo>{obtenerTituloActividad(actividad.tipo)}</ActividadTitulo>
+                    <ActividadFecha>{formatearFecha(actividad.fecha)}</ActividadFecha>
+                  </ActividadInfo>
                   <ActividadDetalles>
                     {actividad.idMensaje && <Detalle>ID Mensaje: {actividad.idMensaje}</Detalle>}
                     {actividad.idEntregable && <Detalle>ID Entregable: {actividad.idEntregable}</Detalle>}
@@ -338,34 +300,6 @@ const UserEmail = styled.p`
   opacity: 0.85;
 `;
 
-const StatsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-`;
-
-const StatCard = styled.div`
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid ${props => props.color || '#667eea'};
-`;
-
-const StatNumber = styled.div`
-  font-size: 2.5em;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 5px;
-`;
-
-const StatLabel = styled.div`
-  font-size: 0.9em;
-  color: #666;
-  font-weight: 500;
-`;
-
 const FilterSection = styled.div`
   background: white;
   padding: 20px;
@@ -454,12 +388,13 @@ const ActividadesList = styled.div`
 const ActividadItem = styled.div`
   display: flex;
   gap: 20px;
-  padding: 20px;
+  padding: 15px;
   background: white;
   border-radius: 10px;
   border-left: 5px solid ${props => props.color};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  align-items: flex-start;
 
   &:hover {
     transform: translateX(5px);
@@ -479,8 +414,10 @@ const ActividadIcono = styled.div`
 const ActividadContent = styled.div`
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 `;
 
 const ActividadTitulo = styled.h3`
@@ -488,6 +425,13 @@ const ActividadTitulo = styled.h3`
   font-size: 1.2em;
   font-weight: 600;
   color: #333;
+`;
+
+const ActividadInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 `;
 
 const ActividadFecha = styled.p`
@@ -498,9 +442,10 @@ const ActividadFecha = styled.p`
 
 const ActividadDetalles = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: flex-start;
 `;
 
 const Detalle = styled.span`

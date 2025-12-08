@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Navigate } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #9DCBD7;
@@ -219,6 +220,7 @@ const NuevoCargaButton = styled.button`
 `;
 
 const CrearUsuarioCsv = () => {
+  const rol = localStorage.getItem("tipo");
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
@@ -322,6 +324,10 @@ const CrearUsuarioCsv = () => {
       setLoading(false);
     }
   };
+
+  if (rol !== "ADMINISTRADOR") {
+    return <Navigate to="/home" />;
+  }
 
   return (
     <Container>

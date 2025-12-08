@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Navigate } from "react-router-dom";
 
 
 
@@ -221,6 +222,7 @@ const NuevoCargaButton = styled.button`
 `;
 
 const CrearCursoCsv = () => {
+  const rol = localStorage.getItem("tipo");
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
@@ -324,6 +326,10 @@ const CrearCursoCsv = () => {
       setLoading(false);
     }
   };
+
+  if (rol !== "ADMINISTRADOR") {
+    return <Navigate to="/home" />;
+  }
 
   return (
     <Container>
