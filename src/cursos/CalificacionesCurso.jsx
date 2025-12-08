@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import useAuth from "../hooks/useAuth";
 import Spinner from '../general/Spinner';
+import { esUsuarioRegular } from '../utils/permisoCursos';
 
 const DEFAULT_AVATAR_URL = "/header/avatar.png";
 
@@ -27,6 +29,13 @@ const CalificacionesCurso = () => {
     const [calificacionesData, setCalificacionesData] = useState([]);
 
     const { profile } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!esUsuarioRegular()) {
+            navigate("/not-found");
+        }
+    }, [navigate]);
 
     const handleToggle = (cursoId) => {
         setExpandedCourse(prevId => prevId === cursoId ? null : cursoId);
@@ -182,7 +191,7 @@ const CalificacionesCurso = () => {
                                                                 <EntregableCol width="50%">
                                                                     <TareaIcono>
                                                                         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                        <path d="M8.75 1.25H3.75C3.41848 1.25 3.10054 1.3817 2.86612 1.61612C2.6317 1.85054 2.5 2.16848 2.5 2.5V12.5C2.5 12.8315 2.6317 13.1495 2.86612 13.3839C3.10054 13.6183 3.41848 13.75 3.75 13.75H11.25C11.5815 13.75 11.8995 13.6183 12.1339 13.3839C12.3683 13.1495 12.5 12.8315 12.5 12.5V5M8.75 1.25L12.5 5M8.75 1.25L8.75 5H12.5M10 8.125H5M10 10.625H5M6.25 5.625H5" stroke="#1E1E1E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                        <path d="M8.75 1.25H3.75C3.41848 1.25 3.10054 1.3817 2.86612 1.61612C2.6317 1.85054 2.5 2.16848 2.5 2.5V12.5C2.5 12.8315 2.6317 13.1495 2.86612 13.3839C3.10054 13.6183 3.41848 13.75 3.75 13.75H11.25C11.5815 13.75 11.8995 13.6183 12.1339 13.3839C12.3683 13.1495 12.5 12.8315 12.5 12.5V5M8.75 1.25L12.5 5M8.75 1.25L8.75 5H12.5M10 8.125H5M10 10.625H5M6.25 5.625H5" stroke="#1E1E1E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                                                         </svg>
                                                                     </TareaIcono>
                                                                     {entregable.tarea}

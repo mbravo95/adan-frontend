@@ -358,7 +358,7 @@ const Header = () => {
             <MenuItem onClick={irPerfil}>
               Perfil
             </MenuItem>
-            {esUsuarioRegular && 
+            {esRegular && 
               <MenuItem onClick={irCalificaciones}>
                 Calificaciones
               </MenuItem>

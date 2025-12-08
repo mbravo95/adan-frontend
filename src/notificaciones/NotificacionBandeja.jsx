@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { esUsuarioRegular } from '../utils/permisoCursos';
 
 const NotificacionBandeja = ({ idUsuario }) => {
   const [notificaciones, setNotificaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openId, setOpenId] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!esUsuarioRegular()) {
+      navigate("/not-found");
+    }
+  }, [navigate]);
 
   const marcarLeida = async (id) => {
     try {
