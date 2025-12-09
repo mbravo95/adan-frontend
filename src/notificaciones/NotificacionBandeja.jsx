@@ -6,9 +6,11 @@ import { esUsuarioRegular } from '../utils/permisoCursos';
 
 const NotificacionBandeja = ({ idUsuario }) => {
   const [notificaciones, setNotificaciones] = useState([]);
+  const [visibleNotificaciones, setVisibleNotificaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openId, setOpenId] = useState(null);
+  const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +20,9 @@ const NotificacionBandeja = ({ idUsuario }) => {
   }, [navigate]);
 
   const marcarLeida = async (id) => {
+    
+    setNotificaciones(prev => prev.map(n => n.id === id ? { ...n, leida: true } : n));
+    
     try {
       const urlBase = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
@@ -27,9 +32,10 @@ const NotificacionBandeja = ({ idUsuario }) => {
           "Content-Type": "application/json",
         }
       });
-      setNotificaciones(prev => prev.map(n => n.id === id ? { ...n, leida: true } : n));
+      
     } catch (err) {
-      // Silenciar error
+      setNotificaciones(prev => prev.map(n => n.id === id ? { ...n, leida: false } : n));
+      console.error('Error al marcar como leída:', err);
     }
   };
 
@@ -45,6 +51,7 @@ const NotificacionBandeja = ({ idUsuario }) => {
         }
       });
       setNotificaciones(prev => prev.filter(n => n.id !== id));
+      setVisibleNotificaciones(prev => prev.filter(n => n.id !== id));
     } catch (err) {
       alert('Error al eliminar la notificación');
     }
@@ -64,6 +71,7 @@ const NotificacionBandeja = ({ idUsuario }) => {
           }
         });
         setNotificaciones(response.data);
+        setVisibleNotificaciones(response.data);
       } catch (err) {
         setError("Error al cargar notificaciones");
       } finally {
@@ -72,6 +80,11 @@ const NotificacionBandeja = ({ idUsuario }) => {
     };
     if (idUsuario) fetchNotificaciones();
   }, [idUsuario]);
+
+
+  useEffect(() => {
+    setVisibleNotificaciones(filter === 'all' ? notificaciones : notificaciones.filter(n => !n.leida));
+  }, [filter, notificaciones]);
 
   if (loading) return (
     <Container>
@@ -85,23 +98,32 @@ const NotificacionBandeja = ({ idUsuario }) => {
     </Container>
   );
 
-  if (!notificaciones.length) return (
+  if (!visibleNotificaciones.length) return (
     <Container>
-      <EmptyMessage>No hay notificaciones.</EmptyMessage>
+      <Title>Notificaciones</Title>
+      <ButtonGroup>
+        <FilterButton $active={filter === 'all'} onClick={() => setFilter('all')}>Todas</FilterButton>
+        <FilterButton $active={filter === 'unread'} onClick={() => setFilter('unread')}>No leídas</FilterButton>
+      </ButtonGroup>
+      <EmptyMessage>No hay notificaciones {filter === 'unread' ? 'no leídas' : ''}.</EmptyMessage>
     </Container>
   );
 
   return (
     <Container>
       <Title>Notificaciones</Title>
+      <ButtonGroup>
+        <FilterButton $active={filter === 'all'} onClick={() => setFilter('all')}>Todas</FilterButton>
+        <FilterButton $active={filter === 'unread'} onClick={() => setFilter('unread')}>No leídas</FilterButton>
+      </ButtonGroup>
       <NotificationList>
-        {notificaciones.map(n => (
+        {visibleNotificaciones.map(n => (
           <NotificationItem
             key={n.id}
             $isRead={n.leida}
             $isOpen={openId === n.id}
             onClick={() => {
-              if (openId !== n.id && !n.leida) {
+              if (openId === n.id && !n.leida) {
                 marcarLeida(n.id);
               }
               setOpenId(openId === n.id ? null : n.id);
@@ -148,17 +170,39 @@ export default NotificacionBandeja;
 
 const Container = styled.div`
   width: 100%;
-  margin-top: 70px;
   padding: 30px;
   box-sizing: border-box;
 `;
 
 const Title = styled.h3`
   color: #333;
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 600;
   margin-bottom: 20px;
   margin-top: 0;
+  padding-top: 70px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const FilterButton = styled.button`
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: ${props => props.$active ? '#2a2a2a' : '#fff'};
+  color: ${props => props.$active ? '#fff' : '#333'};
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${props => props.$active ? '#171717ff' : '#f0f0f0'};
+  }
 `;
 
 const NotificationList = styled.ul`
