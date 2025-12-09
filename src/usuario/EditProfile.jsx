@@ -406,7 +406,7 @@ const EditProfile = () => {
           <FormWrapper>
             <Title>Editar Perfil</Title>
             <FormGroup>
-              <Label>Nombre</Label>
+              <Label>Nombres</Label>
               <Input
                 type="text"
                 name="nombre"
@@ -417,7 +417,7 @@ const EditProfile = () => {
               />
             </FormGroup>
             <FormGroup>
-              <Label>Apellido</Label>
+              <Label>Apellidos</Label>
               <Input
                 type="text"
                 name="apellido"

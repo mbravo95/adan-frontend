@@ -84,12 +84,32 @@ const Perfil = () => {
 
           return `${dia} | ${mes} | ${anio}`;
         };
+
+        // Función para formatear cédula a formato 1.234.567-8
+        const formatearCedula = (cedula) => {
+          if (!cedula) return "No disponible";
+          
+          // Remover cualquier formato previo
+          const cedulaLimpia = cedula.toString().replace(/[.-]/g, '');
+          
+          // Verificar que sea un número válido
+          if (!/^\d+$/.test(cedulaLimpia)) return cedula;
+          
+          // Separar el dígito verificador (último dígito)
+          const digitoVerificador = cedulaLimpia.slice(-1);
+          const cuerpo = cedulaLimpia.slice(0, -1);
+          
+          // Formatear el cuerpo con puntos cada 3 dígitos de derecha a izquierda
+          const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          
+          return `${cuerpoFormateado}-${digitoVerificador}`;
+        };
         
         setUserData({
           nombres: data.nombres || "No disponible",
           apellidos: data.apellidos || "No disponible",
           correo: data.correo || "No disponible",
-          cedula: data.cedula || "No disponible",
+          cedula: formatearCedula(data.cedula),
           fechaNacimiento: formatearFechaNacimiento(data.fechaNacimiento), 
           fechaCreacion: formatearFechaCreacion(data.fechaCreacion),
           rol: data.tipoUsuario || data.rol || localStorage.getItem("tipo") || "No disponible",
@@ -184,38 +204,40 @@ const Perfil = () => {
               {/*<Title>Perfil del Usuario</Title>*/}
               <UserCard>
                 <DataRow>
-                  <Label>Nombres:</Label>
+                  <Label>Nombres</Label>
                   <Value>{userData.nombres}</Value>
                 </DataRow>
                 <DataRow>
-                  <Label>Apellidos:</Label>
+                  <Label>Apellidos</Label>
                   <Value>{userData.apellidos}</Value>
                 </DataRow>
                 <DataRow>
-                  <Label>Correo:</Label>
+                  <Label>Correo</Label>
                   <Value>{userData.correo}</Value>
                 </DataRow>
                 <DataRow>
-                  <Label>Cédula:</Label>
+                  <Label>Cédula</Label>
                   <Value>{userData.cedula}</Value>
                 </DataRow>
                 <DataRow>
-                  <Label>Fecha de Nacimiento:</Label>
+                  <Label>Fecha de Nacimiento</Label>
                   <Value>{userData.fechaNacimiento}</Value>
                 </DataRow>
                 <DataRow>
-                  <Label>Fecha de Ingreso:</Label>
+                  <Label>Fecha de Ingreso</Label>
                   <Value>{userData.fechaCreacion}</Value>
                 </DataRow>
+
+                <ButtonContainer>
+                  <SaveButton onClick={irEditarPerfil}>
+                    Editar perfil
+                  </SaveButton>
+                  <SaveButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
+                    Cambiar contraseña
+                  </SaveButton>
+                </ButtonContainer>
               </UserCard>
-              <ButtonContainer>
-                <EditButton onClick={irEditarPerfil}>
-                  Editar perfil
-                </EditButton>
-                <EditButton onClick={() => navigate('/usuario/cambiar-contrasena')}>
-                  Cambiar contraseña
-                </EditButton>
-              </ButtonContainer>
+              
             </DataSection>
           </MainContent>
           
@@ -298,26 +320,30 @@ const ProfileRole = styled.p`
   opacity: 0.9;
 `;
 
-const EditButton = styled.button`
-  background-color: white;
-  color: #333;
+const Button = styled.button`
+  flex: 1;
+  padding: 14px 20px;
   border: none;
-  padding: 14px 32px;
   border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  
-  &:hover {
+`;
+
+const SaveButton = styled(Button)`
+  background-color: white;
+  color: #333;
+  border: 2px solid #ddd;
+  &:hover:not(:disabled) {
     background-color: #f8f8f8;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+    border-color: #bbb;
   }
-  
-  &:active {
-    transform: translateY(0);
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    color: #999;
   }
 `;
 

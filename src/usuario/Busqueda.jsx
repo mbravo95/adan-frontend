@@ -18,6 +18,26 @@ const Busqueda = () => {
     const {profile} = useAuth();
     const navigate = useNavigate();
 
+    // Función para formatear cédula a formato 1.234.567-8
+    const formatearCedula = (cedula) => {
+        if (!cedula) return "No disponible";
+        
+        // Remover cualquier formato previo
+        const cedulaLimpia = cedula.toString().replace(/[.-]/g, '');
+        
+        // Verificar que sea un número válido
+        if (!/^\d+$/.test(cedulaLimpia)) return cedula;
+        
+        // Separar el dígito verificador (último dígito)
+        const digitoVerificador = cedulaLimpia.slice(-1);
+        const cuerpo = cedulaLimpia.slice(0, -1);
+        
+        // Formatear el cuerpo con puntos cada 3 dígitos de derecha a izquierda
+        const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        
+        return `${cuerpoFormateado}-${digitoVerificador}`;
+    };
+
     useEffect(() => {
         const cargarUsuarios = async () => {
             setLoading(true);
@@ -232,7 +252,7 @@ const Busqueda = () => {
                                             </UserStatus>
                                             <DetailRow>
                                                 <DetailLabel>Cédula:</DetailLabel>
-                                                <DetailValue>{user.cedula ? user.cedula : "No disponible"}</DetailValue>
+                                                <DetailValue>{formatearCedula(user.cedula)}</DetailValue>
                                             </DetailRow>
                                             <DetailRow>
                                                 <DetailLabel>Correo:</DetailLabel>
