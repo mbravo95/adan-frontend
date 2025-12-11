@@ -155,6 +155,18 @@ const CalificarEstudiante = () => {
         },
         body: JSON.stringify(body)
       });
+      try {
+        await fetch(`${urlBase}/notificaciones/avisoCalificacionFinal/curso/${id}/usuario/${estudianteId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+      } catch (notifError) {
+        console.error("Error enviando notificación de calificación final", notifError);
+      }
+
       toast.success("Calificación guardada correctamente");
       setTimeout(() => navigate(-1), 1200);
     } catch (err) {

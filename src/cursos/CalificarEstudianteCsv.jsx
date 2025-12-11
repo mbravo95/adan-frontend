@@ -320,6 +320,11 @@ const CalificarEstudianteCsv = () => {
       const totalErrores = response.data.errores || 0;
       if (totalExitosos > 0) {
         toast.success(`${totalExitosos} estudiantes calificados exitosamente`);
+        try {
+          await axios.post(`${urlBase}/notificaciones/avisoCalificacionFinalMasivo/curso/${cursoActual.id}`, {}, config);
+        } catch (notifError) {
+          console.error("Error enviando notificación masiva de calificación final", notifError);
+        }
       }
       if (totalErrores > 0) {
         toast.warning(`${totalErrores} errores encontrados`);
