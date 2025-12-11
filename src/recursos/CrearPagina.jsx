@@ -18,6 +18,11 @@ const CrearPagina = () => {
 
     const navigate = useNavigate();
     const { codigo, seccion, idpagina } = useParams();
+    // Obtener el nombre de la sección desde location.state
+    let nombreSeccion = "";
+    if (window.history.state && window.history.state.usr && window.history.state.usr.nombreSeccion) {
+      nombreSeccion = window.history.state.usr.nombreSeccion;
+    }
 
     const { esProfesor, loadingSecciones  } = useCursoData(codigo);
     const rol = localStorage.getItem("tipo");
@@ -81,43 +86,61 @@ const CrearPagina = () => {
       }
       
 
-      try {
-            const urlBase = import.meta.env.VITE_BACKEND_URL;
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            const payload = {nombre, idSeccion: Number(seccion), urlHtml: pagina};
-            console.log('[CREAR_PAGINA] URL:', `${urlBase}/recursos/paginas-tematicas`);
-            console.log('[CREAR_PAGINA] Payload enviado:', payload);
-            console.log('[CREAR_PAGINA] Config:', config);
-            
-            const response = await axios.post(`${urlBase}/recursos/paginas-tematicas`, payload, config);
-            console.log('[CREAR_PAGINA] Respuesta exitosa:', response);
-            toast.success("Página agregada exitosamente", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            navigate(`/curso/${codigo}`);
+        try {
+          const urlBase = import.meta.env.VITE_BACKEND_URL;
+          const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            },
+          };
+          const payload = {nombre, idSeccion: Number(seccion), urlHtml: pagina};
+          console.log('[CREAR_PAGINA] URL:', `${urlBase}/recursos/paginas-tematicas`);
+          console.log('[CREAR_PAGINA] Payload enviado:', payload);
+          console.log('[CREAR_PAGINA] Config:', config);
+
+          const response = await axios.post(`${urlBase}/recursos/paginas-tematicas`, payload, config);
+          console.log('[CREAR_PAGINA] Respuesta exitosa:', response);
+
+          if (nombreSeccion && nombreSeccion === "Cartelera de novedades") {
+            try {
+              let idCurso = null;
+              if (window.history.state && window.history.state.usr && window.history.state.usr.idCurso) {
+                idCurso = window.history.state.usr.idCurso;
+              } else if (localStorage.getItem('idCurso')) {
+                idCurso = localStorage.getItem('idCurso');
+              }
+              console.log('[NOTIFICACION] Llamando a:', `${urlBase}/notificaciones/avisoNuevaNovedad/curso/${idCurso}`);
+              console.log('[NOTIFICACION] Config:', config);
+              await axios.post(`${urlBase}/notificaciones/avisoNuevaNovedad/curso/${idCurso}`, {}, config);
+              console.log('[NOTIFICACION] Llamada exitosa');
+            } catch (notifError) {
+              console.error("Error enviando notificación de nueva novedad", notifError);
+            }
+          }
+
+          toast.success("Página agregada exitosamente", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          navigate(`/curso/${codigo}`);
         } catch (error) {
-            console.log(error);
-            toast.error("Ya existe una página con ese título en la sección seleccionada", {
-                position: "top-center",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+          console.log(error);
+          toast.error("Ya existe una página con ese título en la sección seleccionada", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }
     };
 

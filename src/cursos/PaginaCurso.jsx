@@ -334,8 +334,8 @@ const PaginaCurso = () => {
   }
 
 
-  const agregarPagina = (seccionId) => {
-    navigate(`/curso/${codigo}/${seccionId}/crear-pagina`);
+  const agregarPagina = (seccionId, nombreSeccion) => {
+    navigate(`/curso/${codigo}/${seccionId}/crear-pagina`, { state: { nombreSeccion, idCurso: cursoActual.id } });
   };
 
   const verPagina = (recursoId, seccionId) => {
@@ -750,7 +750,7 @@ const PaginaCurso = () => {
                           variant="success" 
                           onClick={(e) => {
                             e.stopPropagation();
-                            agregarPagina(seccion.id);
+                            agregarPagina(seccion.id, seccion.titulo);
                           }}
                         >
                           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -959,7 +959,7 @@ const PaginaCurso = () => {
                           variant="success"
                           onClick={(e) => {
                             e.stopPropagation();
-                            agregarPagina(seccion.id);
+                            agregarPagina(seccion.id, seccion.titulo);
                           }}
                         >
                           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
