@@ -2,9 +2,9 @@ import styled from "styled-components";
 
 const Container = styled.div`
   background-color: white;
-  min-height: 100vh;
   width: 100%;
-  margin-top: 70px;
+  padding-top: 70px;
+  min-height: 100vh;
   display: flex;
   box-sizing: border-box;
 `;
@@ -15,7 +15,7 @@ const Sidebar = styled.div`
   border-right: 1px solid #e0e0e0;
   padding: 20px;
   box-sizing: border-box;
-  min-height: calc(100vh - 60px);
+  height: auto;
 `;
 
 const CourseTitle = styled.h1`

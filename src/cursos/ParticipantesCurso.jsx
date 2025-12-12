@@ -8,8 +8,10 @@ const Container = styled.div`
   background-color: white;
   min-height: 100vh;
   width: 100%;
-  margin-top: 60px;
-  padding: 40px;
+  padding-top: 90px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 40px;
   box-sizing: border-box;
 `;
 
@@ -170,7 +172,7 @@ const ParticipantEmail = styled.p`
 
 const PlaceholderMessage = styled.div`
   text-align: center;
-  padding: 20px 20px;
+  padding: 15px 15px;
   color: #666;
   font-size: 16px;
   background-color: #f8f9fa;
