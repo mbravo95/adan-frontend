@@ -5,149 +5,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { messaging, getToken } from '../../firebase';
 
-const Login = () => {
-  const [mail, setMail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
-
-  async function obtenerFcmToken() {
-    try {
-      const token = await getToken(messaging, { vapidKey: 'BIJwy2uMJrGLrBTOjsCyQQrnIbVR_IPuRuFub_l_9gQIm6yYmBBPBE8XxmhzVFNtEZ8CeSTPj1zeOiYqPPzmKFY' });
-      if (token) {
-        localStorage.setItem('fcmToken', token);
-        return token;
-      }
-    } catch (err) {
-      console.error('Error obteniendo token FCM:', err);
-      return null;
-    }
-  }
-
-  const iniciarSesion = async () => {
-    if(mail == "" || password == ""){
-      toast.error("Debe completar todos los campos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    
-    try {
-      const urlBase = import.meta.env.VITE_BACKEND_URL;
-      const tokenFcm = await obtenerFcmToken();
-      const plataforma = 'pc';
-      const response = await axios.post(
-        `${urlBase}/auth/login`,
-        {
-          correo: mail,
-          pw: password,
-          tokenFcm : tokenFcm,
-          plataforma : plataforma
-        },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      const {data} = response;
-      const {token, rol, id: idLogin} = data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("tipo", rol);
-
-      let idUsuario = idLogin;
-      if (!idUsuario && token) {
-        try {
-          const perfilResp = await axios.get(`${urlBase}/usuarios/perfil`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          idUsuario = perfilResp.data.id;
-        } catch (err) {
-          idUsuario = undefined;
-        }
-      }
-      localStorage.setItem("idUsuario", idUsuario);
-      if (idUsuario && token) {
-        try {
-          const cursosResp = await axios.get(`${urlBase}/usuarios/${idUsuario}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'accept': '*/*'
-            }
-          });
-          if (cursosResp.data && Array.isArray(cursosResp.data.cursosComoProfesor)) {
-            const codigos = cursosResp.data.cursosComoProfesor.map(curso => curso.codigo);
-            localStorage.setItem("codigosCursosProfesor", JSON.stringify(codigos));
-          } else {
-            localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
-          }
-        } catch (err) {
-          localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
-        }
-      }
-
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      navigate('/home');
-    } catch (error) {
-      console.log(error);
-      toast.error("Correo y/o contraseña incorrectos", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  }
-
-  return (
-    <FullScreenContainer>
-      <LoginColumn>
-        <Form>
-          <Input 
-            type="email" 
-            placeholder="adan@email.com" 
-            value={mail}
-            onChange={(e) => setMail(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
-          />
-          <Input 
-            type="password" 
-            placeholder="*******************" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
-          />
-          <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
-          <SeparatorContainer>
-            <SeparatorLine />
-            <SeparatorText>o</SeparatorText>
-            <SeparatorLine />
-          </SeparatorContainer>
-          <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
-        </Form>
-      </LoginColumn>
-      <LogoColumn>
-        <LogoImage src="/logo- SinFondo.png" alt="Logo ADAN" />
-      </LogoColumn>
-    </FullScreenContainer>
-  );
-}
-
-export default Login;
-
 const FullScreenContainer = styled.div`
   min-height: 100vh;
   width: 100vw;
@@ -301,3 +158,147 @@ const LogoImage = styled.img`
     max-width: 300px;
   }
 `;
+
+const Login = () => {
+  const [mail, setMail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  async function obtenerFcmToken() {
+    try {
+      const token = await getToken(messaging, { vapidKey: 'BIJwy2uMJrGLrBTOjsCyQQrnIbVR_IPuRuFub_l_9gQIm6yYmBBPBE8XxmhzVFNtEZ8CeSTPj1zeOiYqPPzmKFY' });
+      if (token) {
+        localStorage.setItem('fcmToken', token);
+        return token;
+      }
+    } catch (err) {
+      console.error('Error obteniendo token FCM:', err);
+      return null;
+    }
+  }
+
+  const iniciarSesion = async () => {
+    if(mail == "" || password == ""){
+      toast.error("Debe completar todos los campos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    
+    try {
+      const urlBase = import.meta.env.VITE_BACKEND_URL;
+      const tokenFcm = await obtenerFcmToken();
+      const plataforma = 'pc';
+      const response = await axios.post(
+        `${urlBase}/auth/login`,
+        {
+          correo: mail,
+          pw: password,
+          tokenFcm : tokenFcm,
+          plataforma : plataforma
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      const {data} = response;
+      const {token, rol, id: idLogin} = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("tipo", rol);
+
+      let idUsuario = idLogin;
+      if (!idUsuario && token) {
+        try {
+          const perfilResp = await axios.get(`${urlBase}/usuarios/perfil`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          idUsuario = perfilResp.data.id;
+        } catch (err) {
+          idUsuario = undefined;
+        }
+      }
+      localStorage.setItem("idUsuario", idUsuario);
+      if (idUsuario && token) {
+        try {
+          const cursosResp = await axios.get(`${urlBase}/usuarios/${idUsuario}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'accept': '*/*'
+            }
+          });
+          if (cursosResp.data && Array.isArray(cursosResp.data.cursosComoProfesor)) {
+            const codigos = cursosResp.data.cursosComoProfesor.map(curso => curso.codigo);
+            localStorage.setItem("codigosCursosProfesor", JSON.stringify(codigos));
+          } else {
+            localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
+          }
+        } catch (err) {
+          localStorage.setItem("codigosCursosProfesor", JSON.stringify([]));
+        }
+      }
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      navigate('/home');
+    } catch (error) {
+      console.log(error);
+      toast.error("Correo y/o contraseña incorrectos", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  return (
+    <FullScreenContainer>
+      <LoginColumn>
+        <Form>
+          <Input 
+            type="email" 
+            placeholder="adan@email.com" 
+            value={mail}
+            onChange={(e) => setMail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
+          />
+          <Input 
+            type="password" 
+            placeholder="*******************" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && iniciarSesion()}
+          />
+          <LoginButton onClick={() => iniciarSesion()}>Iniciar sesión</LoginButton>
+          <SeparatorContainer>
+            <SeparatorLine />
+            <SeparatorText>o</SeparatorText>
+            <SeparatorLine />
+          </SeparatorContainer>
+          <ForgotPasswordLink href="/olvido-password">¿Olvidó su contraseña?</ForgotPasswordLink>
+        </Form>
+      </LoginColumn>
+      <LogoColumn>
+        <LogoImage src="/logo- SinFondo.png" alt="Logo ADAN" />
+      </LogoColumn>
+    </FullScreenContainer>
+  );
+}
+
+export default Login;
+
