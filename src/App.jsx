@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { StyleSheetManager } from 'styled-components';
 import Login from "./usuario/Login";
 import RutaProtegidaLayout from "./layout/RutaProtegidaLayout";
 import AuthLayout from "./layout/AuthLayout";
@@ -56,7 +57,6 @@ import EditarCurso from "./cursos/EditarCurso";
 import ActividadUsuario from './usuario/ActividadUsuario';
 
 function App() {
-
   const token = localStorage.getItem("token");
 
   function NotificacionBandejaWrapper() {
@@ -65,7 +65,7 @@ function App() {
   }
 
   return (
-    <>
+    <StyleSheetManager>
       <GlobalStyles />
       <AuthProvider>
         <ToastContainer />
@@ -126,15 +126,13 @@ function App() {
               <Route path="/curso/:codigo/tarea/:tareaId/entregas/calificar-csv" element={<CalificarEntregaCsv />} />
               <Route path="/usuario/notificacion-bandeja" element={<NotificacionBandejaWrapper />} />
               <Route path="/actividad-usuario/:userId" element={<ActividadUsuario />} />
-              
-
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </>
+    </StyleSheetManager>
   );
 }
 
-export default App
+export default App;
