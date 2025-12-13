@@ -167,7 +167,7 @@ const Login = () => {
 
   async function obtenerFcmToken() {
     try {
-      const token = await getToken(messaging, { vapidKey: 'BIJwy2uMJrGLrBTOjsCyQQrnIbVR_IPuRuFub_l_9gQIm6yYmBBPBE8XxmhzVFNtEZ8CeSTPj1zeOiYqPPzmKFY' });
+      const token = await getToken(messaging, { vapidKey: 'BERJzpI2PusS4qrsE1wSCqEVYfz5x-n_t_xLidyWn98YWm3_sbtlxQ7Wkgf26wt6m5kjIM-OYimyQm1dpYxU6as' });
       if (token) {
         localStorage.setItem('fcmToken', token);
         return token;
